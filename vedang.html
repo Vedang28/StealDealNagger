@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vedang Vaidya - Professional Portfolio</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+      }
+
+      nav {
+        background-color: #f8f9fa;
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: #667eea;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+
+      nav a:hover {
+        color: #764ba2;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      section {
+        margin: 3rem 0;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        color: #667eea;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 3px solid #764ba2;
+        padding-bottom: 0.5rem;
+      }
+
+      h3 {
+        color: #764ba2;
+        font-size: 1.3rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+        text-align: justify;
+      }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .info-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-left: 4px solid #667eea;
+        border-radius: 4px;
+        margin: 1rem 0;
+      }
+
+      .highlights {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+      }
+
+      .highlight-card {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #667eea30;
+        transition: transform 0.3s ease;
+      }
+
+      .highlight-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .highlight-card h4 {
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+
+      footer {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        margin-top: 3rem;
+      }
+
+      footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      .image-placeholder {
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+        margin: 1rem 0;
+      }
+
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 1.8rem;
+        }
+
+        nav ul {
+          gap: 1rem;
+        }
+
+        .about-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Vedang Vaidya</h1>
+      <p>Professional Portfolio & Insights</p>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#about">About Me</a></li>
+        <li><a href="#liverpool">Liverpool</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <!-- About Me Section -->
+      <section id="about">
+        <h2>About Me</h2>
+        <div class="about-grid">
+          <div>
+            <p>
+              Welcome to my professional portfolio. I am Vedang Vaidya, a
+              dedicated professional committed to excellence and continuous
+              growth in my field. With a passion for innovation and
+              problem-solving, I bring a strategic mindset to every project I
+              undertake.
+            </p>
+            <p>
+              My experience spans across multiple domains, where I have
+              developed strong technical and analytical skills. I believe in the
+              power of technology to solve real-world problems and create
+              meaningful impact.
+            </p>
+            <div class="info-box">
+              <strong>Professional Focus:</strong>
+              <p>
+                Delivering high-quality solutions through innovative thinking
+                and collaborative teamwork.
+              </p>
+            </div>
+          </div>
+          <div class="image-placeholder">[Profile Image]</div>
+        </div>
+
+        <h3>Key Strengths</h3>
+        <div class="highlights">
+          <div class="highlight-card">
+            <h4>Problem Solving</h4>
+            <p>
+              Analytical approach to identifying and resolving complex
+              challenges effectively.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Leadership</h4>
+            <p>
+              Committed to inspiring teams and driving projects toward
+              successful outcomes.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Innovation</h4>
+            <p>
+              Passionate about exploring cutting-edge technologies and
+              methodologies.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Communication</h4>
+            <p>
+              Clear articulation of ideas and effective collaboration across
+              teams.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Liverpool Section -->
+      <section id="liverpool">
+        <h2>Liverpool</h2>
+        <div class="about-grid">
+          <div class="image-placeholder">[Liverpool Image]</div>
+          <div>
+            <p>
+              Liverpool, located on the northwest coast of England, is one of
+              the United Kingdom's most vibrant and historically significant
+              cities. Known for its rich cultural heritage, iconic landmarks,
+              and thriving creative communities, Liverpool continues to be a
+              major hub for business, tourism, and innovation.
+            </p>
+            <p>
+              The city is renowned worldwide for its contributions to music,
+              particularly as the birthplace of The Beatles and the Mersey
+              Sound. Beyond its musical legacy, Liverpool boasts world-class
+              museums, stunning Victorian architecture, and a modern waterfront
+              development.
+            </p>
+          </div>
+        </div>
+
+        <h3>Key Highlights of Liverpool</h3>
+        <div class="highlights">
+          <div class="highlight-card">
+            <h4>Musical Heritage</h4>
+            <p>
+              Home to The Beatles and a thriving music scene that continues to
+              influence global culture.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Architectural Beauty</h4>
+            <p>
+              UNESCO World Heritage waterfront with Victorian and contemporary
+              architecture.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Cultural Institutions</h4>
+            <p>
+              World-renowned museums including the Tate Liverpool and Walker Art
+              Gallery.
+            </p>
+          </div>
+          <div class="highlight-card">
+            <h4>Modern Development</h4>
+            <p>
+              Continuous urban regeneration making Liverpool a vibrant
+              destination for business and tourism.
+            </p>
+          </div>
+        </div>
+
+        <h3>Why Liverpool Matters</h3>
+        <div class="info-box">
+          <p>
+            Liverpool stands as a testament to resilience and reinvention. The
+            city has successfully transformed its economy while preserving its
+            rich cultural identity. With European Capital of Culture status and
+            a thriving creative sector, Liverpool represents the perfect blend
+            of tradition and progress.
+          </p>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact">
+        <h2>Get In Touch</h2>
+        <p>
+          I'm always interested in hearing about new opportunities and
+          collaborations. Feel free to reach out for professional inquiries or
+          to discuss ideas about technology, innovation, and Liverpool's
+          exciting developments.
+        </p>
+        <div class="info-box">
+          <strong>Professional Inquiry:</strong>
+          <p>
+            For business proposals, collaborations, or professional inquiries,
+            please contact me through your preferred communication channel.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 Vedang Vaidya. All rights reserved.</p>
+      <p>Designed with precision and professionalism</p>
+    </footer>
+  </body>
+</html>
