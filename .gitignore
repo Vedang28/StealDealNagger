@@ -7,3 +7,5 @@ coverage/
 prisma/*.db
 .idea/
 .vscode/
+
+/generated/prisma

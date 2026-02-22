@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== TEAMS ====================
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  plan        String   @default("growth") // growth | scale
+  timezone    String   @default("UTC")
+  digestTime  String   @default("09:00") @map("digest_time")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users        User[]
+  deals        Deal[]
+  rules        Rule[]
+  integrations Integration[]
+
+  @@map("teams")
+}
+
+// ==================== USERS ====================
+model User {
+  id                String   @id @default(uuid())
+  teamId            String   @map("team_id")
+  email             String   @unique
+  name              String
+  password          String
+  role              String   @default("admin") // admin | manager | rep
+  slackUserId       String?  @map("slack_user_id")
+  teamsUserId       String?  @map("teams_user_id")
+  notificationPrefs Json     @default("{}") @map("notification_prefs")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  team          Team           @relation(fields: [teamId], references: [id])
+  ownedDeals    Deal[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+// ==================== DEALS ====================
+model Deal {
+  id              String    @id @default(uuid())
+  teamId          String    @map("team_id")
+  ownerId         String?   @map("owner_id")
+  crmDealId       String    @map("crm_deal_id")
+  crmSource       String    @map("crm_source") // salesforce | hubspot | pipedrive | sheets
+  name            String
+  stage           String
+  amount          Decimal   @default(0) @db.Decimal(12, 2)
+  currency        String    @default("USD")
+  lastActivityAt  DateTime? @map("last_activity_at")
+  stalenessStatus String    @default("healthy") @map("staleness_status") // healthy | warning | stale | critical
+  daysStale       Int       @default(0) @map("days_stale")
+  snoozedUntil    DateTime? @map("snoozed_until")
+  snoozeReason    String?   @map("snooze_reason")
+  metadata        Json      @default("{}") @db.JsonB
+  closedAt        DateTime? @map("closed_at")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  team          Team           @relation(fields: [teamId], references: [id])
+  owner         User?          @relation(fields: [ownerId], references: [id])
+  activities    Activity[]
+  notifications Notification[]
+
+  @@unique([teamId, crmDealId, crmSource])
+  @@index([teamId, stalenessStatus, isActive])
+  @@index([lastActivityAt, isActive])
+  @@map("deals")
+}
+
+// ==================== ACTIVITIES ====================
+model Activity {
+  id            String   @id @default(uuid())
+  dealId        String   @map("deal_id")
+  type          String   // email | call | meeting | note | stage_change | task
+  description   String?
+  performedBy   String?  @map("performed_by")
+  performedAt   DateTime @map("performed_at")
+  crmActivityId String?  @map("crm_activity_id")
+  syncedAt      DateTime @default(now()) @map("synced_at")
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@index([dealId, performedAt(sort: Desc)])
+  @@map("activities")
+}
+
+// ==================== RULES ====================
+model Rule {
+  id               String  @id @default(uuid())
+  teamId           String  @map("team_id")
+  pipeline         String  @default("default")
+  stage            String
+  staleAfterDays   Int     @map("stale_after_days")
+  escalateAfterDays Int    @map("escalate_after_days")
+  criticalAfterDays Int    @map("critical_after_days")
+  minDealAmount    Decimal @default(0) @map("min_deal_amount") @db.Decimal(12, 2)
+  notifyChannels   Json    @default("[\"slack\"]") @map("notify_channels")
+  suggestedAction  String? @map("suggested_action")
+  isActive         Boolean @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@index([teamId, pipeline, stage, isActive])
+  @@map("rules")
+}
+
+// ==================== NOTIFICATIONS ====================
+model Notification {
+  id              String    @id @default(uuid())
+  dealId          String    @map("deal_id")
+  userId          String    @map("user_id")
+  type            String    // nudge | escalation | digest | snooze_expiry
+  channel         String    // slack | email | teams
+  status          String    @default("pending") // pending | sent | delivered | failed | clicked
+  message         String?
+  suggestedAction String?   @map("suggested_action")
+  sentAt          DateTime? @map("sent_at")
+  openedAt        DateTime? @map("opened_at")
+  errorMessage    String?   @map("error_message")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  deal Deal @relation(fields: [dealId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([dealId, userId, type, createdAt])
+  @@map("notifications")
+}
+
+// ==================== INTEGRATIONS ====================
+model Integration {
+  id            String    @id @default(uuid())
+  teamId        String    @map("team_id")
+  provider      String    // salesforce | hubspot | pipedrive | sheets | slack | teams
+  category      String    // crm | notification
+  accessToken   String?   @map("access_token")
+  refreshToken  String?   @map("refresh_token")
+  tokenExpiresAt DateTime? @map("token_expires_at")
+  webhookUrl    String?   @map("webhook_url")
+  config        Json      @default("{}") @db.JsonB
+  status        String    @default("active") // active | expired | revoked | error
+  lastSyncAt    DateTime? @map("last_sync_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@unique([teamId, provider])
+  @@map("integrations")
+}
