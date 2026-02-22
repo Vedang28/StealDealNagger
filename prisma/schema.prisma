@@ -58,6 +58,8 @@ model Deal {
   stage           String
   amount          Decimal   @default(0) @db.Decimal(12, 2)
   currency        String    @default("USD")
+  contactName     String?   @map("contact_name")
+  contactEmail    String?   @map("contact_email")
   lastActivityAt  DateTime? @map("last_activity_at")
   stalenessStatus String    @default("healthy") @map("staleness_status") // healthy | warning | stale | critical
   daysStale       Int       @default(0) @map("days_stale")

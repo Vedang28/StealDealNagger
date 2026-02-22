@@ -26,6 +26,8 @@ const createDeal = async (teamId, data) => {
       stage: data.stage,
       amount: data.amount || 0,
       currency: data.currency || "USD",
+      contactName: data.contactName || null,
+      contactEmail: data.contactEmail || null,
       ownerId: data.ownerId || null,
       lastActivityAt: data.lastActivityAt || new Date(),
       metadata: data.metadata || {},
@@ -37,8 +39,9 @@ const createDeal = async (teamId, data) => {
 };
 
 const listDeals = async (teamId, query) => {
-  const { page, limit, status, stage, ownerId, search, sortBy, sortOrder } =
-    query;
+  const { status, stage, ownerId, search, sortBy, sortOrder } = query;
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 20;
   const skip = (page - 1) * limit;
 
   const where = { teamId, isActive: true };
