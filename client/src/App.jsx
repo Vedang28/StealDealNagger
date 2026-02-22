@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -23,6 +24,12 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Landing */}
+      <Route
+        path="/"
+        element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+      />
+
       {/* Public */}
       <Route
         path="/login"
@@ -78,7 +85,7 @@ export default function App() {
       {/* Catch-all */}
       <Route
         path="*"
-        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+        element={<Navigate to={user ? "/dashboard" : "/"} replace />}
       />
     </Routes>
   );
