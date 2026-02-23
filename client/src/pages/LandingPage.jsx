@@ -57,8 +57,8 @@ export default function LandingPage() {
             <Link to="/register" className="landing-btn landing-btn-primary">
               Start Nagging Deals
             </Link>
-            <Link to={user ? "/dashboard" : "/login"} className="landing-btn landing-btn-secondary">
-              View Dashboard
+            <Link to="/get-demo" className="landing-btn landing-btn-secondary">
+              Get a Demo
             </Link>
           </div>
           <div className="landing-trusted-by">
@@ -278,7 +278,7 @@ export default function LandingPage() {
                 <li><i className="fa-regular fa-circle-check"></i> Google Sheets Integration</li>
                 <li><i className="fa-regular fa-circle-check"></i> Slack Nudges</li>
               </ul>
-              <Link to="/register" className="landing-btn landing-btn-secondary" style={{ width: "100%", textAlign: "center" }}>
+              <Link to="/get-demo" className="landing-btn landing-btn-secondary" style={{ width: "100%", textAlign: "center" }}>
                 Start Trial
               </Link>
             </div>

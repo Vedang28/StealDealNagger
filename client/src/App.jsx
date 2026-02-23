@@ -3,6 +3,7 @@ import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import GetDemo from "./pages/GetDemo";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -31,6 +32,7 @@ export default function App() {
       />
 
       {/* Public */}
+      <Route path="/get-demo" element={<GetDemo />} />
       <Route
         path="/login"
         element={user ? <Navigate to="/dashboard" replace /> : <Login />}
