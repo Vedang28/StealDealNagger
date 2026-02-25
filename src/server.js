@@ -2,11 +2,17 @@ const app = require("./app");
 const config = require("./config");
 const logger = require("./config/logger");
 const prisma = require("./config/prisma");
+const { initQueues } = require("./infrastructure/queues");
 
 const start = async () => {
   try {
     await prisma.$connect();
     logger.info("Connected to PostgreSQL");
+
+    // Initialize Bull queues (requires Redis — skipped gracefully if unavailable)
+    if (config.nodeEnv !== "test") {
+      initQueues();
+    }
 
     app.listen(config.port, () => {
       logger.info(

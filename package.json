@@ -25,6 +25,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "seed": "node src/scripts/seed.js",
+    "seed:reset": "node src/scripts/seed.js --reset && node src/scripts/seed.js",
     "test": "jest",
     "vercel-build": "prisma generate && cd client && npm install && npm run build",
     "postinstall": "prisma generate"
