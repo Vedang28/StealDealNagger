@@ -1,24 +1,34 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { dealsAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { dealsAPI } from "../services/api";
 import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
+import DealSlideOver from "../components/DealSlideOver";
 import LoadingSpinner from "../components/LoadingSpinner";
 import {
   Briefcase,
   DollarSign,
   AlertTriangle,
   TrendingDown,
-  ArrowRight,
   Clock,
+  Calendar,
 } from "lucide-react";
+
+const STAGES = ["Discovery", "Proposal", "Negotiation", "Closing"];
+
+const STATUS_BORDER = {
+  healthy: "border-l-success",
+  warning: "border-l-warning",
+  stale: "border-l-danger",
+  critical: "border-l-critical",
+};
 
 export default function Dashboard() {
   const { team } = useAuth();
   const [stats, setStats] = useState(null);
-  const [recentDeals, setRecentDeals] = useState([]);
+  const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDealId, setSelectedDealId] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -26,12 +36,12 @@ export default function Dashboard() {
 
   const loadData = async () => {
     try {
-      const [statsRes, dealsRes] = await Promise.all([
+      const [statsRes, dealsRes] = await Promise.allSettled([
         dealsAPI.stats(),
-        dealsAPI.list({ limit: 5, sortBy: "createdAt", sortOrder: "desc" }),
+        dealsAPI.list({ limit: 100, sortBy: "createdAt", sortOrder: "desc" }),
       ]);
-      setStats(statsRes.data.data);
-      setRecentDeals(dealsRes.data.data.deals);
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data.data);
+      if (dealsRes.status === "fulfilled") setDeals(dealsRes.value.data.data.deals);
     } catch (err) {
       console.error("Failed to load dashboard", err);
     } finally {
@@ -46,20 +56,31 @@ export default function Dashboard() {
     return `$${num}`;
   };
 
+  const formatDate = (date) => {
+    if (!date) return null;
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const dealsByStage = (stage) => deals.filter((d) => d.stage === stage);
+
+  const stageValue = (stage) =>
+    dealsByStage(stage).reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+
   if (loading) return <LoadingSpinner size="lg" text="Loading dashboard..." />;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-6 py-8 max-w-none">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-dark">Dashboard</h1>
-        <p className="text-muted text-sm mt-1">
-          {team?.name} — Pipeline Overview
-        </p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-dark">Pipeline</h1>
+        <p className="text-muted text-sm mt-0.5">{team?.name}</p>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           icon={Briefcase}
           label="Total Deals"
@@ -87,108 +108,81 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Status Breakdown + Recent Deals */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Status Breakdown */}
-        <div className="bg-white rounded-xl border border-border p-6 shadow-sm">
-          <h3 className="font-semibold text-dark mb-4">
-            Deal Health Breakdown
-          </h3>
-          <div className="space-y-4">
-            {["healthy", "warning", "stale", "critical"].map((status) => {
-              const data = stats?.byStatus?.[status];
-              const count = data?.count || 0;
-              const total = stats?.totalDeals || 1;
-              const pct = Math.round((count / total) * 100);
-
-              const barColors = {
-                healthy: "bg-success",
-                warning: "bg-warning",
-                stale: "bg-danger",
-                critical: "bg-critical",
-              };
-
-              return (
-                <div key={status}>
-                  <div className="flex justify-between items-center mb-1">
-                    <StatusBadge status={status} />
-                    <span className="text-sm font-semibold text-dark">
-                      {count}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${barColors[status]}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
+      {/* Kanban Board */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {STAGES.map((stage) => {
+          const stageDeals = dealsByStage(stage);
+          return (
+            <div key={stage} className="bg-gray-100 rounded-xl p-3 flex flex-col gap-3">
+              {/* Column header */}
+              <div className="flex items-center justify-between px-1">
+                <div>
+                  <h3 className="text-sm font-semibold text-dark">{stage}</h3>
+                  <p className="text-xs text-muted mt-0.5">
+                    {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""} &middot;{" "}
+                    {formatCurrency(stageValue(stage))}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <span className="w-6 h-6 rounded-full bg-white text-dark text-xs font-bold flex items-center justify-center shadow-sm">
+                  {stageDeals.length}
+                </span>
+              </div>
 
-        {/* Recent Deals */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-border p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-dark">Recent Deals</h3>
-            <Link
-              to="/deals"
-              className="text-primary text-sm font-medium hover:text-primary-hover flex items-center gap-1"
-            >
-              View all <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {recentDeals.length === 0 ? (
-            <div className="text-center py-12">
-              <Briefcase className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <p className="text-muted text-sm">No deals yet</p>
-              <Link
-                to="/deals/new"
-                className="text-primary text-sm font-medium hover:text-primary-hover mt-1 inline-block"
-              >
-                Create your first deal
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {recentDeals.map((deal) => (
-                <Link
-                  key={deal.id}
-                  to={`/deals/${deal.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-lg bg-primary-light text-primary flex items-center justify-center shrink-0">
-                      <Briefcase className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-dark truncate group-hover:text-primary transition-colors">
+              {/* Cards */}
+              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-0.5">
+                {stageDeals.length === 0 ? (
+                  <div className="bg-white rounded-lg border border-dashed border-border py-8 text-center">
+                    <Briefcase className="w-6 h-6 text-gray-300 mx-auto mb-1.5" />
+                    <p className="text-xs text-muted">No deals</p>
+                  </div>
+                ) : (
+                  stageDeals.map((deal) => (
+                    <button
+                      key={deal.id}
+                      onClick={() => setSelectedDealId(deal.id)}
+                      className={`w-full text-left bg-white rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer ${
+                        STATUS_BORDER[deal.stalenessStatus] || "border-l-gray-200"
+                      }`}
+                    >
+                      <p className="text-sm font-semibold text-dark truncate leading-snug">
                         {deal.name}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-muted">
-                        <span>{deal.stage}</span>
-                        <span>&middot;</span>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs font-semibold text-dark">
+                          {formatCurrency(deal.amount)}
+                        </span>
+                        <StatusBadge status={deal.stalenessStatus} />
+                      </div>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-muted">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {deal.daysStale}d stale
                         </span>
+                        {deal.lastActivityAt && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(deal.lastActivityAt)}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 shrink-0">
-                    <span className="text-sm font-semibold text-dark">
-                      {formatCurrency(deal.amount)}
-                    </span>
-                    <StatusBadge status={deal.stalenessStatus} />
-                  </div>
-                </Link>
-              ))}
+                      {deal.contactName && (
+                        <p className="text-xs text-muted mt-1.5 truncate">{deal.contactName}</p>
+                      )}
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
-          )}
-        </div>
+          );
+        })}
       </div>
+
+      {/* Slide-Over */}
+      <DealSlideOver
+        dealId={selectedDealId}
+        onClose={() => setSelectedDealId(null)}
+        onUpdate={loadData}
+      />
     </div>
   );
 }

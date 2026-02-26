@@ -46,4 +46,27 @@ export const dealsAPI = {
   unsnooze: (id) => api.delete(`/deals/${id}/snooze`),
 };
 
+// ─── Analytics ───────────────────────────────────
+export const analyticsAPI = {
+  pipeline: () => api.get("/analytics/pipeline"),
+  trends: (params) => api.get("/analytics/trends", { params }),
+  reps: () => api.get("/analytics/reps"),
+  stages: () => api.get("/analytics/stages"),
+};
+
+// ─── Notifications ────────────────────────────────
+export const notificationsAPI = {
+  list: (params) => api.get("/notifications", { params }),
+  markRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAllRead: () => api.post("/notifications/read-all"),
+};
+
+// ─── Rules ───────────────────────────────────────
+export const rulesAPI = {
+  list: () => api.get("/rules"),
+  create: (data) => api.post("/rules", data),
+  update: (id, data) => api.patch(`/rules/${id}`, data),
+  remove: (id) => api.delete(`/rules/${id}`),
+};
+
 export default api;

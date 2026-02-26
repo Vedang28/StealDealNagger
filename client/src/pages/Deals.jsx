@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { dealsAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
+import DealSlideOver from "../components/DealSlideOver";
 import {
   Briefcase,
   Search,
@@ -11,6 +12,7 @@ import {
   Clock,
   Plus,
   Filter,
+  ExternalLink,
 } from "lucide-react";
 
 export default function Deals() {
@@ -18,6 +20,7 @@ export default function Deals() {
   const [deals, setDeals] = useState([]);
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedDealId, setSelectedDealId] = useState(null);
 
   // Filters from URL
   const page = Number(searchParams.get("page")) || 1;
@@ -106,7 +109,7 @@ export default function Deals() {
           </div>
 
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative flex-1 min-w-50">
             <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
@@ -181,31 +184,30 @@ export default function Deals() {
                     <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
                       Last Activity
                     </th>
+                    <th className="px-6 py-3" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {deals.map((deal) => (
                     <tr
                       key={deal.id}
-                      className="hover:bg-gray-50/80 transition-colors"
+                      onClick={() => setSelectedDealId(deal.id)}
+                      className="hover:bg-gray-50/80 transition-colors cursor-pointer"
                     >
                       <td className="px-6 py-4">
-                        <Link
-                          to={`/deals/${deal.id}`}
-                          className="flex items-center gap-3 group"
-                        >
+                        <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-lg bg-primary-light text-primary flex items-center justify-center shrink-0">
                             <Briefcase className="w-4 h-4" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-dark group-hover:text-primary transition-colors">
+                            <p className="text-sm font-medium text-dark">
                               {deal.name}
                             </p>
                             <p className="text-xs text-muted">
                               {deal.crmSource}
                             </p>
                           </div>
-                        </Link>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-text">
@@ -226,6 +228,18 @@ export default function Deals() {
                       </td>
                       <td className="px-6 py-4 text-sm text-muted">
                         {formatDate(deal.lastActivityAt)}
+                      </td>
+                      <td
+                        className="px-4 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Link
+                          to={`/deals/${deal.id}`}
+                          title="View full details"
+                          className="p-1.5 rounded-lg text-muted hover:text-primary hover:bg-primary-light transition-colors inline-flex"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -267,6 +281,13 @@ export default function Deals() {
           </>
         )}
       </div>
+
+      {/* Slide-Over */}
+      <DealSlideOver
+        dealId={selectedDealId}
+        onClose={() => setSelectedDealId(null)}
+        onUpdate={loadDeals}
+      />
     </div>
   );
 }

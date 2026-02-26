@@ -260,9 +260,9 @@ export default function DealDetail() {
               ["Created", formatDate(d.createdAt)],
               ["Last Activity", formatDate(d.lastActivityAt)],
             ].map(([label, value]) => (
-              <div key={label} className="flex justify-between">
-                <dt className="text-sm text-muted">{label}</dt>
-                <dd className="text-sm font-medium text-dark text-right">
+              <div key={label} className="flex justify-between gap-4">
+                <dt className="text-sm text-muted shrink-0">{label}</dt>
+                <dd className="text-sm font-medium text-dark text-right min-w-0 break-all">
                   {value}
                 </dd>
               </div>

@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import GetDemo from "./pages/GetDemo";
@@ -10,12 +10,16 @@ import Dashboard from "./pages/Dashboard";
 import Deals from "./pages/Deals";
 import DealDetail from "./pages/DealDetail";
 import CreateDeal from "./pages/CreateDeal";
+import Analytics from "./pages/Analytics";
+import Notifications from "./pages/Notifications";
+import Rules from "./pages/Rules";
+import Settings from "./pages/Settings";
 
-function AppLayout({ children }) {
+function SidebarLayout({ children }) {
   return (
-    <div className="min-h-screen bg-bg-light">
-      <Navbar />
-      <main>{children}</main>
+    <div className="flex min-h-screen bg-bg-light">
+      <Sidebar />
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
 }
@@ -42,14 +46,14 @@ export default function App() {
         element={user ? <Navigate to="/dashboard" replace /> : <Register />}
       />
 
-      {/* Protected */}
+      {/* Protected — all use SidebarLayout */}
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <SidebarLayout>
               <Dashboard />
-            </AppLayout>
+            </SidebarLayout>
           </ProtectedRoute>
         }
       />
@@ -57,9 +61,9 @@ export default function App() {
         path="/deals"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <SidebarLayout>
               <Deals />
-            </AppLayout>
+            </SidebarLayout>
           </ProtectedRoute>
         }
       />
@@ -67,9 +71,9 @@ export default function App() {
         path="/deals/new"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <SidebarLayout>
               <CreateDeal />
-            </AppLayout>
+            </SidebarLayout>
           </ProtectedRoute>
         }
       />
@@ -77,9 +81,49 @@ export default function App() {
         path="/deals/:id"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <SidebarLayout>
               <DealDetail />
-            </AppLayout>
+            </SidebarLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <SidebarLayout>
+              <Analytics />
+            </SidebarLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <SidebarLayout>
+              <Notifications />
+            </SidebarLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/rules"
+        element={
+          <ProtectedRoute>
+            <SidebarLayout>
+              <Rules />
+            </SidebarLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SidebarLayout>
+              <Settings />
+            </SidebarLayout>
           </ProtectedRoute>
         }
       />
