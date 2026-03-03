@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { analyticsAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { SkeletonStatCards, SkeletonTable } from "../components/Skeleton";
 import {
   BarChart2,
   Briefcase,
@@ -44,7 +44,18 @@ export default function Analytics() {
 
   const pct = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0);
 
-  if (loading) return <LoadingSpinner size="lg" text="Loading analytics..." />;
+  if (loading)
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div>
+          <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
+          <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mt-2" />
+        </div>
+        <SkeletonStatCards />
+        <SkeletonTable rows={4} cols={5} />
+        <SkeletonTable rows={4} cols={4} />
+      </div>
+    );
 
   // API returns the health object directly (no .summary/.health wrappers)
   // Shape: { totalDeals, totalRevenue, atRiskDeals, atRiskRevenue, healthScore, byStatus: { healthy, warning, stale, critical } }
@@ -54,14 +65,17 @@ export default function Analytics() {
   const criticalCount = byStatus.critical?.count ?? 0;
 
   // trends shape: { trend: [...], current: {...}, note: string }
-  const hasHistoricalTrends = trends?.trend?.filter((t) => t.healthy !== null).length > 1;
+  const hasHistoricalTrends =
+    trends?.trend?.filter((t) => t.healthy !== null).length > 1;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-dark">Analytics</h1>
-        <p className="text-muted text-sm mt-1">Pipeline health and team performance</p>
+        <p className="text-muted text-sm mt-1">
+          Pipeline health and team performance
+        </p>
       </div>
 
       {/* Pipeline Health cards */}
@@ -96,8 +110,13 @@ export default function Analytics() {
             bg: "bg-amber-50",
           },
         ].map(({ icon: Icon, label, value, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-border p-5 shadow-sm">
-            <div className={`w-10 h-10 rounded-lg ${bg} ${color} flex items-center justify-center mb-3`}>
+          <div
+            key={label}
+            className="bg-white rounded-xl border border-border p-5 shadow-sm"
+          >
+            <div
+              className={`w-10 h-10 rounded-lg ${bg} ${color} flex items-center justify-center mb-3`}
+            >
               <Icon className="w-5 h-5" />
             </div>
             <p className="text-2xl font-bold text-dark">{value}</p>
@@ -109,7 +128,9 @@ export default function Analytics() {
       {/* Health breakdown */}
       {Object.keys(byStatus).length > 0 && (
         <div className="bg-white rounded-xl border border-border p-6 shadow-sm mb-8">
-          <h3 className="font-semibold text-dark mb-4">Deal Health Breakdown</h3>
+          <h3 className="font-semibold text-dark mb-4">
+            Deal Health Breakdown
+          </h3>
           <div className="space-y-4">
             {["healthy", "warning", "stale", "critical"].map((s) => {
               const data = byStatus[s] ?? {};
@@ -127,8 +148,12 @@ export default function Analytics() {
                   <div className="flex justify-between items-center mb-1">
                     <StatusBadge status={s} />
                     <div className="flex items-center gap-3 text-sm">
-                      <span className="text-muted">{formatCurrency(data.revenue)}</span>
-                      <span className="font-semibold text-dark w-6 text-right">{count}</span>
+                      <span className="text-muted">
+                        {formatCurrency(data.revenue)}
+                      </span>
+                      <span className="font-semibold text-dark w-6 text-right">
+                        {count}
+                      </span>
                     </div>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
@@ -151,33 +176,51 @@ export default function Analytics() {
             <h3 className="font-semibold text-dark">Stage Breakdown</h3>
           </div>
           {stages.length === 0 ? (
-            <p className="text-sm text-muted px-6 py-8 text-center">No stage data available</p>
+            <p className="text-sm text-muted px-6 py-8 text-center">
+              No stage data available
+            </p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50/50 border-b border-border">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Stage</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Deals</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Value</th>
-                  <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Avg Stale</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {stages.map((s) => (
-                  <tr key={s.stage} className="hover:bg-gray-50/50">
-                    <td className="px-6 py-3 font-medium text-dark">{s.stage}</td>
-                    <td className="px-4 py-3 text-right text-dark">{s.totalDeals}</td>
-                    <td className="px-4 py-3 text-right text-dark font-semibold">{formatCurrency(s.totalRevenue)}</td>
-                    <td className="px-6 py-3 text-right">
-                      <span className="flex items-center justify-end gap-1 text-muted">
-                        <Clock className="w-3.5 h-3.5" />
-                        {Math.round(s.avgDaysStale ?? 0)}d
-                      </span>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-100 text-sm">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-border">
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Stage
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Deals
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Value
+                    </th>
+                    <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Avg Stale
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {stages.map((s) => (
+                    <tr key={s.stage} className="hover:bg-gray-50/50">
+                      <td className="px-6 py-3 font-medium text-dark">
+                        {s.stage}
+                      </td>
+                      <td className="px-4 py-3 text-right text-dark">
+                        {s.totalDeals}
+                      </td>
+                      <td className="px-4 py-3 text-right text-dark font-semibold">
+                        {formatCurrency(s.totalRevenue)}
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <span className="flex items-center justify-end gap-1 text-muted">
+                          <Clock className="w-3.5 h-3.5" />
+                          {Math.round(s.avgDaysStale ?? 0)}d
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -188,40 +231,69 @@ export default function Analytics() {
             <h3 className="font-semibold text-dark">Rep Performance</h3>
           </div>
           {reps.length === 0 ? (
-            <p className="text-sm text-muted px-6 py-8 text-center">No rep data available</p>
+            <p className="text-sm text-muted px-6 py-8 text-center">
+              No rep data available
+            </p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50/50 border-b border-border">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Rep</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Deals</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Stale</th>
-                  <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Value</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {reps.map((r) => {
-                  const stale = r.byStatus?.stale ?? 0;
-                  return (
-                    <tr key={r.user?.id ?? r.user?.email} className="hover:bg-gray-50/50">
-                      <td className="px-6 py-3">
-                        <div>
-                          <p className="font-medium text-dark">{r.user?.name}</p>
-                          <p className="text-xs text-muted">{r.user?.email}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right text-dark">{r.totalDeals}</td>
-                      <td className="px-4 py-3 text-right">
-                        <span className={stale > 0 ? "text-danger font-semibold" : "text-success"}>
-                          {stale}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3 text-right font-semibold text-dark">{formatCurrency(r.totalRevenue)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-100 text-sm">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-border">
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Rep
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Deals
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Stale
+                    </th>
+                    <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
+                      Value
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {reps.map((r) => {
+                    const stale = r.byStatus?.stale ?? 0;
+                    return (
+                      <tr
+                        key={r.user?.id ?? r.user?.email}
+                        className="hover:bg-gray-50/50"
+                      >
+                        <td className="px-6 py-3">
+                          <div>
+                            <p className="font-medium text-dark">
+                              {r.user?.name}
+                            </p>
+                            <p className="text-xs text-muted">
+                              {r.user?.email}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right text-dark">
+                          {r.totalDeals}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span
+                            className={
+                              stale > 0
+                                ? "text-danger font-semibold"
+                                : "text-success"
+                            }
+                          >
+                            {stale}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-right font-semibold text-dark">
+                          {formatCurrency(r.totalRevenue)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
@@ -236,8 +308,9 @@ export default function Analytics() {
           <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
             <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>
-              Trend data builds over time as the staleness engine runs daily snapshots.
-              Check back after the first scheduled run to see historical comparisons.
+              Trend data builds over time as the staleness engine runs daily
+              snapshots. Check back after the first scheduled run to see
+              historical comparisons.
             </span>
           </div>
         ) : (
@@ -246,15 +319,27 @@ export default function Analytics() {
               .filter((t) => t.healthy !== null)
               .slice(-7)
               .map((snap, i) => (
-                <div key={i} className="flex items-center gap-4 text-sm py-2 border-b border-border last:border-0">
+                <div
+                  key={i}
+                  className="flex items-center gap-4 text-sm py-2 border-b border-border last:border-0"
+                >
                   <span className="text-muted w-28 shrink-0">
-                    {new Date(snap.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    {new Date(snap.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </span>
                   <span className="text-dark">
-                    {(snap.healthy ?? 0) + (snap.warning ?? 0) + (snap.stale ?? 0) + (snap.critical ?? 0)} deals
+                    {(snap.healthy ?? 0) +
+                      (snap.warning ?? 0) +
+                      (snap.stale ?? 0) +
+                      (snap.critical ?? 0)}{" "}
+                    deals
                   </span>
                   <span className="text-danger">{snap.stale ?? 0} stale</span>
-                  <span className="text-critical">{snap.critical ?? 0} critical</span>
+                  <span className="text-critical">
+                    {snap.critical ?? 0} critical
+                  </span>
                 </div>
               ))}
           </div>

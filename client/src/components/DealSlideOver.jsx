@@ -152,14 +152,16 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
       {/* Backdrop */}
       <div
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       />
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-[480px] max-w-full bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[480px] sm:max-w-full bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -175,7 +177,9 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                 <Briefcase className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-base font-bold text-dark truncate">{deal.name}</h2>
+                <h2 className="text-base font-bold text-dark truncate">
+                  {deal.name}
+                </h2>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-text">
                     {deal.stage}
@@ -197,12 +201,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-
               {/* Staleness info */}
               <div className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1.5 text-muted">
                   <Clock className="w-4 h-4" />
-                  <span><strong className="text-dark">{deal.daysStale}d</strong> stale</span>
+                  <span>
+                    <strong className="text-dark">{deal.daysStale}d</strong>{" "}
+                    stale
+                  </span>
                 </span>
                 {deal.lastActivityAt && (
                   <span className="flex items-center gap-1.5 text-muted">
@@ -218,7 +224,9 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                   <BellOff className="w-4 h-4 shrink-0" />
                   <span>Snoozed until {formatDate(deal.snoozedUntil)}</span>
                   {deal.snoozeReason && (
-                    <span className="text-amber-600">— {deal.snoozeReason}</span>
+                    <span className="text-amber-600">
+                      — {deal.snoozeReason}
+                    </span>
                   )}
                 </div>
               )}
@@ -227,11 +235,15 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
                 <div className="flex items-center gap-3">
                   <span className="text-muted w-28 shrink-0">CRM Source</span>
-                  <span className="text-dark font-medium">{deal.crmSource || "—"}</span>
+                  <span className="text-dark font-medium">
+                    {deal.crmSource || "—"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-muted w-28 shrink-0">CRM ID</span>
-                  <span className="text-dark font-mono text-xs">{deal.crmDealId || "—"}</span>
+                  <span className="text-dark font-mono text-xs">
+                    {deal.crmDealId || "—"}
+                  </span>
                 </div>
                 {deal.contactName && (
                   <div className="flex items-center gap-3">
@@ -240,7 +252,9 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                       <User className="w-3.5 h-3.5 text-muted" />
                       {deal.contactName}
                       {deal.contactEmail && (
-                        <span className="text-muted font-normal">({deal.contactEmail})</span>
+                        <span className="text-muted font-normal">
+                          ({deal.contactEmail})
+                        </span>
                       )}
                     </span>
                   </div>
@@ -248,31 +262,42 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                 {deal.owner && (
                   <div className="flex items-center gap-3">
                     <span className="text-muted w-28 shrink-0">Owner</span>
-                    <span className="text-dark font-medium">{deal.owner.name}</span>
+                    <span className="text-dark font-medium">
+                      {deal.owner.name}
+                    </span>
                   </div>
                 )}
                 <div className="flex items-center gap-3">
                   <span className="text-muted w-28 shrink-0">Created</span>
-                  <span className="text-dark">{formatDate(deal.createdAt)}</span>
+                  <span className="text-dark">
+                    {formatDate(deal.createdAt)}
+                  </span>
                 </div>
               </div>
 
               {/* Edit form */}
               {showEdit && (
-                <form onSubmit={handleSave} className="bg-white border border-border rounded-xl p-4 space-y-3">
+                <form
+                  onSubmit={handleSave}
+                  className="bg-white border border-border rounded-xl p-4 space-y-3"
+                >
                   <h4 className="text-sm font-semibold text-dark">Edit Deal</h4>
                   <div className="space-y-3">
                     <input
                       className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       placeholder="Deal name"
                       value={editData.name}
-                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({ ...editData, name: e.target.value })
+                      }
                       required
                     />
                     <select
                       className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       value={editData.stage}
-                      onChange={(e) => setEditData({ ...editData, stage: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({ ...editData, stage: e.target.value })
+                      }
                     >
                       <option value="Discovery">Discovery</option>
                       <option value="Proposal">Proposal</option>
@@ -284,20 +309,32 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                       className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       placeholder="Amount"
                       value={editData.amount}
-                      onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({ ...editData, amount: e.target.value })
+                      }
                     />
                     <input
                       className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       placeholder="Contact name"
                       value={editData.contactName}
-                      onChange={(e) => setEditData({ ...editData, contactName: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          contactName: e.target.value,
+                        })
+                      }
                     />
                     <input
                       type="email"
                       className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       placeholder="Contact email"
                       value={editData.contactEmail}
-                      onChange={(e) => setEditData({ ...editData, contactEmail: e.target.value })}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          contactEmail: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div className="flex gap-2 pt-1">
@@ -321,11 +358,18 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
 
               {/* Snooze form */}
               {showSnooze && (
-                <form onSubmit={handleSnooze} className="bg-white border border-border rounded-xl p-4 space-y-3">
-                  <h4 className="text-sm font-semibold text-dark">Snooze Deal</h4>
+                <form
+                  onSubmit={handleSnooze}
+                  className="bg-white border border-border rounded-xl p-4 space-y-3"
+                >
+                  <h4 className="text-sm font-semibold text-dark">
+                    Snooze Deal
+                  </h4>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-muted mb-1">Snooze until</label>
+                      <label className="block text-xs text-muted mb-1">
+                        Snooze until
+                      </label>
                       <input
                         type="date"
                         required
@@ -336,7 +380,9 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-muted mb-1">Reason (optional)</label>
+                      <label className="block text-xs text-muted mb-1">
+                        Reason (optional)
+                      </label>
                       <input
                         type="text"
                         value={snoozeReason}

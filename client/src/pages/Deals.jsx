@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { dealsAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { SkeletonTable } from "../components/Skeleton";
 import DealSlideOver from "../components/DealSlideOver";
 import {
   Briefcase,
@@ -151,7 +151,9 @@ export default function Deals() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         {loading ? (
-          <LoadingSpinner text="Loading deals..." />
+          <div className="p-4">
+            <SkeletonTable rows={8} cols={6} />
+          </div>
         ) : deals.length === 0 ? (
           <div className="text-center py-16">
             <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -162,7 +164,38 @@ export default function Deals() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Mobile card list (hidden on sm+) */}
+            <div className="sm:hidden divide-y divide-border">
+              {deals.map((deal) => (
+                <div
+                  key={deal.id}
+                  onClick={() => setSelectedDealId(deal.id)}
+                  className="px-4 py-4 cursor-pointer hover:bg-gray-50/80 active:bg-gray-100"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="font-medium text-dark text-sm leading-snug">
+                      {deal.name}
+                    </p>
+                    <StatusBadge status={deal.stalenessStatus} />
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted">
+                    <span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+                      {deal.stage}
+                    </span>
+                    <span className="font-semibold text-dark">
+                      {formatCurrency(deal.amount)}
+                    </span>
+                    <span className="flex items-center gap-0.5">
+                      <Clock className="w-3 h-3" />
+                      {deal.daysStale}d stale
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table (hidden on mobile) */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-gray-50/50">

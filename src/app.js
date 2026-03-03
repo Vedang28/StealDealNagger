@@ -8,6 +8,8 @@ const ruleRoutes = require("./routes/ruleRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const stalenessRoutes = require("./routes/stalenessRoutes");
+const teamRoutes = require("./routes/teamRoutes");
+const integrationRoutes = require("./routes/integrationRoutes");
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.use("/api/v1/rules", ruleRoutes);
 app.use("/api/v1/analytics", analyticsRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/staleness", stalenessRoutes);
+app.use("/api/v1", teamRoutes);
+app.use("/api/v1/integrations", integrationRoutes);
 
 // 404 handler
 app.use((req, res) => {

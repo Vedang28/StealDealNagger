@@ -4,7 +4,7 @@ import { dealsAPI } from "../services/api";
 import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
 import DealSlideOver from "../components/DealSlideOver";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { SkeletonStatCards, SkeletonKanban } from "../components/Skeleton";
 import {
   Briefcase,
   DollarSign,
@@ -41,7 +41,8 @@ export default function Dashboard() {
         dealsAPI.list({ limit: 100, sortBy: "createdAt", sortOrder: "desc" }),
       ]);
       if (statsRes.status === "fulfilled") setStats(statsRes.value.data.data);
-      if (dealsRes.status === "fulfilled") setDeals(dealsRes.value.data.data.deals);
+      if (dealsRes.status === "fulfilled")
+        setDeals(dealsRes.value.data.data.deals);
     } catch (err) {
       console.error("Failed to load dashboard", err);
     } finally {
@@ -69,7 +70,19 @@ export default function Dashboard() {
   const stageValue = (stage) =>
     dealsByStage(stage).reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
-  if (loading) return <LoadingSpinner size="lg" text="Loading dashboard..." />;
+  if (loading)
+    return (
+      <div className="px-6 py-8 max-w-none">
+        <div className="mb-6">
+          <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
+          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mt-2" />
+        </div>
+        <div className="mb-8">
+          <SkeletonStatCards />
+        </div>
+        <SkeletonKanban />
+      </div>
+    );
 
   return (
     <div className="px-6 py-8 max-w-none">
@@ -113,14 +126,17 @@ export default function Dashboard() {
         {STAGES.map((stage) => {
           const stageDeals = dealsByStage(stage);
           return (
-            <div key={stage} className="bg-gray-100 rounded-xl p-3 flex flex-col gap-3">
+            <div
+              key={stage}
+              className="bg-gray-100 rounded-xl p-3 flex flex-col gap-3"
+            >
               {/* Column header */}
               <div className="flex items-center justify-between px-1">
                 <div>
                   <h3 className="text-sm font-semibold text-dark">{stage}</h3>
                   <p className="text-xs text-muted mt-0.5">
-                    {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""} &middot;{" "}
-                    {formatCurrency(stageValue(stage))}
+                    {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""}{" "}
+                    &middot; {formatCurrency(stageValue(stage))}
                   </p>
                 </div>
                 <span className="w-6 h-6 rounded-full bg-white text-dark text-xs font-bold flex items-center justify-center shadow-sm">
@@ -141,7 +157,8 @@ export default function Dashboard() {
                       key={deal.id}
                       onClick={() => setSelectedDealId(deal.id)}
                       className={`w-full text-left bg-white rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer ${
-                        STATUS_BORDER[deal.stalenessStatus] || "border-l-gray-200"
+                        STATUS_BORDER[deal.stalenessStatus] ||
+                        "border-l-gray-200"
                       }`}
                     >
                       <p className="text-sm font-semibold text-dark truncate leading-snug">
@@ -166,7 +183,9 @@ export default function Dashboard() {
                         )}
                       </div>
                       {deal.contactName && (
-                        <p className="text-xs text-muted mt-1.5 truncate">{deal.contactName}</p>
+                        <p className="text-xs text-muted mt-1.5 truncate">
+                          {deal.contactName}
+                        </p>
                       )}
                     </button>
                   ))

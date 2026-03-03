@@ -28,6 +28,7 @@
     "seed": "node src/scripts/seed.js",
     "seed:reset": "node src/scripts/seed.js --reset && node src/scripts/seed.js",
     "test": "jest",
+    "test:staleness": "node src/scripts/testStaleness.js",
     "vercel-build": "prisma generate && cd client && npm install && npm run build",
     "postinstall": "prisma generate"
   }

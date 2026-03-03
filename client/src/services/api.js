@@ -69,4 +69,24 @@ export const rulesAPI = {
   remove: (id) => api.delete(`/rules/${id}`),
 };
 
+// ─── Team ─────────────────────────────────────────
+export const teamAPI = {
+  getTeam: () => api.get("/team"),
+  updateTeam: (data) => api.patch("/team", data),
+  getMembers: () => api.get("/team/members"),
+  inviteUser: (data) => api.post("/team/members", data),
+  updateRole: (userId, role) => api.patch(`/team/members/${userId}`, { role }),
+  deactivateUser: (userId) => api.delete(`/team/members/${userId}`),
+  reactivateUser: (userId) => api.post(`/team/members/${userId}/reactivate`),
+  updateProfile: (data) => api.patch("/users/me", data),
+  changePassword: (data) => api.patch("/users/me/password", data),
+};
+
+// ─── Integrations ─────────────────────────────────
+export const integrationsAPI = {
+  getAll: () => api.get("/integrations"),
+  connect: (provider, config) => api.post(`/integrations/${provider}/connect`, config ?? {}),
+  disconnect: (provider) => api.delete(`/integrations/${provider}`),
+};
+
 export default api;

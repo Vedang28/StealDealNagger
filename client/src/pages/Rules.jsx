@@ -1,30 +1,77 @@
 import { useState, useEffect } from "react";
-import { rulesAPI } from "../services/api";
+import { rulesAPI, dealsAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import LoadingSpinner from "../components/LoadingSpinner";
-import { Settings2, Plus, Edit3, Trash2, X, Check } from "lucide-react";
+import { SkeletonRulesCards } from "../components/Skeleton";
+import {
+  Settings2,
+  ChevronRight,
+  Edit3,
+  Check,
+  X,
+  RotateCcw,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 const STAGES = ["Discovery", "Proposal", "Negotiation", "Closing"];
 
-const EMPTY_FORM = {
-  stage: "Discovery",
-  pipeline: "",
-  warningDays: "",
-  staleDays: "",
-  criticalDays: "",
+// Default thresholds used for "Reset to Defaults"
+const DEFAULT_THRESHOLDS = {
+  Discovery: {
+    staleAfterDays: 7,
+    escalateAfterDays: 10,
+    criticalAfterDays: 14,
+  },
+  Proposal: { staleAfterDays: 5, escalateAfterDays: 8, criticalAfterDays: 12 },
+  Negotiation: {
+    staleAfterDays: 3,
+    escalateAfterDays: 5,
+    criticalAfterDays: 7,
+  },
+  Closing: { staleAfterDays: 2, escalateAfterDays: 4, criticalAfterDays: 6 },
 };
+
+// Classify a deal's current staleness (client-side) against a given rule
+function classifyDeal(deal, rule) {
+  if (!rule) return "healthy";
+  const days = deal.daysStale ?? 0;
+  if (days >= rule.criticalAfterDays) return "critical";
+  if (days >= rule.escalateAfterDays) return "stale";
+  if (days >= rule.staleAfterDays) return "warning";
+  return "healthy";
+}
+
+// Build a map of stage → { healthy, warning, stale, critical } counts
+function buildPreviewCounts(deals, rulesByStage) {
+  const counts = {};
+  for (const stage of STAGES) {
+    counts[stage] = { healthy: 0, warning: 0, stale: 0, critical: 0 };
+  }
+  for (const deal of deals) {
+    if (!STAGES.includes(deal.stage)) continue;
+    const rule = rulesByStage[deal.stage];
+    const status = classifyDeal(deal, rule);
+    counts[deal.stage][status]++;
+  }
+  return counts;
+}
 
 export default function Rules() {
   const { user } = useAuth();
   const [rules, setRules] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Form state
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [editingStage, setEditingStage] = useState(null); // stage name being edited
+  const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+
+  // Preview mode
+  const [previewMode, setPreviewMode] = useState(false);
+  const [deals, setDeals] = useState([]);
+  const [dealsLoading, setDealsLoading] = useState(false);
+
+  // Reset to defaults modal
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const isAdmin = user?.role === "admin";
   const canWrite = user?.role === "admin" || user?.role === "manager";
@@ -32,6 +79,12 @@ export default function Rules() {
   useEffect(() => {
     loadRules();
   }, []);
+
+  useEffect(() => {
+    if (previewMode && deals.length === 0) {
+      loadDeals();
+    }
+  }, [previewMode]);
 
   const loadRules = async () => {
     setLoading(true);
@@ -45,52 +98,82 @@ export default function Rules() {
     }
   };
 
-  const openNew = () => {
-    setEditingId(null);
-    setForm(EMPTY_FORM);
-    setShowForm(true);
+  const loadDeals = async () => {
+    setDealsLoading(true);
+    try {
+      const res = await dealsAPI.list({ limit: 500 });
+      setDeals(res.data?.data?.deals ?? res.data?.data ?? []);
+    } catch (err) {
+      console.error("Failed to load deals for preview", err);
+    } finally {
+      setDealsLoading(false);
+    }
   };
 
-  const openEdit = (rule) => {
-    setEditingId(rule.id);
-    setForm({
-      stage: rule.stage,
-      pipeline: rule.pipeline ?? "",
-      warningDays: rule.warningDays ?? "",
-      staleDays: rule.staleDays ?? "",
-      criticalDays: rule.criticalDays ?? "",
+  // Return the rule object for a given stage (or null)
+  const ruleForStage = (stage) =>
+    rules.find(
+      (r) => r.stage === stage && (r.pipeline === "default" || !r.pipeline),
+    ) ?? null;
+
+  // Build a map for preview counts using current (possibly edited) thresholds
+  const rulesByStage = {};
+  for (const stage of STAGES) {
+    rulesByStage[stage] = ruleForStage(stage);
+  }
+  const previewCounts = previewMode
+    ? buildPreviewCounts(deals, rulesByStage)
+    : null;
+
+  const openEdit = (stage) => {
+    const rule = ruleForStage(stage);
+    setEditingStage(stage);
+    setEditForm({
+      staleAfterDays:
+        rule?.staleAfterDays ?? DEFAULT_THRESHOLDS[stage].staleAfterDays,
+      escalateAfterDays:
+        rule?.escalateAfterDays ?? DEFAULT_THRESHOLDS[stage].escalateAfterDays,
+      criticalAfterDays:
+        rule?.criticalAfterDays ?? DEFAULT_THRESHOLDS[stage].criticalAfterDays,
     });
-    setShowForm(true);
   };
 
-  const handleCancel = () => {
-    setShowForm(false);
-    setEditingId(null);
-    setForm(EMPTY_FORM);
+  const cancelEdit = () => {
+    setEditingStage(null);
+    setEditForm({});
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const saveEdit = async () => {
     setSaving(true);
     try {
+      const rule = ruleForStage(editingStage);
       const payload = {
-        stage: form.stage,
-        pipeline: form.pipeline || undefined,
-        warningDays: Number(form.warningDays),
-        staleDays: Number(form.staleDays),
-        criticalDays: Number(form.criticalDays),
+        staleAfterDays: Number(editForm.staleAfterDays),
+        escalateAfterDays: Number(editForm.escalateAfterDays),
+        criticalAfterDays: Number(editForm.criticalAfterDays),
       };
 
-      if (editingId) {
-        await rulesAPI.update(editingId, payload);
-      } else {
-        await rulesAPI.create(payload);
+      if (
+        payload.staleAfterDays >= payload.escalateAfterDays ||
+        payload.escalateAfterDays >= payload.criticalAfterDays
+      ) {
+        alert("Thresholds must increase: Warning < Stale < Critical");
+        return;
       }
 
-      setShowForm(false);
-      setEditingId(null);
-      setForm(EMPTY_FORM);
-      loadRules();
+      if (rule) {
+        await rulesAPI.update(rule.id, payload);
+      } else {
+        await rulesAPI.create({
+          stage: editingStage,
+          pipeline: "default",
+          ...payload,
+        });
+      }
+
+      setEditingStage(null);
+      setEditForm({});
+      await loadRules();
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to save rule";
       alert(msg);
@@ -99,211 +182,371 @@ export default function Rules() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this rule? This cannot be undone.")) return;
-    setDeletingId(id);
+  const handleResetDefaults = async () => {
+    setResetting(true);
     try {
-      await rulesAPI.remove(id);
-      setRules((prev) => prev.filter((r) => r.id !== id));
-    } catch {
-      alert("Failed to delete rule");
+      // Delete existing default-pipeline rules, then recreate with defaults
+      for (const stage of STAGES) {
+        const rule = ruleForStage(stage);
+        if (rule) {
+          await rulesAPI.remove(rule.id);
+        }
+      }
+      for (const stage of STAGES) {
+        await rulesAPI.create({
+          stage,
+          pipeline: "default",
+          ...DEFAULT_THRESHOLDS[stage],
+        });
+      }
+      setShowResetModal(false);
+      await loadRules();
+    } catch (err) {
+      alert("Failed to reset rules. Please try again.");
     } finally {
-      setDeletingId(null);
+      setResetting(false);
     }
   };
 
-  if (loading) return <LoadingSpinner size="lg" text="Loading rules..." />;
+  if (loading)
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="h-7 w-40 bg-gray-200 rounded animate-pulse" />
+          <div className="h-4 w-56 bg-gray-200 rounded animate-pulse mt-2" />
+        </div>
+        <SkeletonRulesCards />
+      </div>
+    );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-dark">Staleness Rules</h1>
           <p className="text-muted text-sm mt-1">
-            Configure when deals are flagged as warning, stale, or critical
+            Define when deals are flagged per pipeline stage
           </p>
         </div>
-        {canWrite && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={openNew}
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+            onClick={() => setPreviewMode((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
+              previewMode
+                ? "bg-blue-50 text-primary border-blue-200"
+                : "bg-white text-muted border-border hover:text-dark"
+            }`}
           >
-            <Plus className="w-4 h-4" />
-            New Rule
+            {previewMode ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+            {previewMode ? "Hide Preview" : "Preview Mode"}
           </button>
-        )}
+          {isAdmin && (
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-border bg-white text-muted hover:text-dark transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reset to Defaults
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <div className="bg-white rounded-xl border border-border shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-dark flex items-center gap-2">
-              <Settings2 className="w-4 h-4 text-muted" />
-              {editingId ? "Edit Rule" : "New Rule"}
-            </h3>
-            <button
-              onClick={handleCancel}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-muted transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+      {/* Pipeline visualizer */}
+      <div className="overflow-x-auto pb-4">
+        <div className="flex items-start gap-2 min-w-max">
+          {STAGES.map((stage, idx) => {
+            const rule = ruleForStage(stage);
+            const isEditing = editingStage === stage;
+            const counts = previewCounts?.[stage];
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-muted mb-1">Stage</label>
-                <select
-                  value={form.stage}
-                  onChange={(e) => setForm({ ...form, stage: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            return (
+              <div key={stage} className="flex items-center gap-2">
+                {/* Stage card */}
+                <div
+                  className={`w-56 rounded-xl border-2 shadow-sm bg-white transition-all ${
+                    isEditing ? "border-primary shadow-md" : "border-border"
+                  }`}
                 >
-                  {STAGES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
+                  {/* Card header */}
+                  <div
+                    className={`px-4 py-3 rounded-t-xl border-b border-border flex items-center justify-between ${
+                      isEditing ? "bg-blue-50" : "bg-gray-50/70"
+                    }`}
+                  >
+                    <span className="font-semibold text-dark text-sm">
+                      {stage}
+                    </span>
+                    {canWrite && !isEditing && (
+                      <button
+                        onClick={() => openEdit(stage)}
+                        className="p-1 rounded-md text-muted hover:text-primary hover:bg-white transition-colors"
+                        title="Edit thresholds"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Card body */}
+                  <div className="px-4 py-4 space-y-3">
+                    {isEditing ? (
+                      /* Edit mode: inputs */
+                      <>
+                        {[
+                          {
+                            key: "staleAfterDays",
+                            label: "Warning after",
+                            color: "text-warning",
+                            borderColor:
+                              "border-amber-300 focus:ring-amber-200",
+                          },
+                          {
+                            key: "escalateAfterDays",
+                            label: "Stale after",
+                            color: "text-danger",
+                            borderColor: "border-red-300 focus:ring-red-200",
+                          },
+                          {
+                            key: "criticalAfterDays",
+                            label: "Critical after",
+                            color: "text-critical",
+                            borderColor: "border-red-400 focus:ring-red-300",
+                          },
+                        ].map(({ key, label, color, borderColor }) => (
+                          <div key={key}>
+                            <label
+                              className={`block text-xs font-medium mb-1 ${color}`}
+                            >
+                              {label}
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                min="1"
+                                max="365"
+                                value={editForm[key]}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                                className={`w-full px-2 py-1.5 border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 ${borderColor}`}
+                              />
+                              <span className="text-xs text-muted shrink-0">
+                                days
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                        <div className="flex gap-1.5 pt-1">
+                          <button
+                            onClick={saveEdit}
+                            disabled={saving}
+                            className="flex-1 flex items-center justify-center gap-1 bg-primary hover:bg-primary-hover text-white py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                          >
+                            <Check className="w-3 h-3" />
+                            {saving ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="flex-1 flex items-center justify-center border border-border py-1.5 rounded-lg text-xs text-dark hover:bg-gray-50 transition-colors"
+                          >
+                            <X className="w-3 h-3 mr-0.5" />
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : rule ? (
+                      /* Display mode: threshold badges */
+                      <>
+                        {[
+                          {
+                            label: "Warning",
+                            value: rule.staleAfterDays,
+                            bg: "bg-amber-50",
+                            text: "text-warning",
+                            border: "border-amber-200",
+                          },
+                          {
+                            label: "Stale",
+                            value: rule.escalateAfterDays,
+                            bg: "bg-red-50",
+                            text: "text-danger",
+                            border: "border-red-200",
+                          },
+                          {
+                            label: "Critical",
+                            value: rule.criticalAfterDays,
+                            bg: "bg-red-100",
+                            text: "text-critical",
+                            border: "border-red-300",
+                          },
+                        ].map(({ label, value, bg, text, border }) => (
+                          <div
+                            key={label}
+                            className="flex items-center justify-between"
+                          >
+                            <span className={`text-xs font-medium ${text}`}>
+                              {label}
+                            </span>
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-md ${bg} ${text} border ${border} text-xs font-bold`}
+                            >
+                              {value}d
+                            </span>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      /* No rule configured */
+                      <div className="text-center py-2">
+                        <Settings2 className="w-6 h-6 text-gray-300 mx-auto mb-1" />
+                        <p className="text-xs text-muted">No rule set</p>
+                        {canWrite && (
+                          <button
+                            onClick={() => openEdit(stage)}
+                            className="text-xs text-primary font-medium hover:underline mt-1"
+                          >
+                            Configure
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Preview counts */}
+                    {previewMode && counts && !isEditing && (
+                      <div className="pt-2 border-t border-border/60 space-y-1">
+                        <p className="text-xs font-medium text-muted mb-1.5">
+                          Current deals:
+                        </p>
+                        {dealsLoading ? (
+                          <p className="text-xs text-muted">Loading…</p>
+                        ) : (
+                          [
+                            {
+                              label: "Healthy",
+                              count: counts.healthy,
+                              color: "text-green-600",
+                            },
+                            {
+                              label: "Warning",
+                              count: counts.warning,
+                              color: "text-warning",
+                            },
+                            {
+                              label: "Stale",
+                              count: counts.stale,
+                              color: "text-danger",
+                            },
+                            {
+                              label: "Critical",
+                              count: counts.critical,
+                              color: "text-critical",
+                            },
+                          ].map(({ label, count, color }) => (
+                            <div
+                              key={label}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-xs text-muted">
+                                {label}
+                              </span>
+                              <span className={`text-xs font-bold ${color}`}>
+                                {count}
+                              </span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Arrow connector */}
+                {idx < STAGES.length - 1 && (
+                  <ChevronRight className="w-5 h-5 text-gray-300 shrink-0 mt-10" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Legend / info */}
+      <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl px-5 py-4">
+        <div className="flex items-start gap-3">
+          <Settings2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+          <div className="text-sm text-blue-800 space-y-0.5">
+            <p className="font-medium">How thresholds work</p>
+            <p className="text-xs text-blue-700">
+              <span className="font-semibold text-warning">Warning</span> — deal
+              flagged after N days of no activity.{" "}
+              <span className="font-semibold text-danger">Stale</span> —
+              escalates to manager.{" "}
+              <span className="font-semibold text-critical">Critical</span> —
+              urgent alert to all stakeholders.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {!canWrite && (
+        <p className="text-xs text-muted text-center mt-6">
+          Contact an admin or manager to modify staleness rules.
+        </p>
+      )}
+
+      {/* Reset to Defaults modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                <RotateCcw className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-muted mb-1">
-                  Pipeline <span className="text-gray-400">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.pipeline}
-                  onChange={(e) => setForm({ ...form, pipeline: e.target.value })}
-                  placeholder="e.g. Enterprise, SMB"
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                />
+                <h3 className="font-bold text-dark">Reset to Defaults?</h3>
+                <p className="text-sm text-muted">
+                  This will overwrite all current rule thresholds.
+                </p>
               </div>
             </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                { key: "warningDays", label: "Warning (days)", color: "text-warning" },
-                { key: "staleDays", label: "Stale (days)", color: "text-danger" },
-                { key: "criticalDays", label: "Critical (days)", color: "text-critical" },
-              ].map(({ key, label, color }) => (
-                <div key={key}>
-                  <label className={`block text-xs font-medium mb-1 ${color}`}>{label}</label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={form[key]}
-                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                    placeholder="days"
-                  />
+            <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-1 text-sm">
+              {STAGES.map((stage) => (
+                <div key={stage} className="flex items-center justify-between">
+                  <span className="font-medium text-dark">{stage}</span>
+                  <span className="text-muted text-xs">
+                    {DEFAULT_THRESHOLDS[stage].staleAfterDays}d /{" "}
+                    {DEFAULT_THRESHOLDS[stage].escalateAfterDays}d /{" "}
+                    {DEFAULT_THRESHOLDS[stage].criticalAfterDays}d
+                  </span>
                 </div>
               ))}
             </div>
-
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2">
               <button
-                type="submit"
-                disabled={saving}
-                className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                onClick={handleResetDefaults}
+                disabled={resetting}
+                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
-                <Check className="w-4 h-4" />
-                {saving ? "Saving…" : editingId ? "Save Changes" : "Create Rule"}
+                {resetting ? "Resetting…" : "Yes, Reset Rules"}
               </button>
               <button
-                type="button"
-                onClick={handleCancel}
-                className="px-4 py-2 border border-border rounded-lg text-sm text-dark hover:bg-gray-50 transition-colors"
+                onClick={() => setShowResetModal(false)}
+                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-dark hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
             </div>
-          </form>
-        </div>
-      )}
-
-      {/* Rules table */}
-      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
-        {rules.length === 0 ? (
-          <div className="text-center py-16">
-            <Settings2 className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="text-muted font-medium">No rules configured</p>
-            {canWrite && (
-              <button
-                onClick={openNew}
-                className="text-primary text-sm font-medium hover:text-primary-hover mt-2 inline-block"
-              >
-                Create your first rule
-              </button>
-            )}
           </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-gray-50/50">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Stage</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Pipeline</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-warning uppercase tracking-wider">Warning</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-danger uppercase tracking-wider">Stale</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-critical uppercase tracking-wider">Critical</th>
-                {canWrite && (
-                  <th className="px-6 py-3" />
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rules.map((rule) => (
-                <tr key={rule.id} className="hover:bg-gray-50/50">
-                  <td className="px-6 py-4 font-medium text-dark">{rule.stage}</td>
-                  <td className="px-6 py-4 text-muted">{rule.pipeline || <span className="italic text-gray-300">all pipelines</span>}</td>
-                  <td className="px-4 py-4 text-center">
-                    <span className="inline-flex items-center justify-center w-12 py-1 rounded-md bg-amber-50 text-warning text-xs font-bold border border-amber-200">
-                      {rule.warningDays}d
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 text-center">
-                    <span className="inline-flex items-center justify-center w-12 py-1 rounded-md bg-red-50 text-danger text-xs font-bold border border-red-200">
-                      {rule.staleDays}d
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 text-center">
-                    <span className="inline-flex items-center justify-center w-12 py-1 rounded-md bg-red-100 text-critical text-xs font-bold border border-red-300">
-                      {rule.criticalDays}d
-                    </span>
-                  </td>
-                  {canWrite && (
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 justify-end">
-                        <button
-                          onClick={() => openEdit(rule)}
-                          className="p-1.5 rounded-lg text-muted hover:text-primary hover:bg-primary-light transition-colors"
-                          title="Edit rule"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        {isAdmin && (
-                          <button
-                            onClick={() => handleDelete(rule.id)}
-                            disabled={deletingId === rule.id}
-                            className="p-1.5 rounded-lg text-muted hover:text-danger hover:bg-red-50 transition-colors disabled:opacity-40"
-                            title="Delete rule"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {!canWrite && (
-        <p className="text-xs text-muted text-center mt-4">
-          Contact an admin or manager to modify staleness rules.
-        </p>
+        </div>
       )}
     </div>
   );

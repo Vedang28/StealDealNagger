@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { notificationsAPI } from "../services/api";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { SkeletonNotifications } from "../components/Skeleton";
 import { Bell, CheckCircle, CheckCheck, Clock } from "lucide-react";
 
 const TYPE_LABELS = {
-  warning: { label: "Warning", color: "text-warning bg-amber-50 border-amber-200" },
+  warning: {
+    label: "Warning",
+    color: "text-warning bg-amber-50 border-amber-200",
+  },
   stale: { label: "Stale", color: "text-danger bg-red-50 border-red-200" },
-  critical: { label: "Critical", color: "text-critical bg-red-100 border-red-300" },
+  critical: {
+    label: "Critical",
+    color: "text-critical bg-red-100 border-red-300",
+  },
 };
 
 export default function Notifications() {
@@ -35,7 +41,7 @@ export default function Notifications() {
     try {
       await notificationsAPI.markRead(id);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
     } catch {
       alert("Failed to mark notification as read");
@@ -72,7 +78,16 @@ export default function Notifications() {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  if (loading) return <LoadingSpinner size="lg" text="Loading notifications..." />;
+  if (loading)
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6">
+          <div className="h-7 w-36 bg-gray-200 rounded animate-pulse" />
+          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mt-2" />
+        </div>
+        <SkeletonNotifications />
+      </div>
+    );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -81,9 +96,7 @@ export default function Notifications() {
         <div>
           <h1 className="text-2xl font-bold text-dark">Notifications</h1>
           <p className="text-muted text-sm mt-1">
-            {unreadCount > 0
-              ? `${unreadCount} unread`
-              : "All caught up"}
+            {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -109,7 +122,10 @@ export default function Notifications() {
       ) : (
         <div className="space-y-2">
           {notifications.map((n) => {
-            const typeStyle = TYPE_LABELS[n.type] ?? { label: n.type, color: "text-muted bg-gray-50 border-gray-200" };
+            const typeStyle = TYPE_LABELS[n.type] ?? {
+              label: n.type,
+              color: "text-muted bg-gray-50 border-gray-200",
+            };
             return (
               <div
                 key={n.id}
@@ -130,7 +146,9 @@ export default function Notifications() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-dark" : "text-muted"}`}>
+                      <p
+                        className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-dark" : "text-muted"}`}
+                      >
                         {n.message}
                       </p>
                       <span className="flex items-center gap-1 text-xs text-muted shrink-0 mt-0.5">
