@@ -13,7 +13,7 @@ export default function StatCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center gap-4">
         <div
           className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors[color]}`}
@@ -21,9 +21,17 @@ export default function StatCard({
           <Icon className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-sm text-muted font-medium">{label}</p>
-          <p className="text-2xl font-bold text-dark">{value}</p>
-          {sub && <p className="text-xs text-muted mt-0.5">{sub}</p>}
+          <p className="text-sm text-muted dark:text-gray-400 font-medium">
+            {label}
+          </p>
+          <p className="text-2xl font-bold text-dark dark:text-white">
+            {value}
+          </p>
+          {sub && (
+            <p className="text-xs text-muted dark:text-gray-400 mt-0.5">
+              {sub}
+            </p>
+          )}
         </div>
       </div>
     </div>
