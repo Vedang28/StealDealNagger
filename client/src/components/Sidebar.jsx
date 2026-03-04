@@ -151,11 +151,18 @@ export default function Sidebar() {
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/8 transition-colors duration-150"
           >
-            {isDark ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+            {isDark ? (
+              <Sun className="w-4 h-4 shrink-0" />
+            ) : (
+              <Moon className="w-4 h-4 shrink-0" />
+            )}
             {isDark ? "Light mode" : "Dark mode"}
           </button>
 
-          <div className="flex items-center gap-3 px-3 py-2">
+          <Link
+            to="/settings"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/8 transition-colors duration-150 cursor-pointer"
+          >
             <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0">
               {initials}
             </div>
@@ -165,7 +172,7 @@ export default function Sidebar() {
               </p>
               <p className="text-white/40 text-xs truncate">{team?.name}</p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/8 transition-colors duration-150"

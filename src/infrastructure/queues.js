@@ -88,18 +88,21 @@ const _startQueues = () => {
     });
 
     // Wait for Redis connection to be ready before scheduling the cron job
-    stalenessQueue.isReady().then(() => {
-      stalenessQueue.add(
-        { source: "cron" },
-        { repeat: { cron: "*/15 * * * *" } },
-      );
-      logger.info(
-        "Bull queues initialized — staleness check scheduled every 15 minutes",
-      );
-    }).catch((err) => {
-      logger.error(`Bull queue ready failed (non-fatal): ${err.message}`);
-      stalenessQueue = null;
-    });
+    stalenessQueue
+      .isReady()
+      .then(() => {
+        stalenessQueue.add(
+          { source: "cron" },
+          { repeat: { cron: "*/15 * * * *" } },
+        );
+        logger.info(
+          "Bull queues initialized — staleness check scheduled every 15 minutes",
+        );
+      })
+      .catch((err) => {
+        logger.error(`Bull queue ready failed (non-fatal): ${err.message}`);
+        stalenessQueue = null;
+      });
   } catch (err) {
     logger.error(`Failed to initialize queues (non-fatal): ${err.message}`);
     stalenessQueue = null;
