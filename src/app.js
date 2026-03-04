@@ -23,7 +23,6 @@ app.get("/health", (req, res) => {
     success: true,
     data: {
       status: "ok",
-      version: "4.1.0",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
     },
