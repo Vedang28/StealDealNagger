@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Dark mode via .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -27,6 +30,21 @@
   --color-critical-light: #fef2f2;
 
   --color-bg-light: #f8f9fa;
+}
+
+/* ─── Dark theme overrides ─── */
+.dark {
+  --color-bg-light: #1f2937;
+  --color-border: #374151;
+  --color-dark: #f9fafb;
+  --color-muted: #9ca3af;
+  --color-gray-text: #d1d5db;
+  --color-primary-light: #431407;
+  --color-primary-100: #431407;
+  --color-success-light: #052e16;
+  --color-warning-light: #451a03;
+  --color-danger-light: #450a0a;
+  --color-critical-light: #450a0a;
 }
 
 body {

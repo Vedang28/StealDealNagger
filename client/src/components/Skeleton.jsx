@@ -10,13 +10,15 @@
 
 export function Skeleton({ className = "" }) {
   return (
-    <div className={`animate-pulse rounded-md bg-gray-200 ${className}`} />
+    <div
+      className={`animate-pulse rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
+    />
   );
 }
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white rounded-xl border border-border p-5 space-y-3">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-5 space-y-3">
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 rounded-lg" />
         <div className="flex-1 space-y-2">
@@ -53,10 +55,10 @@ export function SkeletonTableRow({ cols = 5 }) {
 
 export function SkeletonTable({ rows = 5, cols = 5 }) {
   return (
-    <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border bg-gray-50/50">
+          <tr className="border-b border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
             {Array.from({ length: cols }).map((_, i) => (
               <th key={i} className="px-6 py-3">
                 <Skeleton className="h-3 w-16" />
@@ -64,7 +66,7 @@ export function SkeletonTable({ rows = 5, cols = 5 }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-y divide-border dark:divide-gray-700">
           {Array.from({ length: rows }).map((_, i) => (
             <SkeletonTableRow key={i} cols={cols} />
           ))}
@@ -76,7 +78,7 @@ export function SkeletonTable({ rows = 5, cols = 5 }) {
 
 export function SkeletonKanbanColumn() {
   return (
-    <div className="bg-gray-100 rounded-xl p-3 space-y-3">
+    <div className="bg-gray-100 dark:bg-gray-700/50 rounded-xl p-3 space-y-3">
       <div className="flex items-center justify-between px-1">
         <div className="space-y-1">
           <Skeleton className="h-4 w-24" />
@@ -87,7 +89,7 @@ export function SkeletonKanbanColumn() {
       {Array.from({ length: 3 }).map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-lg border-l-4 border-l-gray-200 shadow-sm p-3.5 space-y-2"
+          className="bg-white dark:bg-gray-800 rounded-lg border-l-4 border-l-gray-200 dark:border-l-gray-600 shadow-sm p-3.5 space-y-2"
         >
           <Skeleton className="h-4 w-full" />
           <div className="flex items-center justify-between">
@@ -126,7 +128,7 @@ export function SkeletonDealSlideOver() {
         </div>
       </div>
       <Skeleton className="h-4 w-36" />
-      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 space-y-3">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
             <Skeleton className="h-3 w-28" />
@@ -144,7 +146,7 @@ export function SkeletonNotifications({ count = 5 }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-xl border border-border p-4 flex items-start gap-3"
+          className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-4 flex items-start gap-3"
         >
           <Skeleton className="w-8 h-8 rounded-full shrink-0" />
           <div className="flex-1 space-y-2">
@@ -164,7 +166,7 @@ export function SkeletonRulesCards() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-xl border border-border p-5 space-y-4"
+          className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-5 space-y-4"
         >
           <div className="flex items-center justify-between">
             <Skeleton className="h-5 w-24" />
@@ -184,10 +186,10 @@ export function SkeletonRulesCards() {
 
 export function SkeletonTeamMembers({ count = 4 }) {
   return (
-    <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border bg-gray-50/50">
+          <tr className="border-b border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
             <th className="px-6 py-3">
               <Skeleton className="h-3 w-16" />
             </th>
@@ -202,7 +204,7 @@ export function SkeletonTeamMembers({ count = 4 }) {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-y divide-border dark:divide-gray-700">
           {Array.from({ length: count }).map((_, i) => (
             <tr key={i}>
               <td className="px-6 py-4">
@@ -237,7 +239,7 @@ export function SkeletonIntegrations() {
       {Array.from({ length: 3 }).map((_, i) => (
         <div
           key={i}
-          className="rounded-xl border-2 border-border bg-white p-5 space-y-3"
+          className="rounded-xl border-2 border-border dark:border-gray-700 bg-white dark:bg-gray-800 p-5 space-y-3"
         >
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2.5">

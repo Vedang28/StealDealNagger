@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { teamAPI } from "../services/api";
+import PageWrapper from "../components/PageWrapper";
 import {
   User,
   Building2,
@@ -14,9 +15,9 @@ import {
 } from "lucide-react";
 
 const ROLE_STYLES = {
-  admin: "bg-purple-100 text-purple-700 border border-purple-200",
-  manager: "bg-blue-100 text-blue-700 border border-blue-200",
-  rep: "bg-gray-100 text-gray-600 border border-gray-200",
+  admin: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
+  manager: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
+  rep: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600",
 };
 
 // Common timezones for the dropdown
@@ -172,20 +173,21 @@ export default function Settings() {
   };
 
   return (
+    <PageWrapper>
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-dark">Settings</h1>
-        <p className="text-muted text-sm mt-1">
+        <h1 className="text-2xl font-bold text-dark dark:text-white">Settings</h1>
+        <p className="text-muted dark:text-gray-400 text-sm mt-1">
           Manage your profile and team configuration
         </p>
       </div>
 
       {/* ── Profile ──────────────────────────────────────────────────────────── */}
-      <section className="bg-white rounded-xl border border-border shadow-sm p-6">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
           <User className="w-4 h-4 text-muted" />
-          <h2 className="font-semibold text-dark">My Profile</h2>
+          <h2 className="font-semibold text-dark dark:text-white">My Profile</h2>
         </div>
 
         {/* Avatar + role */}
@@ -194,8 +196,8 @@ export default function Settings() {
             {initials(user?.name)}
           </div>
           <div>
-            <p className="text-base font-semibold text-dark">{user?.name}</p>
-            <p className="text-sm text-muted">{user?.email}</p>
+            <p className="text-base font-semibold text-dark dark:text-white">{user?.name}</p>
+            <p className="text-sm text-muted dark:text-gray-400">{user?.email}</p>
           </div>
           <span
             className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
@@ -209,7 +211,7 @@ export default function Settings() {
 
         <form onSubmit={handleSaveProfile} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-muted mb-1">
+            <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
               Full Name
             </label>
             <input
@@ -219,23 +221,23 @@ export default function Settings() {
               onChange={(e) =>
                 setProfileForm({ ...profileForm, name: e.target.value })
               }
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-muted mb-1">
+            <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
               Email
             </label>
             <input
               type="email"
               value={user?.email ?? ""}
               disabled
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted bg-gray-50 cursor-not-allowed"
+              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted bg-gray-50 dark:bg-gray-900 dark:text-gray-500 cursor-not-allowed"
             />
-            <p className="text-xs text-muted mt-1">Email cannot be changed.</p>
+            <p className="text-xs text-muted dark:text-gray-400 mt-1">Email cannot be changed.</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-muted mb-1">
+            <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
               Slack User ID <span className="text-gray-400">(optional)</span>
             </label>
             <input
@@ -245,9 +247,9 @@ export default function Settings() {
                 setProfileForm({ ...profileForm, slackUserId: e.target.value })
               }
               placeholder="e.g. U01ABCDE123"
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono"
+              className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary font-mono"
             />
-            <p className="text-xs text-muted mt-1">
+            <p className="text-xs text-muted dark:text-gray-400 mt-1">
               Used to send you direct Slack nudges.
             </p>
           </div>
@@ -265,10 +267,10 @@ export default function Settings() {
       </section>
 
       {/* ── Notification prefs ───────────────────────────────────────────────── */}
-      <section className="bg-white rounded-xl border border-border shadow-sm p-6">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
           <Bell className="w-4 h-4 text-muted" />
-          <h2 className="font-semibold text-dark">Notification Preferences</h2>
+          <h2 className="font-semibold text-dark dark:text-white">Notification Preferences</h2>
         </div>
 
         <div className="space-y-4">
@@ -286,11 +288,11 @@ export default function Settings() {
           ].map(({ key, label, desc }) => (
             <div
               key={key}
-              className="flex items-center justify-between py-3 border-b border-border last:border-0"
+              className="flex items-center justify-between py-3 border-b border-border dark:border-gray-700 last:border-0"
             >
               <div>
-                <p className="text-sm font-medium text-dark">{label}</p>
-                <p className="text-xs text-muted">{desc}</p>
+                <p className="text-sm font-medium text-dark dark:text-white">{label}</p>
+                <p className="text-xs text-muted dark:text-gray-400">{desc}</p>
               </div>
               <button
                 type="button"
@@ -298,7 +300,7 @@ export default function Settings() {
                   setNotifPrefs({ ...notifPrefs, [key]: !notifPrefs[key] })
                 }
                 className={`relative w-11 h-6 rounded-full transition-colors ${
-                  notifPrefs[key] ? "bg-primary" : "bg-gray-200"
+                  notifPrefs[key] ? "bg-primary" : "bg-gray-200 dark:bg-gray-600"
                 }`}
               >
                 <span
@@ -322,10 +324,10 @@ export default function Settings() {
       </section>
 
       {/* ── Change Password ──────────────────────────────────────────────────── */}
-      <section className="bg-white rounded-xl border border-border shadow-sm p-6">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
           <Lock className="w-4 h-4 text-muted" />
-          <h2 className="font-semibold text-dark">Change Password</h2>
+          <h2 className="font-semibold text-dark dark:text-white">Change Password</h2>
         </div>
 
         <form onSubmit={handleChangePassword} className="space-y-4">
@@ -347,7 +349,7 @@ export default function Settings() {
             },
           ].map(({ key, label, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-muted mb-1">
+              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
                 {label}
               </label>
               <input
@@ -358,7 +360,7 @@ export default function Settings() {
                   setPwForm({ ...pwForm, [key]: e.target.value })
                 }
                 placeholder={placeholder}
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
               />
             </div>
           ))}
@@ -375,18 +377,18 @@ export default function Settings() {
 
       {/* ── Team Settings (admin only) ───────────────────────────────────────── */}
       {isAdmin && (
-        <section className="bg-white rounded-xl border border-border shadow-sm p-6">
+        <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
             <Building2 className="w-4 h-4 text-muted" />
-            <h2 className="font-semibold text-dark">Team Settings</h2>
-            <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+            <h2 className="font-semibold text-dark dark:text-white">Team Settings</h2>
+            <span className="ml-auto text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full font-medium">
               Admin only
             </span>
           </div>
 
           <form onSubmit={handleSaveTeam} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-muted mb-1">
+              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
                 Team Name
               </label>
               <input
@@ -396,24 +398,24 @@ export default function Settings() {
                 onChange={(e) =>
                   setTeamForm({ ...teamForm, name: e.target.value })
                 }
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1">
+              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
                 Team Slug <span className="text-gray-400">(read-only)</span>
               </label>
               <input
                 type="text"
                 value={team?.slug ?? ""}
                 disabled
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted font-mono bg-gray-50 cursor-not-allowed"
+                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted font-mono bg-gray-50 dark:bg-gray-900 dark:text-gray-500 cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1">
+              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
                 Timezone
               </label>
               <select
@@ -421,7 +423,7 @@ export default function Settings() {
                 onChange={(e) =>
                   setTeamForm({ ...teamForm, timezone: e.target.value })
                 }
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
               >
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>
@@ -432,7 +434,7 @@ export default function Settings() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted mb-1">
+              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
                 Daily Digest Time
               </label>
               <input
@@ -441,9 +443,9 @@ export default function Settings() {
                 onChange={(e) =>
                   setTeamForm({ ...teamForm, digestTime: e.target.value })
                 }
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
               />
-              <p className="text-xs text-muted mt-1">
+              <p className="text-xs text-muted dark:text-gray-400 mt-1">
                 Manager digest email is sent at this time in your team's
                 timezone.
               </p>
@@ -463,18 +465,18 @@ export default function Settings() {
 
       {/* ── Danger Zone (admin only) ─────────────────────────────────────────── */}
       {isAdmin && (
-        <section className="bg-white rounded-xl border-2 border-red-200 shadow-sm p-6">
+        <section className="bg-white dark:bg-gray-800 rounded-xl border-2 border-red-200 dark:border-red-900 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-2">
             <AlertCircle className="w-4 h-4 text-danger" />
             <h2 className="font-semibold text-danger">Danger Zone</h2>
           </div>
-          <p className="text-sm text-muted mb-4">
+          <p className="text-sm text-muted dark:text-gray-400 mb-4">
             Permanently delete this team and all its data. This action cannot be
             undone.
           </p>
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="flex items-center gap-1.5 border-2 border-red-300 text-danger hover:bg-red-50 px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
+            className="flex items-center gap-1.5 border-2 border-red-300 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
           >
             <Trash2 className="w-4 h-4" />
             Delete Team
@@ -485,21 +487,21 @@ export default function Settings() {
       {/* Delete confirmation modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                 <Trash2 className="w-5 h-5 text-danger" />
               </div>
               <div>
-                <h3 className="font-bold text-dark">Delete Team?</h3>
-                <p className="text-sm text-muted">
+                <h3 className="font-bold text-dark dark:text-white">Delete Team?</h3>
+                <p className="text-sm text-muted dark:text-gray-400">
                   This will delete all data permanently.
                 </p>
               </div>
             </div>
-            <p className="text-sm text-muted mb-3">
+            <p className="text-sm text-muted dark:text-gray-400 mb-3">
               Type{" "}
-              <span className="font-mono font-bold text-dark">
+              <span className="font-mono font-bold text-dark dark:text-white">
                 {team?.slug}
               </span>{" "}
               to confirm:
@@ -509,7 +511,7 @@ export default function Settings() {
               value={deleteConfirm}
               onChange={(e) => setDeleteConfirm(e.target.value)}
               placeholder={team?.slug}
-              className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-dark focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 mb-4 font-mono"
+              className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 mb-4 font-mono"
             />
             <div className="flex gap-2">
               <button
@@ -528,7 +530,7 @@ export default function Settings() {
                   setShowDeleteModal(false);
                   setDeleteConfirm("");
                 }}
-                className="flex-1 border border-border py-2.5 rounded-lg text-sm text-dark hover:bg-gray-50 transition-colors"
+                className="flex-1 border border-border dark:border-gray-600 py-2.5 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
@@ -537,5 +539,6 @@ export default function Settings() {
         </div>
       )}
     </div>
+    </PageWrapper>
   );
 }

@@ -26,7 +26,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-dark text-white flex-col justify-between p-12">
         <div className="flex items-center gap-2 text-lg font-bold">
@@ -64,15 +64,17 @@ export default function Register() {
       {/* Right panel — form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 text-lg font-bold mb-8">
+          <div className="lg:hidden flex items-center gap-2 text-lg font-bold mb-8 dark:text-white">
             <Bell className="w-5 h-5 text-primary" />
             Stale Deal Nagger
           </div>
 
-          <h2 className="text-2xl font-bold text-dark mb-1">
+          <h2 className="text-2xl font-bold text-dark dark:text-white mb-1">
             Create your account
           </h2>
-          <p className="text-muted mb-8">Get started with a free trial</p>
+          <p className="text-muted dark:text-gray-400 mb-8">
+            Get started with a free trial
+          </p>
 
           {error && (
             <div className="bg-danger-light border border-danger/20 text-danger px-4 py-3 rounded-lg text-sm mb-6">
@@ -82,7 +84,7 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-dark mb-1.5">
+              <label className="block text-sm font-medium text-dark dark:text-white mb-1.5">
                 Team Name
               </label>
               <input
@@ -91,12 +93,12 @@ export default function Register() {
                 onChange={update("teamName")}
                 placeholder="Acme Sales Team"
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark mb-1.5">
+              <label className="block text-sm font-medium text-dark dark:text-white mb-1.5">
                 Your Name
               </label>
               <input
@@ -105,12 +107,12 @@ export default function Register() {
                 onChange={update("name")}
                 placeholder="John Doe"
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark mb-1.5">
+              <label className="block text-sm font-medium text-dark dark:text-white mb-1.5">
                 Email
               </label>
               <input
@@ -119,12 +121,12 @@ export default function Register() {
                 onChange={update("email")}
                 placeholder="john@acme.com"
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark mb-1.5">
+              <label className="block text-sm font-medium text-dark dark:text-white mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -135,7 +137,7 @@ export default function Register() {
                   placeholder="Min 8 characters"
                   required
                   minLength={8}
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition pr-11"
+                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition pr-11 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-500"
                 />
                 <button
                   type="button"
@@ -160,7 +162,7 @@ export default function Register() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-muted">
+          <p className="mt-6 text-center text-sm text-muted dark:text-gray-400">
             Already have an account?{" "}
             <Link
               to="/login"

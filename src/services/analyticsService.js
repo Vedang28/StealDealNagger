@@ -194,4 +194,121 @@ const getStageBreakdown = async (teamId) => {
   return Object.values(stageMap);
 };
 
-module.exports = { getPipelineHealth, getPipelineTrends, getRepStats, getStageBreakdown };
+/**
+ * Pipeline velocity: avg days stale per stage + deal count, with rule benchmark.
+ * Powers the Pipeline Velocity bar chart on the Analytics page.
+ */
+const getPipelineVelocity = async (teamId) => {
+  const STAGE_ORDER = ['Discovery', 'Proposal', 'Negotiation', 'Closing'];
+  const DEFAULTS = { Discovery: 10, Proposal: 8, Negotiation: 5, Closing: 4 };
+
+  const [stageGroups, rules] = await Promise.all([
+    prisma.deal.groupBy({
+      by: ['stage', 'stalenessStatus'],
+      where: { teamId, isActive: true },
+      _count: { id: true },
+      _avg: { daysStale: true },
+    }),
+    prisma.rule.findMany({
+      where: { teamId },
+      select: { stage: true, staleAfterDays: true },
+    }),
+  ]);
+
+  const ruleMap = {};
+  for (const rule of rules) {
+    ruleMap[rule.stage] = rule.staleAfterDays;
+  }
+
+  const stageMap = {};
+  for (const row of stageGroups) {
+    if (!stageMap[row.stage]) {
+      stageMap[row.stage] = {
+        stage: row.stage,
+        totalDeals: 0,
+        avgDaysStale: 0,
+        healthyCount: 0,
+        warningCount: 0,
+        staleCount: 0,
+        criticalCount: 0,
+        benchmark: ruleMap[row.stage] || DEFAULTS[row.stage] || 10,
+        _weightedSum: 0,
+      };
+    }
+    const s = stageMap[row.stage];
+    s.totalDeals += row._count.id;
+    s[`${row.stalenessStatus}Count`] = (s[`${row.stalenessStatus}Count`] || 0) + row._count.id;
+    s._weightedSum += (row._avg.daysStale || 0) * row._count.id;
+  }
+
+  // Compute weighted average and clean up
+  return STAGE_ORDER.map((stage) => {
+    const s = stageMap[stage] || {
+      stage, totalDeals: 0, avgDaysStale: 0, benchmark: ruleMap[stage] || DEFAULTS[stage] || 10,
+      healthyCount: 0, warningCount: 0, staleCount: 0, criticalCount: 0,
+    };
+    if (s.totalDeals > 0) {
+      s.avgDaysStale = Math.round(s._weightedSum / s.totalDeals);
+    }
+    delete s._weightedSum;
+    return s;
+  });
+};
+
+/**
+ * Staleness heatmap: Stage × Rep matrix of stale + critical deal counts.
+ * Powers the Staleness Heatmap grid on the Analytics page.
+ */
+const getStaleHeatmap = async (teamId) => {
+  const STAGE_ORDER = ['Discovery', 'Proposal', 'Negotiation', 'Closing'];
+
+  const [staleDeals, users] = await Promise.all([
+    prisma.deal.findMany({
+      where: {
+        teamId,
+        isActive: true,
+        stalenessStatus: { in: ['stale', 'critical'] },
+        ownerId: { not: null },
+      },
+      select: { stage: true, stalenessStatus: true, ownerId: true },
+    }),
+    prisma.user.findMany({
+      where: { teamId, isActive: true },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+  ]);
+
+  // Build matrix: { [stage]: { [userId]: { staleCount, criticalCount, total } } }
+  const matrix = {};
+  for (const stage of STAGE_ORDER) {
+    matrix[stage] = {};
+    for (const user of users) {
+      matrix[stage][user.id] = { staleCount: 0, criticalCount: 0, total: 0 };
+    }
+  }
+
+  for (const deal of staleDeals) {
+    if (!matrix[deal.stage] || !deal.ownerId) continue;
+    if (!matrix[deal.stage][deal.ownerId]) {
+      matrix[deal.stage][deal.ownerId] = { staleCount: 0, criticalCount: 0, total: 0 };
+    }
+    matrix[deal.stage][deal.ownerId][`${deal.stalenessStatus}Count`]++;
+    matrix[deal.stage][deal.ownerId].total++;
+  }
+
+  return {
+    stages: STAGE_ORDER,
+    reps: users,
+    matrix,
+  };
+};
+
+module.exports = {
+  getPipelineHealth,
+  getPipelineTrends,
+  getRepStats,
+  getStageBreakdown,
+  getPipelineVelocity,
+  getStaleHeatmap,
+};

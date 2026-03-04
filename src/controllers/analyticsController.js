@@ -40,4 +40,22 @@ const stages = async (req, res, next) => {
   }
 };
 
-module.exports = { pipeline, trends, reps, stages };
+const velocity = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getPipelineVelocity(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const heatmap = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getStaleHeatmap(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { pipeline, trends, reps, stages, velocity, heatmap };

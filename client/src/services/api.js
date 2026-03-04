@@ -52,6 +52,8 @@ export const analyticsAPI = {
   trends: (params) => api.get("/analytics/trends", { params }),
   reps: () => api.get("/analytics/reps"),
   stages: () => api.get("/analytics/stages"),
+  velocity: () => api.get("/analytics/velocity"),
+  heatmap: () => api.get("/analytics/heatmap"),
 };
 
 // ─── Notifications ────────────────────────────────

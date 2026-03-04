@@ -5,6 +5,7 @@ import StatCard from "../components/StatCard";
 import StatusBadge from "../components/StatusBadge";
 import DealSlideOver from "../components/DealSlideOver";
 import { SkeletonStatCards, SkeletonKanban } from "../components/Skeleton";
+import PageWrapper from "../components/PageWrapper";
 import {
   Briefcase,
   DollarSign,
@@ -72,24 +73,27 @@ export default function Dashboard() {
 
   if (loading)
     return (
-      <div className="px-6 py-8 max-w-none">
-        <div className="mb-6">
-          <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
-          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mt-2" />
+      <PageWrapper>
+        <div className="px-6 py-8 max-w-none">
+          <div className="mb-6">
+            <div className="h-7 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+          </div>
+          <div className="mb-8">
+            <SkeletonStatCards />
+          </div>
+          <SkeletonKanban />
         </div>
-        <div className="mb-8">
-          <SkeletonStatCards />
-        </div>
-        <SkeletonKanban />
-      </div>
+      </PageWrapper>
     );
 
   return (
+    <PageWrapper>
     <div className="px-6 py-8 max-w-none">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-dark">Pipeline</h1>
-        <p className="text-muted text-sm mt-0.5">{team?.name}</p>
+        <h1 className="text-2xl font-bold text-dark dark:text-white">Pipeline</h1>
+        <p className="text-muted dark:text-gray-400 text-sm mt-0.5">{team?.name}</p>
       </div>
 
       {/* Stat Cards */}
@@ -128,18 +132,18 @@ export default function Dashboard() {
           return (
             <div
               key={stage}
-              className="bg-gray-100 rounded-xl p-3 flex flex-col gap-3"
+              className="bg-gray-100 dark:bg-gray-700/50 rounded-xl p-3 flex flex-col gap-3"
             >
               {/* Column header */}
               <div className="flex items-center justify-between px-1">
                 <div>
-                  <h3 className="text-sm font-semibold text-dark">{stage}</h3>
-                  <p className="text-xs text-muted mt-0.5">
+                  <h3 className="text-sm font-semibold text-dark dark:text-white">{stage}</h3>
+                  <p className="text-xs text-muted dark:text-gray-400 mt-0.5">
                     {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""}{" "}
                     &middot; {formatCurrency(stageValue(stage))}
                   </p>
                 </div>
-                <span className="w-6 h-6 rounded-full bg-white text-dark text-xs font-bold flex items-center justify-center shadow-sm">
+                <span className="w-6 h-6 rounded-full bg-white dark:bg-gray-600 text-dark dark:text-white text-xs font-bold flex items-center justify-center shadow-sm">
                   {stageDeals.length}
                 </span>
               </div>
@@ -147,30 +151,30 @@ export default function Dashboard() {
               {/* Cards */}
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-0.5">
                 {stageDeals.length === 0 ? (
-                  <div className="bg-white rounded-lg border border-dashed border-border py-8 text-center">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg border border-dashed border-border dark:border-gray-600 py-8 text-center">
                     <Briefcase className="w-6 h-6 text-gray-300 mx-auto mb-1.5" />
-                    <p className="text-xs text-muted">No deals</p>
+                    <p className="text-xs text-muted dark:text-gray-400">No deals</p>
                   </div>
                 ) : (
                   stageDeals.map((deal) => (
                     <button
                       key={deal.id}
                       onClick={() => setSelectedDealId(deal.id)}
-                      className={`w-full text-left bg-white rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer ${
+                      className={`w-full text-left bg-white dark:bg-gray-800 rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer ${
                         STATUS_BORDER[deal.stalenessStatus] ||
                         "border-l-gray-200"
                       }`}
                     >
-                      <p className="text-sm font-semibold text-dark truncate leading-snug">
+                      <p className="text-sm font-semibold text-dark dark:text-white truncate leading-snug">
                         {deal.name}
                       </p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs font-semibold text-dark">
+                        <span className="text-xs font-semibold text-dark dark:text-white">
                           {formatCurrency(deal.amount)}
                         </span>
                         <StatusBadge status={deal.stalenessStatus} />
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-muted">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-muted dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {deal.daysStale}d stale
@@ -183,7 +187,7 @@ export default function Dashboard() {
                         )}
                       </div>
                       {deal.contactName && (
-                        <p className="text-xs text-muted mt-1.5 truncate">
+                        <p className="text-xs text-muted dark:text-gray-400 mt-1.5 truncate">
                           {deal.contactName}
                         </p>
                       )}
@@ -203,5 +207,6 @@ export default function Dashboard() {
         onUpdate={loadData}
       />
     </div>
+    </PageWrapper>
   );
 }

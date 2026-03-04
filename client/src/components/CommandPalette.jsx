@@ -171,10 +171,10 @@ export default function CommandPalette() {
 
       {/* Palette */}
       <div className="fixed inset-0 z-[201] flex items-start justify-center pt-[15vh] px-4">
-        <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border overflow-hidden animate-scale-in">
+        <div className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-border dark:border-gray-700 overflow-hidden animate-scale-in">
           {/* Search input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-            <Search className="w-5 h-5 text-muted shrink-0" />
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border dark:border-gray-700">
+            <Search className="w-5 h-5 text-muted dark:text-gray-400 shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -182,9 +182,9 @@ export default function CommandPalette() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Search deals, pages, actions…"
-              className="flex-1 text-sm text-dark placeholder:text-muted bg-transparent outline-none"
+              className="flex-1 text-sm text-dark dark:text-white placeholder:text-muted dark:placeholder:text-gray-400 bg-transparent outline-none"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-gray-100 border border-border text-[10px] font-mono text-muted">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 border border-border dark:border-gray-600 text-[10px] font-mono text-muted dark:text-gray-400">
               ESC
             </kbd>
           </div>
@@ -193,8 +193,8 @@ export default function CommandPalette() {
           <div ref={listRef} className="max-h-80 overflow-y-auto py-1">
             {results.length === 0 ? (
               <div className="px-4 py-8 text-center">
-                <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-muted">
+                <Search className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                <p className="text-sm text-muted dark:text-gray-400">
                   {loading ? "Searching…" : "No results found"}
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function CommandPalette() {
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                       isSelected
                         ? "bg-primary/10 text-primary"
-                        : "text-dark hover:bg-gray-50"
+                        : "text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0 opacity-60" />
@@ -218,7 +218,7 @@ export default function CommandPalette() {
                       <p className="text-sm font-medium truncate">
                         {result.label}
                       </p>
-                      <p className="text-xs text-muted truncate">
+                      <p className="text-xs text-muted dark:text-gray-400 truncate">
                         {result.sublabel}
                       </p>
                     </div>
@@ -232,21 +232,21 @@ export default function CommandPalette() {
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-2.5 border-t border-border bg-gray-50/50 flex items-center gap-4 text-[10px] text-muted">
+          <div className="px-4 py-2.5 border-t border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50 flex items-center gap-4 text-[10px] text-muted dark:text-gray-400">
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded bg-white border border-border font-mono">
+              <kbd className="px-1 py-0.5 rounded bg-white dark:bg-gray-700 border border-border dark:border-gray-600 font-mono">
                 ↑↓
               </kbd>
               Navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded bg-white border border-border font-mono">
+              <kbd className="px-1 py-0.5 rounded bg-white dark:bg-gray-700 border border-border dark:border-gray-600 font-mono">
                 ↵
               </kbd>
               Open
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 rounded bg-white border border-border font-mono">
+              <kbd className="px-1 py-0.5 rounded bg-white dark:bg-gray-700 border border-border dark:border-gray-600 font-mono">
                 esc
               </kbd>
               Close

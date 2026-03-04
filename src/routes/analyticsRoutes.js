@@ -9,5 +9,7 @@ router.get('/pipeline', analyticsController.pipeline);
 router.get('/trends', analyticsController.trends);
 router.get('/reps', analyticsController.reps);
 router.get('/stages', analyticsController.stages);
+router.get('/velocity', analyticsController.velocity);
+router.get('/heatmap', analyticsController.heatmap);
 
 module.exports = router;
