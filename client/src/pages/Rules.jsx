@@ -228,7 +228,9 @@ export default function Rules() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">Staleness Rules</h1>
+            <h1 className="text-2xl font-bold text-dark dark:text-white">
+              Staleness Rules
+            </h1>
             <p className="text-muted dark:text-gray-400 text-sm mt-1">
               Define when deals are flagged per pipeline stage
             </p>
@@ -274,13 +276,17 @@ export default function Rules() {
                   {/* Stage card */}
                   <div
                     className={`w-56 rounded-xl border-2 shadow-sm bg-white dark:bg-gray-800 transition-all ${
-                      isEditing ? "border-primary shadow-md" : "border-border dark:border-gray-700"
+                      isEditing
+                        ? "border-primary shadow-md"
+                        : "border-border dark:border-gray-700"
                     }`}
                   >
                     {/* Card header */}
                     <div
                       className={`px-4 py-3 rounded-t-xl border-b border-border dark:border-gray-700 flex items-center justify-between ${
-                        isEditing ? "bg-blue-50 dark:bg-blue-900/20" : "bg-gray-50/70 dark:bg-gray-700/50"
+                        isEditing
+                          ? "bg-blue-50 dark:bg-blue-900/20"
+                          : "bg-gray-50/70 dark:bg-gray-700/50"
                       }`}
                     >
                       <span className="font-semibold text-dark dark:text-white text-sm">
@@ -307,45 +313,63 @@ export default function Rules() {
                               key: "staleAfterDays",
                               label: "Warning after",
                               color: "text-warning",
-                              borderColor:
-                                "border-amber-300 focus:ring-amber-200",
+                              sliderClass:
+                                "accent-amber-500 [&::-webkit-slider-thumb]:bg-amber-500 [&::-moz-range-thumb]:bg-amber-500",
                             },
                             {
                               key: "escalateAfterDays",
                               label: "Stale after",
                               color: "text-danger",
-                              borderColor: "border-red-300 focus:ring-red-200",
+                              sliderClass:
+                                "accent-red-500 [&::-webkit-slider-thumb]:bg-red-500 [&::-moz-range-thumb]:bg-red-500",
                             },
                             {
                               key: "criticalAfterDays",
                               label: "Critical after",
                               color: "text-critical",
-                              borderColor: "border-red-400 focus:ring-red-300",
+                              sliderClass:
+                                "accent-red-700 [&::-webkit-slider-thumb]:bg-red-700 [&::-moz-range-thumb]:bg-red-700",
                             },
-                          ].map(({ key, label, color, borderColor }) => (
+                          ].map(({ key, label, color, sliderClass }) => (
                             <div key={key}>
-                              <label
-                                className={`block text-xs font-medium mb-1 ${color}`}
-                              >
-                                {label}
-                              </label>
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label
+                                  className={`text-xs font-medium ${color}`}
+                                >
+                                  {label}
+                                </label>
+                                <span
+                                  className={`text-xs font-bold ${color} tabular-nums`}
+                                >
+                                  {editForm[key]}d
+                                </span>
+                              </div>
+                              <div className="relative">
                                 <input
-                                  type="number"
+                                  type="range"
                                   min="1"
-                                  max="365"
+                                  max="60"
                                   value={editForm[key]}
                                   onChange={(e) =>
                                     setEditForm({
                                       ...editForm,
-                                      [key]: e.target.value,
+                                      [key]: Number(e.target.value),
                                     })
                                   }
-                                  className={`w-full px-2 py-1.5 border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 ${borderColor}`}
+                                  className={`w-full h-1.5 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-600 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:dark:border-gray-800 [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:transition-transform [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white ${sliderClass}`}
                                 />
-                                <span className="text-xs text-muted dark:text-gray-400 shrink-0">
-                                  days
-                                </span>
+                                {/* Scale markers */}
+                                <div className="flex justify-between mt-0.5 px-0.5">
+                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                    1
+                                  </span>
+                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                    30
+                                  </span>
+                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                    60
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -412,7 +436,9 @@ export default function Rules() {
                         /* No rule configured */
                         <div className="text-center py-2">
                           <Settings2 className="w-6 h-6 text-gray-300 dark:text-gray-600 mx-auto mb-1" />
-                          <p className="text-xs text-muted dark:text-gray-400">No rule set</p>
+                          <p className="text-xs text-muted dark:text-gray-400">
+                            No rule set
+                          </p>
                           {canWrite && (
                             <button
                               onClick={() => openEdit(stage)}
@@ -431,7 +457,9 @@ export default function Rules() {
                             Current deals:
                           </p>
                           {dealsLoading ? (
-                            <p className="text-xs text-muted dark:text-gray-400">Loading…</p>
+                            <p className="text-xs text-muted dark:text-gray-400">
+                              Loading…
+                            </p>
                           ) : (
                             [
                               {
@@ -490,8 +518,8 @@ export default function Rules() {
             <div className="text-sm text-blue-800 dark:text-blue-300 space-y-0.5">
               <p className="font-medium">How thresholds work</p>
               <p className="text-xs text-blue-700 dark:text-blue-400">
-                <span className="font-semibold text-warning">Warning</span> — deal
-                flagged after N days of no activity.{" "}
+                <span className="font-semibold text-warning">Warning</span> —
+                deal flagged after N days of no activity.{" "}
                 <span className="font-semibold text-danger">Stale</span> —
                 escalates to manager.{" "}
                 <span className="font-semibold text-critical">Critical</span> —
@@ -516,7 +544,9 @@ export default function Rules() {
                   <RotateCcw className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-dark dark:text-white">Reset to Defaults?</h3>
+                  <h3 className="font-bold text-dark dark:text-white">
+                    Reset to Defaults?
+                  </h3>
                   <p className="text-sm text-muted dark:text-gray-400">
                     This will overwrite all current rule thresholds.
                   </p>
@@ -524,8 +554,13 @@ export default function Rules() {
               </div>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-5 space-y-1 text-sm">
                 {STAGES.map((stage) => (
-                  <div key={stage} className="flex items-center justify-between">
-                    <span className="font-medium text-dark dark:text-white">{stage}</span>
+                  <div
+                    key={stage}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="font-medium text-dark dark:text-white">
+                      {stage}
+                    </span>
                     <span className="text-muted dark:text-gray-400 text-xs">
                       {DEFAULT_THRESHOLDS[stage].staleAfterDays}d /{" "}
                       {DEFAULT_THRESHOLDS[stage].escalateAfterDays}d /{" "}

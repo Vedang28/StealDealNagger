@@ -17,6 +17,19 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Root route
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      name: "StaleDealNagger API",
+      version: "1.0.0",
+      status: "running",
+      docs: "/health",
+    },
+  });
+});
+
 // Health check
 app.get("/health", (req, res) => {
   res.json({

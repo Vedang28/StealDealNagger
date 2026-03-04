@@ -9,11 +9,7 @@
  */
 
 export function Skeleton({ className = "" }) {
-  return (
-    <div
-      className={`animate-pulse rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
-    />
-  );
+  return <div className={`rounded-md skeleton-shimmer ${className}`} />;
 }
 
 export function SkeletonCard() {

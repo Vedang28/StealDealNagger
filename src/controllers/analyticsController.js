@@ -42,7 +42,11 @@ const stages = async (req, res, next) => {
 
 const velocity = async (req, res, next) => {
   try {
-    const data = await analyticsService.getPipelineVelocity(req.user.teamId);
+    const days = Math.min(Number(req.query.days) || 30, 90);
+    const data = await analyticsService.getPipelineVelocity(
+      req.user.teamId,
+      days,
+    );
     res.json({ success: true, data });
   } catch (error) {
     next(error);
@@ -58,4 +62,51 @@ const heatmap = async (req, res, next) => {
   }
 };
 
-module.exports = { pipeline, trends, reps, stages, velocity, heatmap };
+const revenueAtRisk = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getRevenueAtRiskTrend(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const recoveryRate = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getRecoveryRate(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const leaderboard = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getLeaderboard(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const overview = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getOverview(req.user.teamId);
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  pipeline,
+  trends,
+  reps,
+  stages,
+  velocity,
+  heatmap,
+  revenueAtRisk,
+  recoveryRate,
+  leaderboard,
+  overview,
+};

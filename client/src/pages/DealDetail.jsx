@@ -4,6 +4,7 @@ import { dealsAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PageWrapper from "../components/PageWrapper";
+import EmptyState from "../components/EmptyState";
 import {
   ArrowLeft,
   Briefcase,
@@ -156,14 +157,14 @@ export default function DealDetail() {
   if (loading) return <LoadingSpinner size="lg" text="Loading deal..." />;
   if (!deal) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <AlertCircle className="w-12 h-12 text-danger mx-auto mb-3" />
-        <p className="text-dark dark:text-white font-semibold">
-          Deal not found
-        </p>
-        <Link to="/deals" className="text-primary text-sm mt-2 inline-block">
-          Back to deals
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <EmptyState
+          variant="search"
+          title="Deal not found"
+          subtitle="This deal may have been deleted or the link is invalid"
+          actionLabel="Back to Deals"
+          actionTo="/deals"
+        />
       </div>
     );
   }

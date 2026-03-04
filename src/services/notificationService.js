@@ -1,12 +1,19 @@
-const prisma = require('../config/prisma');
-const { AppError } = require('../middleware/errorHandler');
+const prisma = require("../config/prisma");
+const { AppError } = require("../middleware/errorHandler");
 
 /**
  * Create a notification record in the DB.
  * Deduplicates: skips if the same deal+user+type notification already
  * exists within the last 24 hours (prevents re-alerting on every cron tick).
  */
-const createNotification = async ({ dealId, userId, type, channel, message, suggestedAction }) => {
+const createNotification = async ({
+  dealId,
+  userId,
+  type,
+  channel,
+  message,
+  suggestedAction,
+}) => {
   const dedupeWindow = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   const recent = await prisma.notification.findFirst({
@@ -27,8 +34,8 @@ const createNotification = async ({ dealId, userId, type, channel, message, sugg
       dealId,
       userId,
       type,
-      channel: channel || 'slack',
-      status: 'pending',
+      channel: channel || "slack",
+      status: "pending",
       message,
       suggestedAction,
     },
@@ -57,10 +64,18 @@ const getNotifications = async (teamId, query = {}) => {
     prisma.notification.findMany({
       where,
       include: {
-        deal: { select: { id: true, name: true, stage: true, stalenessStatus: true, amount: true } },
+        deal: {
+          select: {
+            id: true,
+            name: true,
+            stage: true,
+            stalenessStatus: true,
+            amount: true,
+          },
+        },
         user: { select: { id: true, name: true, email: true, role: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     }),
@@ -87,12 +102,12 @@ const markAsRead = async (notificationId, userId) => {
   });
 
   if (!notification) {
-    throw new AppError('Notification not found', 404);
+    throw new AppError("Notification not found", 404);
   }
 
   return prisma.notification.update({
     where: { id: notificationId },
-    data: { status: 'delivered', openedAt: new Date() },
+    data: { status: "delivered", openedAt: new Date() },
   });
 };
 
@@ -101,11 +116,50 @@ const markAsRead = async (notificationId, userId) => {
  */
 const markAllAsRead = async (userId) => {
   const result = await prisma.notification.updateMany({
-    where: { userId, status: 'pending' },
-    data: { status: 'delivered', openedAt: new Date() },
+    where: { userId, status: "pending" },
+    data: { status: "delivered", openedAt: new Date() },
   });
 
   return { updated: result.count };
 };
 
-module.exports = { createNotification, getNotifications, markAsRead, markAllAsRead };
+/**
+ * Archive a single notification (hides from list).
+ */
+const archiveNotification = async (notificationId, userId) => {
+  const notification = await prisma.notification.findFirst({
+    where: { id: notificationId, userId },
+  });
+
+  if (!notification) {
+    throw new AppError("Notification not found", 404);
+  }
+
+  return prisma.notification.update({
+    where: { id: notificationId },
+    data: { status: "archived" },
+  });
+};
+
+/**
+ * Get unread (pending) notification count for a user's team.
+ */
+const getUnreadCount = async (teamId, userId) => {
+  const count = await prisma.notification.count({
+    where: {
+      deal: { teamId },
+      userId,
+      status: "pending",
+    },
+  });
+  return { unreadCount: count };
+};
+
+module.exports = {
+  createNotification,
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  archiveNotification,
+  getUnreadCount,
+};

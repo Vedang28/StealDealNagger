@@ -3,14 +3,40 @@ import { Link } from "react-router-dom";
 import { notificationsAPI } from "../services/api";
 import { SkeletonNotifications } from "../components/Skeleton";
 import PageWrapper from "../components/PageWrapper";
-import { Bell, CheckCircle, CheckCheck, Clock } from "lucide-react";
+import EmptyState from "../components/EmptyState";
+import { Archive, Bell, CheckCircle, CheckCheck, Clock } from "lucide-react";
 
 const TYPE_CONFIG = {
-  warning: { label: "Warning", color: "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", border: "border-l-warning" },
-  stale: { label: "Stale", color: "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800", border: "border-l-danger" },
-  critical: { label: "Critical", color: "text-critical bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700", border: "border-l-critical" },
-  nudge: { label: "Nudge", color: "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", border: "border-l-warning" },
-  escalation: { label: "Escalation", color: "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800", border: "border-l-danger" },
+  warning: {
+    label: "Warning",
+    color:
+      "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
+    border: "border-l-warning",
+  },
+  stale: {
+    label: "Stale",
+    color:
+      "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+    border: "border-l-danger",
+  },
+  critical: {
+    label: "Critical",
+    color:
+      "text-critical bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700",
+    border: "border-l-critical",
+  },
+  nudge: {
+    label: "Nudge",
+    color:
+      "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
+    border: "border-l-warning",
+  },
+  escalation: {
+    label: "Escalation",
+    color:
+      "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+    border: "border-l-danger",
+  },
 };
 
 const FILTERS = [
@@ -24,9 +50,12 @@ const FILTERS = [
 
 function groupByDate(notifications) {
   const now = new Date();
-  const today = new Date(now); today.setHours(0, 0, 0, 0);
-  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-  const thisWeek = new Date(today); thisWeek.setDate(thisWeek.getDate() - 7);
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const thisWeek = new Date(today);
+  thisWeek.setDate(thisWeek.getDate() - 7);
 
   return [
     {
@@ -72,7 +101,9 @@ export default function Notifications() {
   const [markingAll, setMarkingAll] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");
 
-  useEffect(() => { loadNotifications(); }, []);
+  useEffect(() => {
+    loadNotifications();
+  }, []);
 
   async function loadNotifications() {
     setLoading(true);
@@ -89,9 +120,20 @@ export default function Notifications() {
   async function handleMarkRead(id) {
     try {
       await notificationsAPI.markRead(id);
-      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+      );
     } catch {
       alert("Failed to mark notification as read");
+    }
+  }
+
+  async function handleArchive(id) {
+    try {
+      await notificationsAPI.archive(id);
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch {
+      alert("Failed to archive notification");
     }
   }
 
@@ -107,9 +149,10 @@ export default function Notifications() {
     }
   }
 
-  const filtered = typeFilter === "all"
-    ? notifications
-    : notifications.filter((n) => n.type === typeFilter);
+  const filtered =
+    typeFilter === "all"
+      ? notifications
+      : notifications.filter((n) => n.type === typeFilter);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const groups = groupByDate(filtered);
@@ -131,7 +174,9 @@ export default function Notifications() {
         {/* Header */}
         <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">Notifications</h1>
+            <h1 className="text-2xl font-bold text-dark dark:text-white">
+              Notifications
+            </h1>
             <p className="text-muted dark:text-gray-400 text-sm mt-1">
               {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
             </p>
@@ -172,28 +217,39 @@ export default function Notifications() {
 
         {/* Content */}
         {filtered.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-16 text-center shadow-sm">
-            <CheckCircle className="w-12 h-12 text-success mx-auto mb-3" />
-            <p className="text-dark dark:text-white font-semibold">
-              {typeFilter === "all" ? "You're all caught up!" : `No ${typeFilter} notifications`}
-            </p>
-            <p className="text-sm text-muted dark:text-gray-400 mt-1">
-              {typeFilter === "all"
-                ? "Run a staleness check to generate alerts."
-                : "Try a different filter above."}
-            </p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
+            <EmptyState
+              variant="notifications"
+              title={
+                typeFilter === "all"
+                  ? "You're all caught up!"
+                  : `No ${typeFilter} notifications`
+              }
+              subtitle={
+                typeFilter === "all"
+                  ? "Run a staleness check to generate alerts."
+                  : "Try a different filter above."
+              }
+            />
           </div>
         ) : (
           <div className="space-y-6">
             {groups.map(({ label, items }) => (
               <div key={label}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted dark:text-gray-500">{label}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted dark:text-gray-500">
+                    {label}
+                  </span>
                   <div className="flex-1 h-px bg-border dark:bg-gray-700" />
                 </div>
                 <div className="space-y-2">
                   {items.map((n) => {
-                    const cfg = TYPE_CONFIG[n.type] ?? { label: n.type, color: "text-muted bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700", border: "border-l-gray-300" };
+                    const cfg = TYPE_CONFIG[n.type] ?? {
+                      label: n.type,
+                      color:
+                        "text-muted bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700",
+                      border: "border-l-gray-300",
+                    };
                     return (
                       <div
                         key={n.id}
@@ -204,12 +260,16 @@ export default function Notifications() {
                         }`}
                       >
                         <div className="px-5 py-4 flex items-start gap-4">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border text-xs font-bold mt-0.5 ${cfg.color}`}>
+                          <div
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border text-xs font-bold mt-0.5 ${cfg.color}`}
+                          >
                             <Bell className="w-4 h-4" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
-                              <p className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-dark dark:text-white" : "text-muted dark:text-gray-400"}`}>
+                              <p
+                                className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-dark dark:text-white" : "text-muted dark:text-gray-400"}`}
+                              >
                                 {n.message}
                               </p>
                               <span className="flex items-center gap-1 text-xs text-muted dark:text-gray-500 shrink-0 mt-0.5">
@@ -234,7 +294,9 @@ export default function Notifications() {
                               </Link>
                             )}
                             <div className="flex items-center gap-3 mt-2">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${cfg.color}`}>
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${cfg.color}`}
+                              >
                                 {cfg.label}
                               </span>
                               {!n.isRead && (
@@ -246,6 +308,13 @@ export default function Notifications() {
                                   Mark read
                                 </button>
                               )}
+                              <button
+                                onClick={() => handleArchive(n.id)}
+                                className="text-xs text-muted dark:text-gray-400 hover:text-danger transition-colors flex items-center gap-1"
+                              >
+                                <Archive className="w-3.5 h-3.5" />
+                                Archive
+                              </button>
                             </div>
                           </div>
                         </div>

@@ -1,4 +1,4 @@
-const teamService = require('../services/teamService');
+const teamService = require("../services/teamService");
 
 const getTeam = async (req, res, next) => {
   try {
@@ -42,7 +42,7 @@ const updateUserRole = async (req, res, next) => {
       req.user.teamId,
       req.params.userId,
       req.body.role,
-      req.user.id
+      req.user.id,
     );
     res.json({ success: true, data: user });
   } catch (err) {
@@ -55,7 +55,7 @@ const deactivateUser = async (req, res, next) => {
     const user = await teamService.deactivateUser(
       req.user.teamId,
       req.params.userId,
-      req.user.id
+      req.user.id,
     );
     res.json({ success: true, data: user });
   } catch (err) {
@@ -65,7 +65,10 @@ const deactivateUser = async (req, res, next) => {
 
 const reactivateUser = async (req, res, next) => {
   try {
-    const user = await teamService.reactivateUser(req.user.teamId, req.params.userId);
+    const user = await teamService.reactivateUser(
+      req.user.teamId,
+      req.params.userId,
+    );
     res.json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -86,8 +89,17 @@ const changePassword = async (req, res, next) => {
     const result = await teamService.changePassword(
       req.user.id,
       req.body.currentPassword,
-      req.body.newPassword
+      req.body.newPassword,
     );
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deleteTeam = async (req, res, next) => {
+  try {
+    const result = await teamService.deleteTeam(req.user.teamId, req.user.id);
     res.json({ success: true, data: result });
   } catch (err) {
     next(err);
@@ -104,4 +116,5 @@ module.exports = {
   reactivateUser,
   updateProfile,
   changePassword,
+  deleteTeam,
 };

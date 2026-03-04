@@ -3,8 +3,22 @@
 /* Dark mode via .dark class on <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ─── Dark mode smooth transitions ─── */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition:
+    background-color 0.3s ease,
+    color 0.2s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    "Plus Jakarta Sans", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --color-primary: #f97316;
   --color-primary-hover: #ea580c;
@@ -105,7 +119,8 @@ body {
   background-color: #f8f9fa;
   color: #111827;
   line-height: 1.6;
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family:
+    "Plus Jakarta Sans", "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 .landing-container {
@@ -1058,4 +1073,71 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* ─── Micro-interactions ─── */
+
+/* Card hover lift */
+.card-hover-lift {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 10px -6px rgba(0, 0, 0, 0.1);
+}
+.dark .card-hover-lift:hover {
+  box-shadow:
+    0 8px 25px -5px rgba(0, 0, 0, 0.4),
+    0 4px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+/* Status badge pulse animation */
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.badge-pulse-stale .badge-dot {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+.badge-pulse-critical .badge-dot {
+  animation: badge-pulse 1s ease-in-out infinite;
+}
+
+/* Enhanced skeleton shimmer with gradient */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(229, 231, 235, 1) 25%,
+    rgba(243, 244, 246, 1) 37%,
+    rgba(229, 231, 235, 1) 63%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.dark .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(55, 65, 81, 1) 25%,
+    rgba(75, 85, 99, 1) 37%,
+    rgba(55, 65, 81, 1) 63%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }

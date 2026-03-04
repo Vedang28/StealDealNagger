@@ -3,6 +3,7 @@ import { teamAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { SkeletonTeamMembers } from "../components/Skeleton";
 import PageWrapper from "../components/PageWrapper";
+import EmptyState from "../components/EmptyState";
 import {
   Users,
   UserPlus,
@@ -14,6 +15,9 @@ import {
   Power,
   PowerOff,
   ChevronDown,
+  Bell,
+  BellOff,
+  MessageSquare,
 } from "lucide-react";
 
 const ROLE_META = {
@@ -177,7 +181,9 @@ export default function Team() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">Team Management</h1>
+            <h1 className="text-2xl font-bold text-dark dark:text-white">
+              Team Management
+            </h1>
             <p className="text-muted dark:text-gray-400 text-sm mt-1">
               {activeCount} active member{activeCount !== 1 ? "s" : ""}
             </p>
@@ -199,10 +205,11 @@ export default function Team() {
         {/* Members list */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
           {members.length === 0 ? (
-            <div className="text-center py-16">
-              <Users className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-muted dark:text-gray-400 font-medium">No team members yet</p>
-            </div>
+            <EmptyState
+              variant="team"
+              title="No team members yet"
+              subtitle="Invite your team to start collaborating on deals"
+            />
           ) : (
             <>
               {/* Desktop table */}
@@ -218,6 +225,12 @@ export default function Team() {
                       </th>
                       <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
                         Status
+                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                        Slack ID
+                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                        Notifications
                       </th>
                       <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
                         Joined
@@ -277,13 +290,65 @@ export default function Team() {
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                member.isActive
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                  : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                                member.inviteStatus === "pending"
+                                  ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                                  : member.isActive
+                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                    : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                               }`}
                             >
-                              {member.isActive ? "Active" : "Inactive"}
+                              {member.inviteStatus === "pending"
+                                ? "Pending Invite"
+                                : member.isActive
+                                  ? "Active"
+                                  : "Inactive"}
                             </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            {member.slackUserId ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-mono text-dark dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-2 py-0.5 rounded">
+                                <MessageSquare className="w-3 h-3 text-muted dark:text-gray-400" />
+                                {member.slackUserId}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted dark:text-gray-500 italic">
+                                Not set
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-1.5">
+                              {member.notificationPrefs?.slack ? (
+                                <span
+                                  className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400"
+                                  title="Slack enabled"
+                                >
+                                  <Bell className="w-3 h-3" /> Slack
+                                </span>
+                              ) : (
+                                <span
+                                  className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through"
+                                  title="Slack disabled"
+                                >
+                                  <BellOff className="w-3 h-3" /> Slack
+                                </span>
+                              )}
+                              {member.notificationPrefs?.email ? (
+                                <span
+                                  className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400"
+                                  title="Email enabled"
+                                >
+                                  <Bell className="w-3 h-3" /> Email
+                                </span>
+                              ) : (
+                                <span
+                                  className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through"
+                                  title="Email disabled"
+                                >
+                                  <BellOff className="w-3 h-3" /> Email
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-muted dark:text-gray-400 text-xs">
                             {formatDate(member.createdAt)}
@@ -295,7 +360,9 @@ export default function Team() {
                                   onClick={() => handleToggleActive(member)}
                                   disabled={togglingId === member.id}
                                   title={
-                                    member.isActive ? "Deactivate" : "Reactivate"
+                                    member.isActive
+                                      ? "Deactivate"
+                                      : "Reactivate"
                                   }
                                   className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${
                                     member.isActive
@@ -342,20 +409,58 @@ export default function Team() {
                                 </span>
                               )}
                             </p>
-                            <p className="text-xs text-muted dark:text-gray-400">{member.email}</p>
+                            <p className="text-xs text-muted dark:text-gray-400">
+                              {member.email}
+                            </p>
                           </div>
                         </div>
                         <RoleBadge role={member.role} />
                       </div>
-                      <div className="mt-2 flex items-center gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${member.isActive ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"}`}
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            member.inviteStatus === "pending"
+                              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                              : member.isActive
+                                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                          }`}
                         >
-                          {member.isActive ? "Active" : "Inactive"}
+                          {member.inviteStatus === "pending"
+                            ? "Pending Invite"
+                            : member.isActive
+                              ? "Active"
+                              : "Inactive"}
                         </span>
+                        {member.slackUserId && (
+                          <span className="inline-flex items-center gap-0.5 text-xs font-mono text-muted dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                            <MessageSquare className="w-3 h-3" />
+                            {member.slackUserId}
+                          </span>
+                        )}
                         <span className="text-xs text-muted dark:text-gray-400">
                           Joined {formatDate(member.createdAt)}
                         </span>
+                      </div>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        {member.notificationPrefs?.slack ? (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400">
+                            <Bell className="w-3 h-3" /> Slack
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through">
+                            <BellOff className="w-3 h-3" /> Slack
+                          </span>
+                        )}
+                        {member.notificationPrefs?.email ? (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400">
+                            <Bell className="w-3 h-3" /> Email
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through">
+                            <BellOff className="w-3 h-3" /> Email
+                          </span>
+                        )}
                       </div>
                       {isAdmin && !isSelf && (
                         <div className="mt-3 flex gap-2">

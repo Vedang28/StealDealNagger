@@ -1,179 +1,357 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sparkles, Database, Upload, Settings, MessageSquare, Users, CheckCircle2, X,
-  ArrowRight, ArrowLeft, Plug, Bell, ShieldCheck,
+  Building2,
+  Users,
+  Plug,
+  Settings,
+  ArrowRight,
+  ArrowLeft,
+  X,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
+import { teamAPI, integrationsAPI, rulesAPI } from "../services/api";
 
-const STEPS = [
+const TIMEZONES = [
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "America/Sao_Paulo",
+  "Europe/London",
+  "Europe/Berlin",
+  "Europe/Paris",
+  "Asia/Dubai",
+  "Asia/Kolkata",
+  "Asia/Shanghai",
+  "Asia/Tokyo",
+  "Australia/Sydney",
+  "Pacific/Auckland",
+];
+
+const CRM_PROVIDERS = [
   {
-    id: 1,
-    icon: Sparkles,
-    title: "Welcome to Stale Deal Nagger",
-    subtitle: "Let's get your pipeline monitoring set up in a few quick steps.",
+    id: "hubspot",
+    name: "HubSpot",
+    color: "text-orange-600 bg-orange-50 dark:bg-orange-900/20",
+  },
+  {
+    id: "salesforce",
+    name: "Salesforce",
+    color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20",
+  },
+  {
+    id: "pipedrive",
+    name: "Pipedrive",
+    color: "text-green-600 bg-green-50 dark:bg-green-900/20",
+  },
+];
+
+const DEFAULT_RULES = [
+  { stage: "Discovery", warningDays: 7, staleDays: 10, criticalDays: 14 },
+  { stage: "Proposal", warningDays: 5, staleDays: 8, criticalDays: 12 },
+  { stage: "Negotiation", warningDays: 3, staleDays: 5, criticalDays: 7 },
+  { stage: "Closing", warningDays: 2, staleDays: 4, criticalDays: 6 },
+];
+
+/* ──── Step 1: Company Info ──────────────────────── */
+function CompanyInfoStep({ data, onChange }) {
+  return (
+    <div className="mt-4 space-y-4">
+      <div>
+        <label className="block text-xs font-medium text-dark dark:text-gray-300 mb-1.5">
+          Team / Company Name
+        </label>
+        <input
+          type="text"
+          value={data.teamName}
+          onChange={(e) => onChange({ ...data, teamName: e.target.value })}
+          placeholder="Acme Corp"
+          className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-dark dark:text-white placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-dark dark:text-gray-300 mb-1.5">
+          Timezone
+        </label>
+        <select
+          value={data.timezone}
+          onChange={(e) => onChange({ ...data, timezone: e.target.value })}
+          className="w-full px-3 py-2.5 rounded-lg border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+        >
+          {TIMEZONES.map((tz) => (
+            <option key={tz} value={tz}>
+              {tz.replace(/_/g, " ")}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
+
+/* ──── Step 2: Invite Team ───────────────────────── */
+function InviteTeamStep({ invites, onChange }) {
+  const addRow = () => onChange([...invites, { email: "", role: "rep" }]);
+  const removeRow = (i) => onChange(invites.filter((_, idx) => idx !== i));
+  const update = (i, field, val) =>
+    onChange(
+      invites.map((inv, idx) => (idx === i ? { ...inv, [field]: val } : inv)),
+    );
+
+  return (
+    <div className="mt-4 space-y-3">
+      {invites.map((inv, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            type="email"
+            value={inv.email}
+            onChange={(e) => update(i, "email", e.target.value)}
+            placeholder="teammate@company.com"
+            className="flex-1 px-3 py-2 rounded-lg border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-dark dark:text-white placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+          />
+          <select
+            value={inv.role}
+            onChange={(e) => update(i, "role", e.target.value)}
+            className="w-28 px-2 py-2 rounded-lg border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors"
+          >
+            <option value="rep">Rep</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button
+            onClick={() => removeRow(i)}
+            className="p-2 rounded-lg text-muted hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      ))}
+      <button
+        onClick={addRow}
+        className="flex items-center gap-1.5 text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+      >
+        <Plus className="w-4 h-4" />
+        Add teammate
+      </button>
+      <p className="text-xs text-muted dark:text-gray-400">
+        They'll receive a temporary password. You can also invite later from the
+        Team page.
+      </p>
+    </div>
+  );
+}
+
+/* ──── Step 3: Connect Integration ───────────────── */
+function ConnectIntegrationStep({ connected, onConnect }) {
+  return (
+    <div className="mt-4 space-y-2">
+      {CRM_PROVIDERS.map((crm) => (
+        <div
+          key={crm.id}
+          className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+        >
+          <span
+            className={`text-sm font-medium ${crm.color} px-2 py-0.5 rounded-md`}
+          >
+            {crm.name}
+          </span>
+          {connected.includes(crm.id) ? (
+            <span className="flex items-center gap-1 text-xs font-medium text-success">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Connected
+            </span>
+          ) : (
+            <button
+              onClick={() => onConnect(crm.id)}
+              className="text-xs font-medium px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white transition-colors"
+            >
+              Connect
+            </button>
+          )}
+        </div>
+      ))}
+      <p className="text-xs text-muted dark:text-gray-400 text-center pt-1">
+        Connect later from the Integrations page if you prefer.
+      </p>
+    </div>
+  );
+}
+
+/* ──── Step 4: Create First Rule ─────────────────── */
+function CreateRuleStep({ rules, onChange }) {
+  const update = (i, field, val) =>
+    onChange(
+      rules.map((r, idx) => (idx === i ? { ...r, [field]: Number(val) } : r)),
+    );
+
+  return (
+    <div className="mt-4 space-y-3">
+      <p className="text-xs text-muted dark:text-gray-400">
+        Set the number of days before each alert tier fires per stage.
+      </p>
+      {rules.map((r, i) => (
+        <div
+          key={r.stage}
+          className="p-3 rounded-lg border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+        >
+          <p className="text-sm font-medium text-dark dark:text-white mb-2">
+            {r.stage}
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { key: "warningDays", label: "Warning", color: "text-warning" },
+              { key: "staleDays", label: "Stale", color: "text-danger" },
+              {
+                key: "criticalDays",
+                label: "Critical",
+                color: "text-critical",
+              },
+            ].map(({ key, label, color }) => (
+              <div key={key}>
+                <label
+                  className={`block text-[10px] font-medium ${color} mb-1`}
+                >
+                  {label}
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={90}
+                  value={r[key]}
+                  onChange={(e) => update(i, key, e.target.value)}
+                  className="w-full px-2 py-1.5 rounded-md border border-border dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-dark dark:text-white text-center focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ──── STEP DEFINITIONS ──────────────────────────── */
+const STEP_META = [
+  {
+    icon: Building2,
+    title: "Company Info",
+    subtitle: "Tell us about your team so we can set things up.",
     color: "text-primary bg-primary-light dark:bg-orange-900/30",
-    content: (
-      <ul className="space-y-3 mt-4">
-        {[
-          { icon: Bell, text: "Automatic staleness detection for every deal" },
-          { icon: ShieldCheck, text: "Role-based alerts for reps and managers" },
-          { icon: Sparkles, text: "Configurable thresholds per pipeline stage" },
-        ].map(({ icon: Icon, text }) => (
-          <li key={text} className="flex items-start gap-3 text-sm text-dark dark:text-gray-300">
-            <Icon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            {text}
-          </li>
-        ))}
-      </ul>
-    ),
   },
   {
-    id: 2,
-    icon: Database,
-    title: "Connect Your CRM",
-    subtitle: "Import deals automatically from HubSpot, Salesforce, or Pipedrive.",
-    color: "text-blue-600 bg-blue-50 dark:bg-blue-900/30",
-    content: (
-      <div className="mt-4 space-y-2">
-        {["HubSpot", "Salesforce", "Pipedrive"].map((name) => (
-          <div key={name} className="flex items-center justify-between p-3 rounded-lg border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-            <span className="text-sm font-medium text-dark dark:text-white">{name}</span>
-            <span className="text-xs text-muted dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">Phase 5</span>
-          </div>
-        ))}
-        <p className="text-xs text-muted dark:text-gray-400 text-center pt-1">
-          You can connect integrations later in the Integrations page.
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 3,
-    icon: Upload,
-    title: "Import Your Deals",
-    subtitle: "Add deals manually or import them from your connected CRM.",
-    color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30",
-    content: (
-      <div className="mt-4 space-y-3">
-        <div className="p-4 rounded-lg border border-dashed border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-center">
-          <Upload className="w-8 h-8 text-muted dark:text-gray-500 mx-auto mb-2" />
-          <p className="text-sm font-medium text-dark dark:text-white">CRM Import</p>
-          <p className="text-xs text-muted dark:text-gray-400 mt-1">Available after connecting a CRM in Phase 5</p>
-        </div>
-        <p className="text-xs text-center text-muted dark:text-gray-400">
-          Or add deals manually via the{" "}
-          <span className="text-primary font-medium">Deals</span> page at any time.
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 4,
-    icon: Settings,
-    title: "Configure Staleness Rules",
-    subtitle: "Define when deals are considered warning, stale, or critical per pipeline stage.",
-    color: "text-purple-600 bg-purple-50 dark:bg-purple-900/30",
-    content: (
-      <div className="mt-4 space-y-2">
-        {[
-          { stage: "Discovery", warning: "7d", stale: "10d", critical: "14d" },
-          { stage: "Proposal", warning: "5d", stale: "8d", critical: "12d" },
-          { stage: "Negotiation", warning: "3d", stale: "5d", critical: "7d" },
-          { stage: "Closing", warning: "2d", stale: "4d", critical: "6d" },
-        ].map((r) => (
-          <div key={r.stage} className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 border border-border dark:border-gray-700 text-xs">
-            <span className="font-medium text-dark dark:text-white">{r.stage}</span>
-            <div className="flex items-center gap-2">
-              <span className="text-warning">⚠ {r.warning}</span>
-              <span className="text-danger">● {r.stale}</span>
-              <span className="text-critical font-bold">🔴 {r.critical}</span>
-            </div>
-          </div>
-        ))}
-        <p className="text-xs text-center text-muted dark:text-gray-400 pt-1">
-          Customize these thresholds in the <span className="text-primary font-medium">Rules</span> page.
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 5,
-    icon: MessageSquare,
-    title: "Connect Slack",
-    subtitle: "Get instant DMs when deals go stale and let reps snooze alerts from Slack.",
-    color: "text-green-600 bg-green-50 dark:bg-green-900/30",
-    content: (
-      <div className="mt-4">
-        <div className="flex items-center gap-3 p-4 rounded-lg border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <Plug className="w-8 h-8 text-green-600 shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-dark dark:text-white">Slack Integration</p>
-            <p className="text-xs text-muted dark:text-gray-400 mt-0.5">Coming in Phase 5 — OAuth connection + Block Kit alerts</p>
-          </div>
-        </div>
-        <p className="text-xs text-center text-muted dark:text-gray-400 mt-3">
-          Skip for now and connect later in{" "}
-          <span className="text-primary font-medium">Integrations</span>.
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 6,
     icon: Users,
     title: "Invite Your Team",
-    subtitle: "Add your sales reps and managers so they can receive alerts.",
+    subtitle: "Add your sales reps and managers so they get alerts.",
     color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30",
-    content: (
-      <div className="mt-4 space-y-3">
-        <div className="p-3 rounded-lg border border-border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm text-muted dark:text-gray-400">
-          You can invite team members with a temp password from the{" "}
-          <span className="text-primary font-medium">Team</span> page. Each member gets role-appropriate alerts.
-        </div>
-        <div className="space-y-1.5">
-          {[
-            { role: "Admin", desc: "Full access + team management" },
-            { role: "Manager", desc: "See all deals + invite reps" },
-            { role: "Rep", desc: "See own deals + receive alerts" },
-          ].map(({ role, desc }) => (
-            <div key={role} className="flex items-center gap-2 text-xs">
-              <span className="font-medium text-dark dark:text-white w-16">{role}</span>
-              <span className="text-muted dark:text-gray-400">{desc}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
   },
   {
-    id: 7,
-    icon: CheckCircle2,
-    title: "You're All Set!",
-    subtitle: "Your pipeline monitoring is ready. Head to the dashboard to explore.",
-    color: "text-success bg-success-light dark:bg-green-900/30",
-    content: (
-      <div className="mt-4 text-center space-y-3">
-        <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-8 h-8 text-success" />
-        </div>
-        <p className="text-sm text-dark dark:text-gray-300">
-          Start by adding your first deal or running a staleness check to see the engine in action.
-        </p>
-      </div>
-    ),
+    icon: Plug,
+    title: "Connect a CRM",
+    subtitle: "Import deals automatically from your CRM of choice.",
+    color: "text-blue-600 bg-blue-50 dark:bg-blue-900/30",
+  },
+  {
+    icon: Settings,
+    title: "Staleness Rules",
+    subtitle:
+      "Configure when deals trigger warning, stale, and critical alerts.",
+    color: "text-purple-600 bg-purple-50 dark:bg-purple-900/30",
   },
 ];
 
 export default function Onboarding({ onComplete, onSkip }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  const current = STEPS[step];
-  const isLast = step === STEPS.length - 1;
+  // Step 1 data
+  const [companyData, setCompanyData] = useState({
+    teamName: "",
+    timezone: "America/New_York",
+  });
 
-  function goNext() {
+  // Step 2 data
+  const [invites, setInvites] = useState([{ email: "", role: "rep" }]);
+
+  // Step 3 data
+  const [connectedCRMs, setConnectedCRMs] = useState([]);
+
+  // Step 4 data
+  const [rules, setRules] = useState(DEFAULT_RULES);
+
+  const current = STEP_META[step];
+  const isLast = step === STEP_META.length - 1;
+
+  const handleConnectCRM = useCallback(async (provider) => {
+    try {
+      const res = await integrationsAPI.getAuthUrl(
+        provider,
+        window.location.origin + "/integrations",
+      );
+      const url = res.data?.data?.url;
+      if (url && url.startsWith("http")) {
+        window.open(url, "_blank", "noopener");
+      }
+      // Optimistically mark as connected for onboarding UX
+      setConnectedCRMs((prev) => [...prev, provider]);
+    } catch {
+      // Scaffold: mark as connected anyway to let user proceed
+      setConnectedCRMs((prev) => [...prev, provider]);
+    }
+  }, []);
+
+  async function saveStepData() {
+    setSaving(true);
+    try {
+      if (step === 0 && companyData.teamName.trim()) {
+        await teamAPI.updateTeam({
+          name: companyData.teamName.trim(),
+          settings: { timezone: companyData.timezone },
+        });
+      }
+      if (step === 1) {
+        const validInvites = invites.filter((inv) => inv.email.trim());
+        for (const inv of validInvites) {
+          try {
+            await teamAPI.inviteUser({
+              email: inv.email.trim(),
+              name: inv.email.split("@")[0],
+              role: inv.role,
+              tempPassword: "Welcome123!",
+            });
+          } catch {
+            // Skip duplicates / errors silently during onboarding
+          }
+        }
+      }
+      if (step === 3) {
+        for (const r of rules) {
+          try {
+            await rulesAPI.create({
+              stage: r.stage,
+              warningDays: r.warningDays,
+              staleDays: r.staleDays,
+              criticalDays: r.criticalDays,
+            });
+          } catch {
+            // Skip duplicates
+          }
+        }
+      }
+    } catch {
+      // Non-blocking: onboarding should not fail hard
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function goNext() {
+    await saveStepData();
     if (isLast) {
       onComplete();
       navigate("/dashboard");
@@ -190,12 +368,15 @@ export default function Onboarding({ onComplete, onSkip }) {
     }
   }
 
-  const progress = ((step + 1) / STEPS.length) * 100;
+  const progress = ((step + 1) / STEP_META.length) * 100;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onSkip} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onSkip}
+      />
 
       {/* Modal */}
       <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -220,7 +401,7 @@ export default function Onboarding({ onComplete, onSkip }) {
         {/* Step counter */}
         <div className="px-6 pt-5 pb-2">
           <span className="text-xs font-medium text-muted dark:text-gray-400">
-            Step {step + 1} of {STEPS.length}
+            Step {step + 1} of {STEP_META.length}
           </span>
         </div>
 
@@ -236,26 +417,53 @@ export default function Onboarding({ onComplete, onSkip }) {
               transition={{ duration: 0.22, ease: "easeOut" }}
             >
               {/* Icon */}
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${current.color}`}>
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${current.color}`}
+              >
                 <current.icon className="w-6 h-6" />
               </div>
 
-              <h2 className="text-xl font-bold text-dark dark:text-white">{current.title}</h2>
-              <p className="text-sm text-muted dark:text-gray-400 mt-1">{current.subtitle}</p>
+              <h2 className="text-xl font-bold text-dark dark:text-white">
+                {current.title}
+              </h2>
+              <p className="text-sm text-muted dark:text-gray-400 mt-1">
+                {current.subtitle}
+              </p>
 
-              {current.content}
+              {step === 0 && (
+                <CompanyInfoStep data={companyData} onChange={setCompanyData} />
+              )}
+              {step === 1 && (
+                <InviteTeamStep invites={invites} onChange={setInvites} />
+              )}
+              {step === 2 && (
+                <ConnectIntegrationStep
+                  connected={connectedCRMs}
+                  onConnect={handleConnectCRM}
+                />
+              )}
+              {step === 3 && (
+                <CreateRuleStep rules={rules} onChange={setRules} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
 
         {/* Step dots */}
         <div className="flex justify-center gap-1.5 pb-4">
-          {STEPS.map((_, i) => (
+          {STEP_META.map((_, i) => (
             <button
               key={i}
-              onClick={() => { setDirection(i > step ? 1 : -1); setStep(i); }}
+              onClick={() => {
+                setDirection(i > step ? 1 : -1);
+                setStep(i);
+              }}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                i === step ? "bg-primary w-4" : "bg-gray-300 dark:bg-gray-600"
+                i === step
+                  ? "bg-primary w-4"
+                  : i < step
+                    ? "bg-primary/50"
+                    : "bg-gray-300 dark:bg-gray-600"
               }`}
             />
           ))}
@@ -265,7 +473,7 @@ export default function Onboarding({ onComplete, onSkip }) {
         <div className="px-6 pb-6 flex items-center justify-between gap-3">
           <button
             onClick={goPrev}
-            disabled={step === 0}
+            disabled={step === 0 || saving}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -273,10 +481,22 @@ export default function Onboarding({ onComplete, onSkip }) {
           </button>
           <button
             onClick={goNext}
-            className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors active:scale-95"
+            disabled={saving}
+            className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors active:scale-95 disabled:opacity-70"
           >
-            {isLast ? "Go to Dashboard" : "Next"}
-            {!isLast && <ArrowRight className="w-4 h-4" />}
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving…
+              </>
+            ) : isLast ? (
+              "Go to Dashboard"
+            ) : (
+              <>
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </div>
       </div>

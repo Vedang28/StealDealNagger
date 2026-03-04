@@ -127,6 +127,14 @@ const login = async ({ email, password }) => {
     throw new AppError("Account is deactivated", 403);
   }
 
+  // Auto-accept pending invites on first login
+  if (user.inviteStatus === "pending") {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { inviteStatus: "accepted" },
+    });
+  }
+
   const tokens = generateTokens(user);
 
   return {

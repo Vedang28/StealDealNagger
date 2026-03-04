@@ -1,15 +1,19 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const analyticsController = require('../controllers/analyticsController');
-const { authenticate } = require('../middleware/auth');
+const analyticsController = require("../controllers/analyticsController");
+const { authenticate } = require("../middleware/auth");
 
 router.use(authenticate);
 
-router.get('/pipeline', analyticsController.pipeline);
-router.get('/trends', analyticsController.trends);
-router.get('/reps', analyticsController.reps);
-router.get('/stages', analyticsController.stages);
-router.get('/velocity', analyticsController.velocity);
-router.get('/heatmap', analyticsController.heatmap);
+router.get("/pipeline", analyticsController.pipeline);
+router.get("/trends", analyticsController.trends);
+router.get("/reps", analyticsController.reps);
+router.get("/stages", analyticsController.stages);
+router.get("/velocity", analyticsController.velocity);
+router.get("/heatmap", analyticsController.heatmap);
+router.get("/revenue-at-risk", analyticsController.revenueAtRisk);
+router.get("/recovery-rate", analyticsController.recoveryRate);
+router.get("/leaderboard", analyticsController.leaderboard);
+router.get("/overview", analyticsController.overview);
 
 module.exports = router;

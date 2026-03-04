@@ -52,8 +52,12 @@ export const analyticsAPI = {
   trends: (params) => api.get("/analytics/trends", { params }),
   reps: () => api.get("/analytics/reps"),
   stages: () => api.get("/analytics/stages"),
-  velocity: () => api.get("/analytics/velocity"),
+  velocity: (params) => api.get("/analytics/velocity", { params }),
   heatmap: () => api.get("/analytics/heatmap"),
+  revenueAtRisk: () => api.get("/analytics/revenue-at-risk"),
+  recoveryRate: () => api.get("/analytics/recovery-rate"),
+  leaderboard: () => api.get("/analytics/leaderboard"),
+  overview: () => api.get("/analytics/overview"),
 };
 
 // ─── Notifications ────────────────────────────────
@@ -61,6 +65,8 @@ export const notificationsAPI = {
   list: (params) => api.get("/notifications", { params }),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
   markAllRead: () => api.post("/notifications/read-all"),
+  archive: (id) => api.patch(`/notifications/${id}/archive`),
+  unreadCount: () => api.get("/notifications/unread-count"),
 };
 
 // ─── Rules ───────────────────────────────────────
@@ -75,6 +81,7 @@ export const rulesAPI = {
 export const teamAPI = {
   getTeam: () => api.get("/team"),
   updateTeam: (data) => api.patch("/team", data),
+  deleteTeam: () => api.delete("/team"),
   getMembers: () => api.get("/team/members"),
   inviteUser: (data) => api.post("/team/members", data),
   updateRole: (userId, role) => api.patch(`/team/members/${userId}`, { role }),
@@ -87,7 +94,12 @@ export const teamAPI = {
 // ─── Integrations ─────────────────────────────────
 export const integrationsAPI = {
   getAll: () => api.get("/integrations"),
-  connect: (provider, config) => api.post(`/integrations/${provider}/connect`, config ?? {}),
+  getAuthUrl: (provider, redirectUri) =>
+    api.get(`/integrations/${provider}/auth-url`, {
+      params: { redirect_uri: redirectUri },
+    }),
+  connect: (provider, config) =>
+    api.post(`/integrations/${provider}/connect`, config ?? {}),
   disconnect: (provider) => api.delete(`/integrations/${provider}`),
 };
 

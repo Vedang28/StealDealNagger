@@ -1,8 +1,11 @@
-const notificationService = require('../services/notificationService');
+const notificationService = require("../services/notificationService");
 
 const list = async (req, res, next) => {
   try {
-    const result = await notificationService.getNotifications(req.user.teamId, req.query);
+    const result = await notificationService.getNotifications(
+      req.user.teamId,
+      req.query,
+    );
     res.json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -11,7 +14,10 @@ const list = async (req, res, next) => {
 
 const markRead = async (req, res, next) => {
   try {
-    const notification = await notificationService.markAsRead(req.params.id, req.user.userId);
+    const notification = await notificationService.markAsRead(
+      req.params.id,
+      req.user.userId,
+    );
     res.json({ success: true, data: notification });
   } catch (error) {
     next(error);
@@ -27,4 +33,28 @@ const markAllRead = async (req, res, next) => {
   }
 };
 
-module.exports = { list, markRead, markAllRead };
+const archive = async (req, res, next) => {
+  try {
+    const notification = await notificationService.archiveNotification(
+      req.params.id,
+      req.user.userId,
+    );
+    res.json({ success: true, data: notification });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const unreadCount = async (req, res, next) => {
+  try {
+    const result = await notificationService.getUnreadCount(
+      req.user.teamId,
+      req.user.userId,
+    );
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { list, markRead, markAllRead, archive, unreadCount };
