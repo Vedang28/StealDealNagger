@@ -31,4 +31,18 @@ process.on("SIGTERM", async () => {
   process.exit(0);
 });
 
+process.on("uncaughtException", (err) => {
+  // Don't crash on Redis/Bull connection errors
+  if (
+    err.name === "MaxRetriesPerRequestError" ||
+    err.message?.includes("redis") ||
+    err.message?.includes("ECONNREFUSED")
+  ) {
+    logger.error(`Non-fatal connection error suppressed: ${err.message}`);
+    return;
+  }
+  logger.error("Uncaught exception:", err);
+  process.exit(1);
+});
+
 start();

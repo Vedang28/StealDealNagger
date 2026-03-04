@@ -7,51 +7,102 @@
  * Alternatively, migrate to Vercel Cron Jobs + a stateless staleness endpoint in Phase 5.
  */
 
-const Bull = require('bull');
-const config = require('../config');
-const logger = require('../config/logger');
+const Bull = require("bull");
+const config = require("../config");
+const logger = require("../config/logger");
 
 let stalenessQueue = null;
 
 const initQueues = () => {
-  if (!config.redis.url) {
-    logger.warn('REDIS_URL not configured — skipping queue initialization');
+  if (!config.redis.url || config.redis.url === "redis://localhost:6379") {
+    // Check if Redis is actually reachable before initializing
+    const net = require("net");
+    const url = new URL(config.redis.url || "redis://localhost:6379");
+    const socket = net.createConnection({
+      host: url.hostname,
+      port: url.port || 6379,
+      timeout: 2000,
+    });
+
+    socket.on("connect", () => {
+      socket.destroy();
+      _startQueues();
+    });
+
+    socket.on("error", () => {
+      socket.destroy();
+      logger.warn(
+        "Redis not reachable — skipping queue initialization. Staleness checks will only run via manual API trigger.",
+      );
+    });
+
+    socket.on("timeout", () => {
+      socket.destroy();
+      logger.warn(
+        "Redis connection timed out — skipping queue initialization.",
+      );
+    });
+
     return;
   }
 
+  _startQueues();
+};
+
+const _startQueues = () => {
   try {
-    stalenessQueue = new Bull('staleness-check', config.redis.url, {
+    stalenessQueue = new Bull("staleness-check", config.redis.url, {
       defaultJobOptions: {
-        removeOnComplete: 10, // Keep last 10 completed jobs
-        removeOnFail: 20,     // Keep last 20 failed jobs for debugging
+        removeOnComplete: 10,
+        removeOnFail: 20,
+      },
+      redis: {
+        maxRetriesPerRequest: 3,
+        retryStrategy(times) {
+          if (times > 3) return null;
+          return Math.min(times * 200, 2000);
+        },
       },
     });
 
     // Process staleness check jobs
     stalenessQueue.process(async (job) => {
-      // Lazy-require to avoid circular deps at module load time
-      const stalenessService = require('../services/stalenessService');
+      const stalenessService = require("../services/stalenessService");
       const teamId = job.data.teamId || null;
       return stalenessService.runStalenessCheck(teamId);
     });
 
-    // Schedule recurring staleness check every 15 minutes
-    stalenessQueue.add(
-      { source: 'cron' },
-      { repeat: { cron: '*/15 * * * *' } }
-    );
-
-    stalenessQueue.on('completed', (job, result) => {
-      logger.info('Staleness queue job completed', { jobId: job.id, result });
+    stalenessQueue.on("completed", (job, result) => {
+      logger.info("Staleness queue job completed", { jobId: job.id, result });
     });
 
-    stalenessQueue.on('failed', (job, err) => {
-      logger.error('Staleness queue job failed', { jobId: job.id, error: err.message });
+    stalenessQueue.on("failed", (job, err) => {
+      logger.error("Staleness queue job failed", {
+        jobId: job.id,
+        error: err.message,
+      });
     });
 
-    logger.info('Bull queues initialized — staleness check scheduled every 15 minutes');
+    stalenessQueue.on("error", (err) => {
+      logger.error(`Bull queue error (non-fatal): ${err.message}`);
+    });
+
+    // Wait for Redis connection to be ready before scheduling the cron job
+    stalenessQueue.isReady().then(() => {
+      stalenessQueue.add(
+        { source: "cron" },
+        { repeat: { cron: "*/15 * * * *" } },
+      );
+      logger.info(
+        "Bull queues initialized — staleness check scheduled every 15 minutes",
+      );
+    }).catch((err) => {
+      logger.error(`Bull queue ready failed (non-fatal): ${err.message}`);
+      stalenessQueue = null;
+    });
   } catch (err) {
-    logger.error(`Failed to initialize queues: ${err.message}`);
+    logger.error(`Failed to initialize queues (non-fatal): ${err.message}`);
+    stalenessQueue = null;
   }
 };
 
@@ -60,13 +111,13 @@ const initQueues = () => {
  */
 const enqueueStalenessCheck = async (teamId = null) => {
   if (!stalenessQueue) {
-    throw new Error('Queue not initialized — Redis may be unavailable');
+    throw new Error("Queue not initialized — Redis may be unavailable");
   }
-  return stalenessQueue.add({ teamId, source: 'manual' });
+  return stalenessQueue.add({ teamId, source: "manual" });
 };
 
 const getQueue = (name) => {
-  if (name === 'staleness') return stalenessQueue;
+  if (name === "staleness") return stalenessQueue;
   return null;
 };
 
