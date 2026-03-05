@@ -1,5 +1,6 @@
 const prisma = require("../config/prisma");
 const { AppError } = require("../middleware/errorHandler");
+const activityService = require("./activityService");
 
 const createDeal = async (teamId, data) => {
   // Check for duplicate CRM deal
@@ -33,6 +34,14 @@ const createDeal = async (teamId, data) => {
       metadata: data.metadata || {},
     },
     include: { owner: { select: { id: true, name: true, email: true } } },
+  });
+
+  // Log activity
+  await activityService.logActivity({
+    dealId: deal.id,
+    type: "note",
+    description: `Deal created: ${deal.name} (${deal.stage})`,
+    performedBy: data.ownerId || null,
   });
 
   return deal;
@@ -115,6 +124,20 @@ const updateDeal = async (teamId, dealId, data) => {
     include: { owner: { select: { id: true, name: true, email: true } } },
   });
 
+  // Log activity for stage changes and other updates
+  const changes = Object.keys(data).filter((k) => k !== "updatedAt");
+  const description =
+    data.stage && data.stage !== existing.stage
+      ? `Stage changed: ${existing.stage} → ${data.stage}`
+      : `Deal updated: ${changes.join(", ")}`;
+
+  await activityService.logActivity({
+    dealId: deal.id,
+    type: data.stage && data.stage !== existing.stage ? "stage_change" : "note",
+    description,
+    performedBy: deal.ownerId || null,
+  });
+
   return deal;
 };
 
@@ -137,6 +160,14 @@ const snoozeDeal = async (teamId, dealId, { snoozedUntil, snoozeReason }) => {
     include: { owner: { select: { id: true, name: true, email: true } } },
   });
 
+  // Log snooze activity
+  await activityService.logActivity({
+    dealId: deal.id,
+    type: "note",
+    description: `Deal snoozed until ${new Date(snoozedUntil).toLocaleDateString()}${snoozeReason ? `: ${snoozeReason}` : ""}`,
+    performedBy: deal.ownerId || null,
+  });
+
   return deal;
 };
 
@@ -156,6 +187,14 @@ const unsnoozeDeal = async (teamId, dealId) => {
       snoozeReason: null,
     },
     include: { owner: { select: { id: true, name: true, email: true } } },
+  });
+
+  // Log unsnooze activity
+  await activityService.logActivity({
+    dealId: deal.id,
+    type: "note",
+    description: "Deal unsnoozed — staleness monitoring resumed",
+    performedBy: deal.ownerId || null,
   });
 
   return deal;

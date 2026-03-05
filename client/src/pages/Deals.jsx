@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { dealsAPI, teamAPI } from "../services/api";
+import { dealsAPI, teamAPI, importAPI } from "../services/api";
 import { useToast } from "../context/ToastContext";
 import StatusBadge from "../components/StatusBadge";
 import { SkeletonTable } from "../components/Skeleton";
 import DealSlideOver from "../components/DealSlideOver";
 import PageWrapper from "../components/PageWrapper";
 import EmptyState from "../components/EmptyState";
+import ImportModal from "../components/ImportModal";
 import {
   Briefcase,
   Search,
@@ -24,6 +25,7 @@ import {
   X,
   UserRoundX,
   Users,
+  Upload,
 } from "lucide-react";
 
 export default function Deals() {
@@ -43,6 +45,9 @@ export default function Deals() {
   const [bulkLoading, setBulkLoading] = useState(false);
   const [showReassign, setShowReassign] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
+
+  // Import modal
+  const [showImport, setShowImport] = useState(false);
 
   // Filters from URL
   const page = Number(searchParams.get("page")) || 1;
@@ -244,13 +249,22 @@ export default function Deals() {
               {pagination.total ?? 0} deals in pipeline
             </p>
           </div>
-          <Link
-            to="/deals/new"
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
-          >
-            <Plus className="w-4 h-4" />
-            New Deal
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImport(true)}
+              className="flex items-center gap-1.5 border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-dark dark:text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
+            >
+              <Upload className="w-4 h-4" />
+              Import CSV
+            </button>
+            <Link
+              to="/deals/new"
+              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              New Deal
+            </Link>
+          </div>
         </div>
 
         {/* Filters */}
@@ -615,6 +629,17 @@ export default function Deals() {
           dealId={selectedDealId}
           onClose={() => setSelectedDealId(null)}
           onUpdate={loadDeals}
+        />
+
+        {/* Import Modal */}
+        <ImportModal
+          isOpen={showImport}
+          onClose={() => setShowImport(false)}
+          onImport={async (file) => {
+            const res = await importAPI.uploadCSV(file);
+            loadDeals();
+            return res.data.data;
+          }}
         />
       </div>
     </PageWrapper>

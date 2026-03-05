@@ -10,6 +10,8 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const stalenessRoutes = require("./routes/stalenessRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const integrationRoutes = require("./routes/integrationRoutes");
+const importRoutes = require("./routes/importRoutes");
+const webhookRoutes = require("./routes/webhookRoutes");
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/staleness", stalenessRoutes);
 app.use("/api/v1", teamRoutes);
 app.use("/api/v1/integrations", integrationRoutes);
+app.use("/api/v1/import", importRoutes);
+app.use("/api/v1/webhooks", webhookRoutes);
 
 // 404 handler
 app.use((req, res) => {

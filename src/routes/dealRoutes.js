@@ -22,6 +22,10 @@ router.get("/:id", dealController.getById);
 router.patch("/:id", validate(updateDealSchema), dealController.update);
 router.delete("/:id", dealController.remove);
 
+// Activities
+router.get("/:id/activities", dealController.getActivities);
+router.post("/:id/activities", dealController.addNote);
+
 // Snooze
 router.post("/:id/snooze", validate(snoozeDealSchema), dealController.snooze);
 router.delete("/:id/snooze", dealController.unsnooze);

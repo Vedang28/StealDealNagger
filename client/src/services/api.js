@@ -101,6 +101,27 @@ export const integrationsAPI = {
   connect: (provider, config) =>
     api.post(`/integrations/${provider}/connect`, config ?? {}),
   disconnect: (provider) => api.delete(`/integrations/${provider}`),
+  sync: (provider) => api.post(`/integrations/${provider}/sync`),
+  triggerDigest: () => api.post("/integrations/email/digest"),
+};
+
+// ─── Activities ───────────────────────────────────
+export const activitiesAPI = {
+  list: (dealId, params) => api.get(`/deals/${dealId}/activities`, { params }),
+  addNote: (dealId, description) =>
+    api.post(`/deals/${dealId}/activities`, { description }),
+};
+
+// ─── Import ───────────────────────────────────────
+export const importAPI = {
+  uploadCSV: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post("/import/csv", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+  getHistory: (params) => api.get("/import/history", { params }),
 };
 
 export default api;

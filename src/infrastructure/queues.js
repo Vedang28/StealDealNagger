@@ -12,6 +12,7 @@ const config = require("../config");
 const logger = require("../config/logger");
 
 let stalenessQueue = null;
+let digestQueue = null;
 
 const initQueues = () => {
   if (!config.redis.url || config.redis.url === "redis://localhost:6379") {
@@ -103,6 +104,42 @@ const _startQueues = () => {
         logger.error(`Bull queue ready failed (non-fatal): ${err.message}`);
         stalenessQueue = null;
       });
+
+    // ── Email Digest Queue ────────────────────────────────────────────────
+    digestQueue = new Bull("email-digest", config.redis.url, {
+      defaultJobOptions: {
+        removeOnComplete: 5,
+        removeOnFail: 10,
+      },
+    });
+
+    digestQueue.process(async () => {
+      const emailService = require("../services/emailService");
+      return emailService.runAllDigests();
+    });
+
+    digestQueue.on("completed", (job, result) => {
+      logger.info("Digest queue job completed", { jobId: job.id, result });
+    });
+
+    digestQueue.on("failed", (job, err) => {
+      logger.error("Digest queue job failed", {
+        jobId: job.id,
+        error: err.message,
+      });
+    });
+
+    digestQueue
+      .isReady()
+      .then(() => {
+        // Run daily at 9:00 AM UTC (teams can configure their own digestTime)
+        digestQueue.add({ source: "cron" }, { repeat: { cron: "0 9 * * *" } });
+        logger.info("Email digest queue scheduled — daily at 9:00 AM UTC");
+      })
+      .catch((err) => {
+        logger.error(`Digest queue ready failed (non-fatal): ${err.message}`);
+        digestQueue = null;
+      });
   } catch (err) {
     logger.error(`Failed to initialize queues (non-fatal): ${err.message}`);
     stalenessQueue = null;
@@ -121,6 +158,7 @@ const enqueueStalenessCheck = async (teamId = null) => {
 
 const getQueue = (name) => {
   if (name === "staleness") return stalenessQueue;
+  if (name === "digest") return digestQueue;
   return null;
 };
 

@@ -5,6 +5,8 @@ const { AppError } = require("../middleware/errorHandler");
  * Create a notification record in the DB.
  * Deduplicates: skips if the same deal+user+type notification already
  * exists within the last 24 hours (prevents re-alerting on every cron tick).
+ *
+ * After creation, attempts Slack dispatch if the team has Slack connected.
  */
 const createNotification = async ({
   dealId,
@@ -40,6 +42,16 @@ const createNotification = async ({
       suggestedAction,
     },
   });
+
+  // Attempt Slack dispatch asynchronously (non-blocking)
+  try {
+    const slackService = require("./slackService");
+    slackService.dispatchNotification(notification).catch(() => {
+      // Slack dispatch failures are logged inside slackService
+    });
+  } catch {
+    // slackService not available — skip
+  }
 
   return notification;
 };

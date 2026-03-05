@@ -130,7 +130,26 @@ export default function Integrations() {
   const handleOAuthAuthorize = async () => {
     setOauthStep(2);
     try {
-      // Simulate the OAuth token exchange (server-side connect)
+      // Try to get real OAuth URL from backend first
+      let oauthUrl = null;
+      try {
+        const redirectUri = `${window.location.origin}/integrations`;
+        const res = await integrationsAPI.getAuthUrl(
+          oauthProvider.id,
+          redirectUri,
+        );
+        oauthUrl = res.data?.data?.url;
+      } catch {
+        // No real OAuth URL — fall back to simulated connect
+      }
+
+      if (oauthUrl) {
+        // Real OAuth: redirect to provider
+        window.location.href = oauthUrl;
+        return;
+      }
+
+      // Simulated OAuth fallback for demo/dev
       await new Promise((r) => setTimeout(r, 1800));
       await integrationsAPI.connect(oauthProvider.id, {
         scope:
@@ -173,6 +192,19 @@ export default function Integrations() {
     } finally {
       setDisconnecting(null);
       setShowDisconnectModal(null);
+    }
+  };
+
+  const handleSync = async (providerId) => {
+    try {
+      const res = await integrationsAPI.sync(providerId);
+      const data = res.data?.data;
+      toast.success(`Synced ${data?.synced ?? 0} deals from ${providerId}`);
+      await loadIntegrations();
+    } catch (err) {
+      toast.error(
+        err.response?.data?.error?.message || `Failed to sync ${providerId}`,
+      );
     }
   };
 
@@ -223,6 +255,7 @@ export default function Integrations() {
                 isAdmin={isAdmin}
                 onConnect={() => handleConnect(provider)}
                 onDisconnect={() => setShowDisconnectModal(provider.id)}
+                onSync={handleSync}
               />
             ))}
           </div>
@@ -242,6 +275,7 @@ export default function Integrations() {
                 isAdmin={isAdmin}
                 onConnect={() => handleConnect(provider)}
                 onDisconnect={() => setShowDisconnectModal(provider.id)}
+                onSync={handleSync}
               />
             ))}
           </div>
@@ -438,9 +472,20 @@ function IntegrationCard({
   isAdmin,
   onConnect,
   onDisconnect,
+  onSync,
 }) {
   const connected = status?.connected ?? false;
   const lastSync = status?.lastSyncAt;
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      await onSync(provider.id);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   return (
     <div
@@ -488,6 +533,18 @@ function IntegrationCard({
               </span>
             )}
           </div>
+          {isAdmin && provider.category === "crm" && (
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="w-full py-1.5 flex items-center justify-center gap-1.5 border border-primary/30 text-primary rounded-lg text-xs font-medium hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`}
+              />
+              {syncing ? "Syncing…" : "Sync Now"}
+            </button>
+          )}
           {isAdmin && (
             <button
               onClick={onDisconnect}

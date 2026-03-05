@@ -158,6 +158,7 @@ export default function Analytics() {
   const [dateRange, setDateRange] = useState(30);
   const [velocityRange, setVelocityRange] = useState(30);
   const [leaderboardPeriod, setLeaderboardPeriod] = useState("all");
+  const [hoverCell, setHoverCell] = useState(null);
 
   const loadTrends = useCallback((days) => {
     analyticsAPI
@@ -365,7 +366,6 @@ export default function Analytics() {
         ),
       )
     : 1;
-  const [hoverCell, setHoverCell] = useState(null);
 
   return (
     <PageWrapper>

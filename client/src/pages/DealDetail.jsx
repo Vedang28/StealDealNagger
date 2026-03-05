@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { dealsAPI } from "../services/api";
+import { dealsAPI, activitiesAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PageWrapper from "../components/PageWrapper";
@@ -19,6 +19,11 @@ import {
   AlertCircle,
   X,
   ExternalLink,
+  Send,
+  MessageSquare,
+  GitCommit,
+  ArrowRightLeft,
+  StickyNote,
 } from "lucide-react";
 
 export default function DealDetail() {
@@ -35,9 +40,19 @@ export default function DealDetail() {
   const [editData, setEditData] = useState({});
   const [saving, setSaving] = useState(false);
 
+  // Activity timeline
+  const [activities, setActivities] = useState([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  const [noteText, setNoteText] = useState("");
+  const [addingNote, setAddingNote] = useState(false);
+
   useEffect(() => {
     loadDeal();
   }, [id]);
+
+  useEffect(() => {
+    if (deal) loadActivities();
+  }, [deal?.id]);
 
   const loadDeal = async () => {
     try {
@@ -47,6 +62,33 @@ export default function DealDetail() {
       console.error("Failed to load deal", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadActivities = async () => {
+    setActivitiesLoading(true);
+    try {
+      const res = await activitiesAPI.list(id, { limit: 50 });
+      setActivities(res.data.data?.activities || res.data.data || []);
+    } catch (err) {
+      console.error("Failed to load activities", err);
+    } finally {
+      setActivitiesLoading(false);
+    }
+  };
+
+  const handleAddNote = async (e) => {
+    e.preventDefault();
+    if (!noteText.trim()) return;
+    setAddingNote(true);
+    try {
+      await activitiesAPI.addNote(id, noteText.trim());
+      setNoteText("");
+      loadActivities();
+    } catch (err) {
+      alert("Failed to add note");
+    } finally {
+      setAddingNote(false);
     }
   };
 
@@ -285,27 +327,81 @@ export default function DealDetail() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm">
               <h3 className="font-semibold text-dark dark:text-white mb-4 flex items-center gap-2">
-                <Activity className="w-4 h-4 text-primary" /> Recent Activity
+                <Activity className="w-4 h-4 text-primary" /> Activity Timeline
               </h3>
-              {deal.activities?.length > 0 ? (
-                <div className="space-y-4">
-                  {deal.activities.map((act, i) => (
-                    <div key={i} className="flex gap-3 relative">
-                      <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                      <div>
-                        <p className="text-sm text-dark dark:text-white">
-                          {act.type}: {act.description || "—"}
-                        </p>
-                        <p className="text-xs text-muted dark:text-gray-400 mt-0.5">
-                          {formatDateTime(act.performedAt || act.createdAt)}
-                        </p>
+
+              {/* Add Note Form */}
+              <form onSubmit={handleAddNote} className="flex gap-2 mb-5">
+                <input
+                  type="text"
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="Add a note..."
+                  className="flex-1 px-3 py-2 rounded-lg border border-border dark:border-gray-600 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary/30 focus:border-primary transition placeholder-gray-400"
+                />
+                <button
+                  type="submit"
+                  disabled={addingNote || !noteText.trim()}
+                  className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 active:scale-95 shrink-0"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  {addingNote ? "Adding…" : "Add Note"}
+                </button>
+              </form>
+
+              {activitiesLoading ? (
+                <p className="text-sm text-muted dark:text-gray-400 py-4 text-center animate-pulse">
+                  Loading activities…
+                </p>
+              ) : activities.length > 0 ? (
+                <div className="space-y-3">
+                  {activities.map((act, i) => {
+                    const iconMap = {
+                      note: <StickyNote className="w-3.5 h-3.5" />,
+                      stage_change: <ArrowRightLeft className="w-3.5 h-3.5" />,
+                      crm_sync: <GitCommit className="w-3.5 h-3.5" />,
+                    };
+                    const colorMap = {
+                      note: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+                      stage_change:
+                        "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
+                      crm_sync:
+                        "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400",
+                    };
+                    const icon = iconMap[act.type] || (
+                      <MessageSquare className="w-3.5 h-3.5" />
+                    );
+                    const color =
+                      colorMap[act.type] ||
+                      "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400";
+                    return (
+                      <div key={act.id || i} className="flex gap-3 items-start">
+                        <div
+                          className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${color}`}
+                        >
+                          {icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-dark dark:text-white">
+                            <span className="font-medium capitalize">
+                              {act.type?.replace("_", " ")}
+                            </span>
+                            {act.description ? ` — ${act.description}` : ""}
+                          </p>
+                          <p className="text-xs text-muted dark:text-gray-400 mt-0.5">
+                            {formatDateTime(act.performedAt || act.createdAt)}
+                            {act.performer?.name
+                              ? ` · ${act.performer.name}`
+                              : ""}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-sm text-muted dark:text-gray-400 py-4 text-center">
-                  No recent activity
+                  No activity yet — add a note to get started
                 </p>
               )}
             </div>

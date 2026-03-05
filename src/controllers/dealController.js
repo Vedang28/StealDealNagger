@@ -1,4 +1,5 @@
 const dealService = require("../services/dealService");
+const activityService = require("../services/activityService");
 
 const create = async (req, res, next) => {
   try {
@@ -80,6 +81,40 @@ const stats = async (req, res, next) => {
   }
 };
 
+const getActivities = async (req, res, next) => {
+  try {
+    const result = await activityService.getActivities(
+      req.params.id,
+      req.query,
+    );
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const addNote = async (req, res, next) => {
+  try {
+    const { description } = req.body;
+    if (!description) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          error: { message: "Description is required" },
+        });
+    }
+    const activity = await activityService.createNote(
+      req.params.id,
+      req.user.id,
+      description,
+    );
+    res.status(201).json({ success: true, data: activity });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   list,
@@ -89,4 +124,6 @@ module.exports = {
   unsnooze,
   remove,
   stats,
+  getActivities,
+  addNote,
 };

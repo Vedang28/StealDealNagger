@@ -1,4 +1,6 @@
 const integrationService = require("../services/integrationService");
+const crmSyncService = require("../services/crmSyncService");
+const emailService = require("../services/emailService");
 
 const getAll = async (req, res, next) => {
   try {
@@ -59,12 +61,10 @@ const handleCallback = async (req, res, next) => {
     const { code, state } = req.query;
 
     if (!code || !state) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: { message: "Missing code or state parameter" },
-        });
+      return res.status(400).json({
+        success: false,
+        error: { message: "Missing code or state parameter" },
+      });
     }
 
     const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/integrations/${provider}/callback`;
@@ -88,4 +88,31 @@ const handleCallback = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, connect, disconnect, getAuthUrl, handleCallback };
+const syncCRM = async (req, res, next) => {
+  try {
+    const { provider } = req.params;
+    const result = await crmSyncService.syncDeals(req.user.teamId, provider);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const triggerDigest = async (req, res, next) => {
+  try {
+    const result = await emailService.sendDigest(req.user.teamId);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getAll,
+  connect,
+  disconnect,
+  getAuthUrl,
+  handleCallback,
+  syncCRM,
+  triggerDigest,
+};

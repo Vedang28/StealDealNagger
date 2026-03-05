@@ -26,4 +26,18 @@ router.delete(
   integrationController.disconnect,
 );
 
+// CRM sync trigger
+router.post(
+  "/:provider/sync",
+  authorize("admin", "manager"),
+  integrationController.syncCRM,
+);
+
+// Manual digest trigger
+router.post(
+  "/email/digest",
+  authorize("admin"),
+  integrationController.triggerDigest,
+);
+
 module.exports = router;
