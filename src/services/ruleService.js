@@ -121,14 +121,30 @@ const deleteRule = async (teamId, ruleId) => {
  * Find the best-matching active rule for a deal's stage.
  * First tries exact pipeline match, then falls back to 'default' pipeline.
  */
+const STAGE_FALLBACKS = {
+  qualification: 'Discovery',
+  qualifying: 'Discovery',
+};
+
 const matchRuleForDeal = async (teamId, stage, pipeline = 'default') => {
+  // Case-insensitive match so "discovery" matches rule for "Discovery", etc.
   let rule = await prisma.rule.findFirst({
-    where: { teamId, pipeline, stage, isActive: true },
+    where: { teamId, pipeline, stage: { equals: stage, mode: 'insensitive' }, isActive: true },
   });
+
+  // Fallback: "Qualification" → use Discovery rules
+  if (!rule) {
+    const fallback = STAGE_FALLBACKS[stage.toLowerCase()];
+    if (fallback) {
+      rule = await prisma.rule.findFirst({
+        where: { teamId, pipeline, stage: { equals: fallback, mode: 'insensitive' }, isActive: true },
+      });
+    }
+  }
 
   if (!rule && pipeline !== 'default') {
     rule = await prisma.rule.findFirst({
-      where: { teamId, pipeline: 'default', stage, isActive: true },
+      where: { teamId, pipeline: 'default', stage: { equals: stage, mode: 'insensitive' }, isActive: true },
     });
   }
 

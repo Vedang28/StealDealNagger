@@ -56,7 +56,7 @@ const listDeals = async (teamId, query) => {
   const where = { teamId, isActive: true };
 
   if (status) where.stalenessStatus = status;
-  if (stage) where.stage = stage;
+  if (stage) where.stage = { equals: stage, mode: 'insensitive' };
   if (ownerId) where.ownerId = ownerId;
   if (search) {
     where.name = { contains: search, mode: "insensitive" };
