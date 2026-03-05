@@ -85,7 +85,13 @@ const COLUMN_ALIASES = {
 // ---------------------------------------------------------------------------
 // Stage helpers  (our DB stores title-case: Discovery, Proposal, …)
 // ---------------------------------------------------------------------------
-const VALID_STAGES = ["Discovery", "Qualification", "Proposal", "Negotiation", "Closing"];
+const VALID_STAGES = [
+  "Discovery",
+  "Qualification",
+  "Proposal",
+  "Negotiation",
+  "Closing",
+];
 
 const STAGE_MAP = {
   discovery: "Discovery",
@@ -291,11 +297,11 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
 
       if (existing) {
         const updateData = {
-            stage,
-            amount,
-            lastActivityAt,
-            contactName: contactName || existing.contactName,
-            contactEmail: contactEmail || existing.contactEmail,
+          stage,
+          amount,
+          lastActivityAt,
+          contactName: contactName || existing.contactName,
+          contactEmail: contactEmail || existing.contactEmail,
         };
         if (daysStale !== null) updateData.daysStale = daysStale;
         if (stalenessStatus) updateData.stalenessStatus = stalenessStatus;
@@ -308,21 +314,21 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
         const crmDealId = `csv-${Date.now()}-${i}`;
 
         const createData = {
-            teamId,
-            crmDealId,
-            crmSource: "csv",
-            name,
-            stage,
-            amount,
-            currency,
-            contactName,
-            contactEmail,
-            lastActivityAt,
-            ownerId: userId,
-            metadata: {
-              importedBy: userId,
-              importedAt: new Date().toISOString(),
-            },
+          teamId,
+          crmDealId,
+          crmSource: "csv",
+          name,
+          stage,
+          amount,
+          currency,
+          contactName,
+          contactEmail,
+          lastActivityAt,
+          ownerId: userId,
+          metadata: {
+            importedBy: userId,
+            importedAt: new Date().toISOString(),
+          },
         };
         if (daysStale !== null) createData.daysStale = daysStale;
         if (stalenessStatus) createData.stalenessStatus = stalenessStatus;
