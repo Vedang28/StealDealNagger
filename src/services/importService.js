@@ -20,7 +20,19 @@ const COLUMN_ALIASES = {
   "pipeline stage": "stage",
   "deal stage": "stage",
   pipeline: "stage",
-  status: "stage", // many CSVs label the pipeline column "STATUS"
+
+  // Staleness status
+  status: "stalenessStatus",
+  "staleness status": "stalenessStatus",
+  staleness: "stalenessStatus",
+  health: "stalenessStatus",
+
+  // Days stale
+  "days stale": "daysStale",
+  days_stale: "daysStale",
+  daysstale: "daysStale",
+  stale: "daysStale",
+  "stale days": "daysStale",
 
   // Value / Amount
   value: "amount",
@@ -71,22 +83,22 @@ const COLUMN_ALIASES = {
 };
 
 // ---------------------------------------------------------------------------
-// Stage helpers  (our DB stores lowercase: discovery, proposal, …)
+// Stage helpers  (our DB stores title-case: Discovery, Proposal, …)
 // ---------------------------------------------------------------------------
-const VALID_STAGES = ["discovery", "proposal", "negotiation", "closing"];
+const VALID_STAGES = ["Discovery", "Qualification", "Proposal", "Negotiation", "Closing"];
 
 const STAGE_MAP = {
-  qualification: "discovery",
-  qualifying: "discovery",
-  discovery: "discovery",
-  demo: "discovery",
-  proposal: "proposal",
-  negotiation: "negotiation",
-  negotiating: "negotiation",
-  closing: "closing",
-  "closed won": "closing",
-  "closed lost": "closing",
-  close: "closing",
+  discovery: "Discovery",
+  qualification: "Qualification",
+  qualifying: "Qualification",
+  demo: "Discovery",
+  proposal: "Proposal",
+  negotiation: "Negotiation",
+  negotiating: "Negotiation",
+  closing: "Closing",
+  "closed won": "Closing",
+  "closed lost": "Closing",
+  close: "Closing",
 };
 
 // ---------------------------------------------------------------------------
@@ -108,7 +120,9 @@ function normalizeHeaders(headers) {
 // ---------------------------------------------------------------------------
 function parseValue(raw) {
   if (raw === null || raw === undefined) return 0;
-  let cleaned = String(raw).replace(/[$,\s]/g, "").trim();
+  let cleaned = String(raw)
+    .replace(/[$,\s]/g, "")
+    .trim();
   if (cleaned === "") return 0;
 
   if (/^\d+(\.\d+)?[kK]$/.test(cleaned)) {
@@ -126,13 +140,36 @@ function parseValue(raw) {
 // Utility: normalise stage string → one of our valid enum values
 // ---------------------------------------------------------------------------
 function normalizeStage(raw) {
-  if (!raw) return "discovery";
+  if (!raw) return "Discovery";
   const cleaned = raw.toLowerCase().trim();
 
-  if (VALID_STAGES.includes(cleaned)) return cleaned;
   if (STAGE_MAP[cleaned]) return STAGE_MAP[cleaned];
 
-  return "discovery"; // safe default
+  // Title-case the input if it matches a valid stage (case-insensitive)
+  const titleCase = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  if (VALID_STAGES.includes(titleCase)) return titleCase;
+
+  return titleCase || "Discovery"; // preserve the original value title-cased
+}
+
+// ---------------------------------------------------------------------------
+// Utility: parse "2d", "3 days", "10" → integer days
+// ---------------------------------------------------------------------------
+function parseDaysStale(raw) {
+  if (raw === null || raw === undefined) return null;
+  const str = String(raw).trim();
+  const match = str.match(/^(\d+)/);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+// ---------------------------------------------------------------------------
+// Utility: normalise staleness status string → one of our valid values
+// ---------------------------------------------------------------------------
+function normalizeStalenessStatus(raw) {
+  if (!raw) return null;
+  const cleaned = raw.toLowerCase().trim();
+  const valid = ["healthy", "warning", "stale", "critical"];
+  return valid.includes(cleaned) ? cleaned : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -195,7 +232,9 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
   const headers = Object.keys(records[0]);
   const headerMap = normalizeHeaders(headers);
 
-  logger.info(`CSV Import — detected column mapping: ${JSON.stringify(headerMap)}`);
+  logger.info(
+    `CSV Import — detected column mapping: ${JSON.stringify(headerMap)}`,
+  );
 
   // Make sure we can detect a name column
   const hasNameCol = Object.values(headerMap).includes("name");
@@ -207,7 +246,12 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
     );
   }
 
-  const results = { total: records.length, imported: 0, skipped: 0, errors: [] };
+  const results = {
+    total: records.length,
+    imported: 0,
+    skipped: 0,
+    errors: [],
+  };
 
   for (let i = 0; i < records.length; i++) {
     const raw = records[i];
@@ -236,6 +280,8 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
     const lastActivityAt = parseDate(row.lastActivityAt) || new Date();
     const contactName = row.contactName || null;
     const contactEmail = row.contactEmail || null;
+    const daysStale = parseDaysStale(row.daysStale);
+    const stalenessStatus = normalizeStalenessStatus(row.stalenessStatus);
 
     try {
       // Check for existing deal with same name in this team (upsert logic)
@@ -244,22 +290,24 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
       });
 
       if (existing) {
-        await prisma.deal.update({
-          where: { id: existing.id },
-          data: {
+        const updateData = {
             stage,
             amount,
             lastActivityAt,
             contactName: contactName || existing.contactName,
             contactEmail: contactEmail || existing.contactEmail,
-          },
+        };
+        if (daysStale !== null) updateData.daysStale = daysStale;
+        if (stalenessStatus) updateData.stalenessStatus = stalenessStatus;
+        await prisma.deal.update({
+          where: { id: existing.id },
+          data: updateData,
         });
         results.imported++;
       } else {
         const crmDealId = `csv-${Date.now()}-${i}`;
 
-        await prisma.deal.create({
-          data: {
+        const createData = {
             teamId,
             crmDealId,
             crmSource: "csv",
@@ -275,8 +323,10 @@ const importFromCSV = async (teamId, csvBuffer, userId) => {
               importedBy: userId,
               importedAt: new Date().toISOString(),
             },
-          },
-        });
+        };
+        if (daysStale !== null) createData.daysStale = daysStale;
+        if (stalenessStatus) createData.stalenessStatus = stalenessStatus;
+        await prisma.deal.create({ data: createData });
         results.imported++;
       }
     } catch (err) {
