@@ -153,4 +153,33 @@ const login = async ({ email, password }) => {
   };
 };
 
-module.exports = { register, login };
+const refreshAccessToken = async (refreshTokenStr) => {
+  if (!refreshTokenStr) {
+    throw new AppError("Refresh token is required", 400);
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshTokenStr, config.jwt.refreshSecret);
+  } catch {
+    throw new AppError("Invalid or expired refresh token", 401);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+    include: { team: true },
+  });
+
+  if (!user || !user.isActive) {
+    throw new AppError("User not found or deactivated", 401);
+  }
+
+  const tokens = generateTokens(user);
+
+  return {
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+  };
+};
+
+module.exports = { register, login, refreshAccessToken };

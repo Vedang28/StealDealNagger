@@ -10,6 +10,7 @@ const {
 
 router.post("/register", validate(registerSchema), authController.register);
 router.post("/login", validate(loginSchema), authController.login);
+router.post("/refresh", authController.refreshToken);
 
 // ─── OAuth callbacks (no auth — browser redirect from provider) ─────────────
 router.get("/hubspot/callback", authController.hubspotCallback);

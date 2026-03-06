@@ -18,8 +18,8 @@ const { encrypt, decrypt } = require("../config/encryptionUtils");
 const ensureValidToken = async (integration) => {
   if (!integration.accessToken) {
     throw new AppError(
-      `No access token for ${integration.provider}. Please reconnect.`,
-      401,
+      `No access token for ${integration.provider}. Please reconnect via Integrations page.`,
+      400,
     );
   }
 
@@ -31,7 +31,7 @@ const ensureValidToken = async (integration) => {
     if (!integration.refreshToken) {
       throw new AppError(
         `Token expired for ${integration.provider} and no refresh token available. Please reconnect.`,
-        401,
+        400,
       );
     }
 

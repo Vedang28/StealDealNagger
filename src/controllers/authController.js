@@ -24,7 +24,9 @@ const login = async (req, res, next) => {
 
 const hubspotAuth = async (req, res, next) => {
   try {
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/auth/hubspot/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/auth/hubspot/callback`;
     const { url } = integrationService.getAuthUrl(
       req.user.teamId,
       "hubspot",
@@ -46,7 +48,9 @@ const hubspotCallback = async (req, res, next) => {
       });
     }
 
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/auth/hubspot/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/auth/hubspot/callback`;
     await integrationService.handleCallback(
       "hubspot",
       code,
@@ -68,7 +72,9 @@ const hubspotCallback = async (req, res, next) => {
 
 const slackAuth = async (req, res, next) => {
   try {
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/auth/slack/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/auth/slack/callback`;
     const { url } = integrationService.getAuthUrl(
       req.user.teamId,
       "slack",
@@ -90,7 +96,9 @@ const slackCallback = async (req, res, next) => {
       });
     }
 
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/auth/slack/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/auth/slack/callback`;
     await integrationService.handleCallback("slack", code, state, redirectUri);
 
     res.redirect(
@@ -108,7 +116,9 @@ const slackCallback = async (req, res, next) => {
 const initiateOAuth = async (req, res, next) => {
   try {
     const { provider } = req.params;
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/integrations/${provider}/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/integrations/${provider}/callback`;
     const { url } = integrationService.getAuthUrl(
       req.user.teamId,
       provider,
@@ -120,9 +130,20 @@ const initiateOAuth = async (req, res, next) => {
   }
 };
 
+const refreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken: token } = req.body;
+    const result = await authService.refreshAccessToken(token);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
+  refreshToken,
   hubspotAuth,
   hubspotCallback,
   slackAuth,

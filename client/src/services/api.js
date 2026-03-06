@@ -14,16 +14,83 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 → redirect to login
+// Handle 401 → attempt token refresh, then retry; logout only if refresh fails
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) =>
+    error ? prom.reject(error) : prom.resolve(token),
+  );
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("team");
-      window.location.href = "/login";
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Only attempt refresh for 401s that aren't already retries
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // Skip refresh for login/register endpoints
+      if (
+        originalRequest.url?.includes("/auth/login") ||
+        originalRequest.url?.includes("/auth/register")
+      ) {
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        isRefreshing = false;
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("team");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
+      try {
+        const res = await api.post("/auth/refresh", { refreshToken });
+        const newToken = res.data?.data?.accessToken;
+        if (newToken) {
+          localStorage.setItem("accessToken", newToken);
+          if (res.data?.data?.refreshToken) {
+            localStorage.setItem("refreshToken", res.data.data.refreshToken);
+          }
+          api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+          processQueue(null, newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        }
+        throw new Error("No token in refresh response");
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("team");
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   },
 );
@@ -94,10 +161,7 @@ export const teamAPI = {
 // ─── Integrations ─────────────────────────────────
 export const integrationsAPI = {
   getAll: () => api.get("/integrations"),
-  getAuthUrl: (provider, redirectUri) =>
-    api.get(`/integrations/${provider}/auth-url`, {
-      params: { redirect_uri: redirectUri },
-    }),
+  getAuthUrl: (provider) => api.get(`/integrations/${provider}/auth-url`),
   connect: (provider, config) =>
     api.post(`/integrations/${provider}/connect`, config ?? {}),
   disconnect: (provider) => api.delete(`/integrations/${provider}`),

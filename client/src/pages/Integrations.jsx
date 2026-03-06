@@ -133,11 +133,7 @@ export default function Integrations() {
       // Try to get real OAuth URL from backend first
       let oauthUrl = null;
       try {
-        const redirectUri = `${window.location.origin}/integrations`;
-        const res = await integrationsAPI.getAuthUrl(
-          oauthProvider.id,
-          redirectUri,
-        );
+        const res = await integrationsAPI.getAuthUrl(oauthProvider.id);
         oauthUrl = res.data?.data?.url;
       } catch {
         // No real OAuth URL — fall back to simulated connect

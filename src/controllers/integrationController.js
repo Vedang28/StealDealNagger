@@ -41,9 +41,11 @@ const disconnect = async (req, res, next) => {
 const getAuthUrl = async (req, res, next) => {
   try {
     const { provider } = req.params;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
     const redirectUri =
       req.query.redirect_uri ||
-      `${req.protocol}://${req.get("host")}/api/v1/integrations/${provider}/callback`;
+      `${baseUrl}/api/v1/integrations/${provider}/callback`;
     const result = integrationService.getAuthUrl(
       req.user.teamId,
       provider,
@@ -67,7 +69,9 @@ const handleCallback = async (req, res, next) => {
       });
     }
 
-    const redirectUri = `${req.protocol}://${req.get("host")}/api/v1/integrations/${provider}/callback`;
+    const baseUrl =
+      process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+    const redirectUri = `${baseUrl}/api/v1/integrations/${provider}/callback`;
     const integration = await integrationService.handleCallback(
       provider,
       code,
