@@ -154,6 +154,7 @@ model Integration {
   accessToken   String?   @map("access_token")
   refreshToken  String?   @map("refresh_token")
   tokenExpiresAt DateTime? @map("token_expires_at")
+  scope         String?   @map("scope")
   webhookUrl    String?   @map("webhook_url")
   config        Json      @default("{}") @db.JsonB
   status        String    @default("active") // active | expired | revoked | error

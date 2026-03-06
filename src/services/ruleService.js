@@ -1,5 +1,5 @@
-const prisma = require('../config/prisma');
-const { AppError } = require('../middleware/errorHandler');
+const prisma = require("../config/prisma");
+const { AppError } = require("../middleware/errorHandler");
 
 const listRules = async (teamId, query = {}) => {
   const where = { teamId };
@@ -10,7 +10,7 @@ const listRules = async (teamId, query = {}) => {
 
   const rules = await prisma.rule.findMany({
     where,
-    orderBy: [{ pipeline: 'asc' }, { stage: 'asc' }],
+    orderBy: [{ pipeline: "asc" }, { stage: "asc" }],
   });
 
   return rules;
@@ -22,21 +22,27 @@ const getRuleById = async (teamId, ruleId) => {
   });
 
   if (!rule) {
-    throw new AppError('Rule not found', 404);
+    throw new AppError("Rule not found", 404);
   }
 
   return rule;
 };
 
 const createRule = async (teamId, data) => {
-  const pipeline = data.pipeline || 'default';
+  const pipeline = data.pipeline || "default";
 
   // Validate threshold ordering
   if (data.staleAfterDays >= data.escalateAfterDays) {
-    throw new AppError('escalateAfterDays must be greater than staleAfterDays', 400);
+    throw new AppError(
+      "escalateAfterDays must be greater than staleAfterDays",
+      400,
+    );
   }
   if (data.escalateAfterDays >= data.criticalAfterDays) {
-    throw new AppError('criticalAfterDays must be greater than escalateAfterDays', 400);
+    throw new AppError(
+      "criticalAfterDays must be greater than escalateAfterDays",
+      400,
+    );
   }
 
   // Check for duplicate active rule for this stage in the pipeline
@@ -47,7 +53,7 @@ const createRule = async (teamId, data) => {
   if (existing) {
     throw new AppError(
       `An active rule for stage "${data.stage}" already exists in pipeline "${pipeline}"`,
-      409
+      409,
     );
   }
 
@@ -60,7 +66,7 @@ const createRule = async (teamId, data) => {
       escalateAfterDays: data.escalateAfterDays,
       criticalAfterDays: data.criticalAfterDays,
       minDealAmount: data.minDealAmount || 0,
-      notifyChannels: data.notifyChannels || ['slack'],
+      notifyChannels: data.notifyChannels || ["slack"],
       suggestedAction: data.suggestedAction || null,
     },
   });
@@ -74,7 +80,7 @@ const updateRule = async (teamId, ruleId, data) => {
   });
 
   if (!existing) {
-    throw new AppError('Rule not found', 404);
+    throw new AppError("Rule not found", 404);
   }
 
   // Merge proposed changes with existing values for threshold validation
@@ -85,10 +91,16 @@ const updateRule = async (teamId, ruleId, data) => {
   };
 
   if (merged.staleAfterDays >= merged.escalateAfterDays) {
-    throw new AppError('escalateAfterDays must be greater than staleAfterDays', 400);
+    throw new AppError(
+      "escalateAfterDays must be greater than staleAfterDays",
+      400,
+    );
   }
   if (merged.escalateAfterDays >= merged.criticalAfterDays) {
-    throw new AppError('criticalAfterDays must be greater than escalateAfterDays', 400);
+    throw new AppError(
+      "criticalAfterDays must be greater than escalateAfterDays",
+      400,
+    );
   }
 
   const rule = await prisma.rule.update({
@@ -105,7 +117,7 @@ const deleteRule = async (teamId, ruleId) => {
   });
 
   if (!existing) {
-    throw new AppError('Rule not found', 404);
+    throw new AppError("Rule not found", 404);
   }
 
   // Soft delete — keeps history intact
@@ -114,7 +126,7 @@ const deleteRule = async (teamId, ruleId) => {
     data: { isActive: false },
   });
 
-  return { message: 'Rule deleted successfully' };
+  return { message: "Rule deleted successfully" };
 };
 
 /**
@@ -122,14 +134,19 @@ const deleteRule = async (teamId, ruleId) => {
  * First tries exact pipeline match, then falls back to 'default' pipeline.
  */
 const STAGE_FALLBACKS = {
-  qualification: 'Discovery',
-  qualifying: 'Discovery',
+  qualification: "Discovery",
+  qualifying: "Discovery",
 };
 
-const matchRuleForDeal = async (teamId, stage, pipeline = 'default') => {
+const matchRuleForDeal = async (teamId, stage, pipeline = "default") => {
   // Case-insensitive match so "discovery" matches rule for "Discovery", etc.
   let rule = await prisma.rule.findFirst({
-    where: { teamId, pipeline, stage: { equals: stage, mode: 'insensitive' }, isActive: true },
+    where: {
+      teamId,
+      pipeline,
+      stage: { equals: stage, mode: "insensitive" },
+      isActive: true,
+    },
   });
 
   // Fallback: "Qualification" → use Discovery rules
@@ -137,14 +154,24 @@ const matchRuleForDeal = async (teamId, stage, pipeline = 'default') => {
     const fallback = STAGE_FALLBACKS[stage.toLowerCase()];
     if (fallback) {
       rule = await prisma.rule.findFirst({
-        where: { teamId, pipeline, stage: { equals: fallback, mode: 'insensitive' }, isActive: true },
+        where: {
+          teamId,
+          pipeline,
+          stage: { equals: fallback, mode: "insensitive" },
+          isActive: true,
+        },
       });
     }
   }
 
-  if (!rule && pipeline !== 'default') {
+  if (!rule && pipeline !== "default") {
     rule = await prisma.rule.findFirst({
-      where: { teamId, pipeline: 'default', stage: { equals: stage, mode: 'insensitive' }, isActive: true },
+      where: {
+        teamId,
+        pipeline: "default",
+        stage: { equals: stage, mode: "insensitive" },
+        isActive: true,
+      },
     });
   }
 

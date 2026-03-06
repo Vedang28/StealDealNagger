@@ -1,6 +1,7 @@
 const prisma = require("../config/prisma");
 const { AppError } = require("../middleware/errorHandler");
 const logger = require("../config/logger");
+const { decrypt } = require("../config/encryptionUtils");
 
 /**
  * Slack Service — sends Block Kit messages via the Slack API
@@ -243,7 +244,7 @@ const dispatchNotification = async (notification) => {
       return null;
     }
 
-    const botToken = slackIntegration.accessToken;
+    const botToken = decrypt(slackIntegration.accessToken);
 
     // Get the target user's Slack ID
     const user = await prisma.user.findUnique({

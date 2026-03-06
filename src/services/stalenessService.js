@@ -1,7 +1,8 @@
-const prisma = require('../config/prisma');
-const { matchRuleForDeal } = require('./ruleService');
-const notificationService = require('./notificationService');
-const logger = require('../config/logger');
+const prisma = require("../config/prisma");
+const { matchRuleForDeal } = require("./ruleService");
+const notificationService = require("./notificationService");
+const crmSyncService = require("./crmSyncService");
+const logger = require("../config/logger");
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -20,29 +21,38 @@ const daysSince = (date) => {
  *  critical → daysSinceLastActivity >= criticalAfterDays
  */
 const determineStatus = (daysInactive, rule) => {
-  if (daysInactive >= rule.criticalAfterDays) return 'critical';
-  if (daysInactive >= rule.escalateAfterDays) return 'stale';
-  if (daysInactive >= rule.staleAfterDays) return 'warning';
-  return 'healthy';
+  if (daysInactive >= rule.criticalAfterDays) return "critical";
+  if (daysInactive >= rule.escalateAfterDays) return "stale";
+  if (daysInactive >= rule.staleAfterDays) return "warning";
+  return "healthy";
 };
 
 // ─── Notification dispatch on status transition ────────────────────────────────
 
-const notifyOnTransition = async (deal, prevStatus, newStatus, rule, daysInactive) => {
+const notifyOnTransition = async (
+  deal,
+  prevStatus,
+  newStatus,
+  rule,
+  daysInactive,
+) => {
   const usersToNotify = [];
 
   // Always notify the deal owner
   if (deal.ownerId) {
-    const notifType = newStatus === 'stale' || newStatus === 'critical' ? 'escalation' : 'nudge';
+    const notifType =
+      newStatus === "stale" || newStatus === "critical"
+        ? "escalation"
+        : "nudge";
     usersToNotify.push({ userId: deal.ownerId, type: notifType });
   }
 
   // Escalate to managers/admins when deal reaches stale or critical
-  if (newStatus === 'stale' || newStatus === 'critical') {
+  if (newStatus === "stale" || newStatus === "critical") {
     const managers = await prisma.user.findMany({
       where: {
         teamId: deal.teamId,
-        role: { in: ['admin', 'manager'] },
+        role: { in: ["admin", "manager"] },
         isActive: true,
       },
       select: { id: true },
@@ -50,13 +60,13 @@ const notifyOnTransition = async (deal, prevStatus, newStatus, rule, daysInactiv
 
     for (const mgr of managers) {
       if (mgr.id !== deal.ownerId) {
-        usersToNotify.push({ userId: mgr.id, type: 'escalation' });
+        usersToNotify.push({ userId: mgr.id, type: "escalation" });
       }
     }
   }
 
   const message =
-    `Deal "${deal.name}" has been inactive for ${daysInactive} day${daysInactive !== 1 ? 's' : ''} ` +
+    `Deal "${deal.name}" has been inactive for ${daysInactive} day${daysInactive !== 1 ? "s" : ""} ` +
     `(${prevStatus} → ${newStatus})`;
 
   for (const { userId, type } of usersToNotify) {
@@ -64,7 +74,7 @@ const notifyOnTransition = async (deal, prevStatus, newStatus, rule, daysInactiv
       dealId: deal.id,
       userId,
       type,
-      channel: 'slack',
+      channel: "slack",
       message,
       suggestedAction: rule.suggestedAction,
     });
@@ -75,6 +85,23 @@ const notifyOnTransition = async (deal, prevStatus, newStatus, rule, daysInactiv
 
 const processTeam = async (team) => {
   const now = new Date();
+
+  // Sync deals from connected CRM before checking staleness
+  const crmIntegration = await prisma.integration.findFirst({
+    where: { teamId: team.id, category: "crm", status: "active" },
+  });
+
+  if (crmIntegration) {
+    try {
+      await crmSyncService.syncDeals(team.id, crmIntegration.provider);
+      logger.debug(
+        `CRM sync completed for team "${team.name}" (${crmIntegration.provider})`,
+      );
+    } catch (err) {
+      logger.warn(`CRM sync failed for team "${team.name}": ${err.message}`);
+      // Continue with staleness check even if sync fails
+    }
+  }
 
   const deals = await prisma.deal.findMany({
     where: { teamId: team.id, isActive: true },
@@ -153,7 +180,7 @@ const processTeam = async (team) => {
  * Called by the Bull queue cron job every 15 minutes, and via the manual API endpoint.
  */
 const runStalenessCheck = async (teamId = null) => {
-  const label = teamId ? `team ${teamId}` : 'all teams';
+  const label = teamId ? `team ${teamId}` : "all teams";
   logger.info(`Staleness check started for ${label}`);
 
   const teams = await prisma.team.findMany({
@@ -168,11 +195,17 @@ const runStalenessCheck = async (teamId = null) => {
     const result = await processTeam(team);
     totalProcessed += result.processed;
     totalTransitioned += result.transitioned;
-    logger.debug(`Team "${team.name}": ${result.processed} processed, ${result.transitioned} transitioned`);
+    logger.debug(
+      `Team "${team.name}": ${result.processed} processed, ${result.transitioned} transitioned`,
+    );
   }
 
-  const summary = { totalProcessed, totalTransitioned, teamsChecked: teams.length };
-  logger.info('Staleness check complete', summary);
+  const summary = {
+    totalProcessed,
+    totalTransitioned,
+    teamsChecked: teams.length,
+  };
+  logger.info("Staleness check complete", summary);
   return summary;
 };
 

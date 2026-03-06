@@ -1,5 +1,8 @@
 const prisma = require("../config/prisma");
+const jwt = require("jsonwebtoken");
 const { AppError } = require("../middleware/errorHandler");
+const { encrypt } = require("../config/encryptionUtils");
+const config = require("../config");
 
 const SUPPORTED_PROVIDERS = [
   "hubspot",
@@ -37,7 +40,7 @@ const OAUTH_CONFIG = {
   slack: {
     authorizeUrl: "https://slack.com/oauth/v2/authorize",
     tokenUrl: "https://slack.com/api/oauth.v2.access",
-    scopes: ["chat:write", "users:read"],
+    scopes: ["chat:write", "incoming-webhook", "users:read"],
     clientId: process.env.SLACK_CLIENT_ID || "",
     clientSecret: process.env.SLACK_CLIENT_SECRET || "",
   },
@@ -166,10 +169,10 @@ const getAuthUrl = (teamId, provider, redirectUri) => {
     );
   }
 
-  // Encode team context into state so the callback can map it back
-  const state = Buffer.from(JSON.stringify({ teamId, provider })).toString(
-    "base64url",
-  );
+  // Sign team context into state with JWT to prevent CSRF / tampering
+  const state = jwt.sign({ teamId, provider }, config.jwt.secret, {
+    expiresIn: "15m",
+  });
 
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -197,12 +200,12 @@ const handleCallback = async (provider, code, state, redirectUri) => {
     throw new AppError(`Unsupported provider: ${provider}`, 400);
   }
 
-  // Decode state to get teamId
+  // Verify JWT state to get teamId (prevents CSRF and tampering)
   let parsed;
   try {
-    parsed = JSON.parse(Buffer.from(state, "base64url").toString());
+    parsed = jwt.verify(state, config.jwt.secret);
   } catch {
-    throw new AppError("Invalid OAuth state parameter", 400);
+    throw new AppError("Invalid or expired OAuth state parameter", 400);
   }
 
   const { teamId } = parsed;
@@ -237,6 +240,11 @@ const handleCallback = async (provider, code, state, redirectUri) => {
 
   const tokens = await tokenRes.json();
 
+  // Slack returns { ok, access_token, team, incoming_webhook, ... }
+  if (provider === "slack" && tokens.ok === false) {
+    throw new AppError(`Slack OAuth failed: ${tokens.error}`, 502);
+  }
+
   const category = ["hubspot", "salesforce", "pipedrive"].includes(provider)
     ? "crm"
     : "notification";
@@ -245,13 +253,34 @@ const handleCallback = async (provider, code, state, redirectUri) => {
     ? new Date(Date.now() + tokens.expires_in * 1000)
     : null;
 
+  // Encrypt tokens before database storage (AES-256-GCM)
+  const encryptedAccessToken = encrypt(tokens.access_token);
+  const encryptedRefreshToken = encrypt(tokens.refresh_token);
+
+  // Extract Slack-specific fields
+  let webhookUrl = null;
+  let providerConfig = {};
+  let grantedScope = tokens.scope || oauthConfig.scopes.join(" ");
+
+  if (provider === "slack") {
+    webhookUrl = tokens.incoming_webhook?.url || null;
+    providerConfig = {
+      slackTeamId: tokens.team?.id || null,
+      slackTeamName: tokens.team?.name || null,
+      botUserId: tokens.bot_user_id || null,
+    };
+  }
+
   const integration = await prisma.integration.upsert({
     where: { teamId_provider: { teamId, provider } },
     update: {
       status: "active",
-      accessToken: tokens.access_token || null,
-      refreshToken: tokens.refresh_token || null,
+      accessToken: encryptedAccessToken || null,
+      refreshToken: encryptedRefreshToken || null,
       tokenExpiresAt: expiresAt,
+      webhookUrl,
+      scope: grantedScope,
+      config: providerConfig,
       lastSyncAt: new Date(),
       updatedAt: new Date(),
     },
@@ -260,11 +289,13 @@ const handleCallback = async (provider, code, state, redirectUri) => {
       provider,
       category,
       status: "active",
-      accessToken: tokens.access_token || null,
-      refreshToken: tokens.refresh_token || null,
+      accessToken: encryptedAccessToken || null,
+      refreshToken: encryptedRefreshToken || null,
       tokenExpiresAt: expiresAt,
+      webhookUrl,
+      scope: grantedScope,
+      config: providerConfig,
       lastSyncAt: new Date(),
-      config: {},
     },
     select: {
       id: true,

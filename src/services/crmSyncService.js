@@ -2,6 +2,7 @@ const prisma = require("../config/prisma");
 const { AppError } = require("../middleware/errorHandler");
 const logger = require("../config/logger");
 const config = require("../config");
+const { encrypt, decrypt } = require("../config/encryptionUtils");
 
 /**
  * CRM Sync Service — handles fetching deals and activities from connected CRM providers.
@@ -35,10 +36,10 @@ const ensureValidToken = async (integration) => {
     }
 
     const refreshed = await refreshToken(integration);
-    return refreshed.accessToken;
+    return decrypt(refreshed.accessToken);
   }
 
-  return integration.accessToken;
+  return decrypt(integration.accessToken);
 };
 
 /**
@@ -76,7 +77,7 @@ const refreshToken = async (integration) => {
       grant_type: "refresh_token",
       client_id: config.clientId,
       client_secret: config.clientSecret,
-      refresh_token: integration.refreshToken,
+      refresh_token: decrypt(integration.refreshToken),
     });
 
     const res = await fetch(config.tokenUrl, {
@@ -109,8 +110,10 @@ const refreshToken = async (integration) => {
     const updated = await prisma.integration.update({
       where: { id: integration.id },
       data: {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token || integration.refreshToken,
+        accessToken: encrypt(tokens.access_token),
+        refreshToken: tokens.refresh_token
+          ? encrypt(tokens.refresh_token)
+          : integration.refreshToken,
         tokenExpiresAt: expiresAt,
         status: "active",
       },

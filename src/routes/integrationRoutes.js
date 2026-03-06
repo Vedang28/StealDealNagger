@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { authenticate, authorize } = require("../middleware/auth");
 const integrationController = require("../controllers/integrationController");
+const authController = require("../controllers/authController");
 
 // OAuth callback does NOT require auth (browser redirect from provider)
 router.get("/:provider/callback", integrationController.handleCallback);
@@ -10,6 +11,10 @@ router.get("/:provider/callback", integrationController.handleCallback);
 router.use(authenticate);
 
 router.get("/", integrationController.getAll);
+
+// Provider-specific OAuth initiation — redirects browser to consent screen
+router.get("/:provider/auth", authorize("admin"), authController.initiateOAuth);
+
 router.get(
   "/:provider/auth-url",
   authorize("admin"),

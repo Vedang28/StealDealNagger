@@ -1,5 +1,4 @@
 node_modules/
-.env
 dist/
 coverage/
 .DS_Store
@@ -10,3 +9,15 @@ prisma/*.db
 
 /generated/prisma
 .vercel
+
+# ─── Secrets & Credentials ────────────────────────
+# Environment files (contain API keys, tokens, passwords)
+.env
+.env.*
+!.env.example
+
+# Google service account and other credential JSON files
+*-credentials.json
+*-service-account.json
+service-account*.json
+**/credentials/*.json
