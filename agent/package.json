@@ -1,0 +1,13 @@
+{
+  "name": "stale-deal-nagger-ai-designer",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "npx @21st-sdk/cli deploy"
+  },
+  "dependencies": {
+    "@21st-sdk/agent": "latest",
+    "zod": "^3.22.0"
+  }
+}

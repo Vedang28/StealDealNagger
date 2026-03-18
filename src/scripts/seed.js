@@ -41,6 +41,7 @@ async function reset() {
   await prisma.activity.deleteMany({ where: { deal: { teamId: team.id } } });
   await prisma.deal.deleteMany({ where: { teamId: team.id } });
   await prisma.rule.deleteMany({ where: { teamId: team.id } });
+  await prisma.integration.deleteMany({ where: { teamId: team.id } });
   await prisma.user.deleteMany({ where: { teamId: team.id } });
   await prisma.team.delete({ where: { id: team.id } });
 

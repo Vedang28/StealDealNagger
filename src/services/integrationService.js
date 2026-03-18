@@ -157,12 +157,12 @@ const getAuthUrl = (teamId, provider, redirectUri) => {
     throw new AppError(`Unsupported provider: ${provider}`, 400);
   }
 
-  const config = OAUTH_CONFIG[provider];
-  if (!config) {
+  const providerConfig = OAUTH_CONFIG[provider];
+  if (!providerConfig) {
     throw new AppError(`OAuth not configured for ${provider}`, 400);
   }
 
-  if (!config.clientId) {
+  if (!providerConfig.clientId) {
     throw new AppError(
       `OAuth client ID not set for ${provider}. Set the ${provider.toUpperCase()}_CLIENT_ID environment variable.`,
       400,
@@ -175,10 +175,10 @@ const getAuthUrl = (teamId, provider, redirectUri) => {
   });
 
   const params = new URLSearchParams({
-    client_id: config.clientId,
+    client_id: providerConfig.clientId,
     redirect_uri: redirectUri,
     response_type: "code",
-    scope: config.scopes.join(" "),
+    scope: providerConfig.scopes.join(" "),
     state,
   });
 
@@ -188,7 +188,7 @@ const getAuthUrl = (teamId, provider, redirectUri) => {
     params.set("prompt", "consent");
   }
 
-  return { url: `${config.authorizeUrl}?${params.toString()}`, state };
+  return { url: `${providerConfig.authorizeUrl}?${params.toString()}`, state };
 };
 
 /**
