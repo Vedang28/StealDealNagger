@@ -15,7 +15,6 @@ import {
   ExternalLink,
   ShieldCheck,
   ArrowRight,
-  GitBranch,
   MessageSquare,
   Table2,
   Lock,
@@ -37,12 +36,19 @@ const SalesforceIcon = ({ className = "" }) => (
   </svg>
 );
 
+// Pipedrive "p" icon (extracted from official wordmark)
+const PipedriveIcon = ({ className = "" }) => (
+  <svg viewBox="-5 -5 85 125" fill="currentColor" className={className}>
+    <path d="M44.138 23.65c-10.288 0-16.238 4.616-19.108 7.805-.341-2.748-2.154-6.313-9.227-6.313H.443V41.22h6.295c1.065 0 1.408.34 1.408 1.403v73.412h18.31V88.482c0-.744-.015-1.439-.034-2.061 2.86 2.627 8.322 6.243 16.854 6.243 17.896 0 30.408-14.186 30.408-34.504 0-20.64-11.88-34.51-29.546-34.51m-3.72 53.066c-9.857 0-14.335-9.438-14.335-18.182 0-13.773 7.532-18.682 14.58-18.682 8.643 0 14.456 7.452 14.456 18.553 0 12.659-7.39 18.311-14.7 18.311"/>
+  </svg>
+);
+
 // SVG icon components for each provider
 const ProviderIcon = ({ id, className = "" }) => {
   if (id === "hubspot") return <HubSpotIcon className={className} />;
   if (id === "salesforce") return <SalesforceIcon className={className} />;
+  if (id === "pipedrive") return <PipedriveIcon className={className} />;
   const icons = {
-    pipedrive: GitBranch,
     slack: MessageSquare,
     sheets: Table2,
   };
