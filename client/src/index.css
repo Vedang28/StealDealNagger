@@ -65,6 +65,42 @@ body {
   color: var(--color-dark);
 }
 
+/* ─── Focus ring ─── */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* ─── Modal backdrop blur ─── */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.dark .modal-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* ─── Sidebar active accent bar ─── */
+.nav-active-bar {
+  position: relative;
+}
+.nav-active-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--color-primary);
+  border-radius: 0 3px 3px 0;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -75,6 +111,12 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
 }
 
 /* ═══════════════════════════════════════════

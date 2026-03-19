@@ -17,9 +17,11 @@ import {
 } from "recharts";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { motion } from "framer-motion";
 import { analyticsAPI } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import PageWrapper from "../components/PageWrapper";
+import PageHeader from "../components/ui/PageHeader";
 import EmptyState from "../components/EmptyState";
 import { SkeletonStatCards, SkeletonTable } from "../components/Skeleton";
 import {
@@ -371,32 +373,22 @@ export default function Analytics() {
     <PageWrapper>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">
-              Analytics
-            </h1>
-            <p className="text-muted dark:text-gray-400 text-sm mt-1">
-              Pipeline health, velocity, and team performance
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 active:scale-95"
-            >
-              <Download className="w-4 h-4" />
-              CSV
-            </button>
-            <button
-              onClick={exportPDF}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors duration-150 active:scale-95"
-            >
-              <FileText className="w-4 h-4" />
-              PDF
-            </button>
-          </div>
-        </div>
+        <PageHeader title="Analytics" description="Pipeline health, velocity, and team performance">
+          <button
+            onClick={exportCSV}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 active:scale-95"
+          >
+            <Download className="w-4 h-4" />
+            CSV
+          </button>
+          <button
+            onClick={exportPDF}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors duration-150 active:scale-95"
+          >
+            <FileText className="w-4 h-4" />
+            PDF
+          </button>
+        </PageHeader>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
@@ -443,9 +435,12 @@ export default function Analytics() {
               color: "text-success",
               bg: "bg-success-light dark:bg-green-900/20",
             },
-          ].map(({ icon: Icon, label, value, color, bg }) => (
-            <div
+          ].map(({ icon: Icon, label, value, color, bg }, index) => (
+            <motion.div
               key={label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
               className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-5 shadow-sm card-hover-lift"
             >
               <div
@@ -459,7 +454,7 @@ export default function Analytics() {
               <p className="text-sm text-muted dark:text-gray-400 mt-0.5">
                 {label}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 

@@ -13,6 +13,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import PageHeader from "../components/ui/PageHeader";
 
 const STAGES = ["Discovery", "Proposal", "Negotiation", "Closing"];
 
@@ -225,43 +226,32 @@ export default function Rules() {
   return (
     <PageWrapper>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">
-              Staleness Rules
-            </h1>
-            <p className="text-muted dark:text-gray-400 text-sm mt-1">
-              Define when deals are flagged per pipeline stage
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPreviewMode((v) => !v)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
-                previewMode
-                  ? "bg-blue-50 text-primary border-blue-200"
-                  : "bg-white dark:bg-gray-800 text-muted dark:text-gray-400 border-border dark:border-gray-700 hover:text-dark dark:hover:text-white"
-              }`}
-            >
-              {previewMode ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-              {previewMode ? "Hide Preview" : "Preview Mode"}
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => setShowResetModal(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Reset to Defaults
-              </button>
+        <PageHeader title="Staleness Rules" description="Define when deals are flagged per pipeline stage">
+          <button
+            onClick={() => setPreviewMode((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
+              previewMode
+                ? "bg-primary/10 text-primary border-primary/30"
+                : "bg-white dark:bg-gray-800 text-muted dark:text-gray-400 border-border dark:border-gray-700 hover:text-dark dark:hover:text-white"
+            }`}
+          >
+            {previewMode ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
             )}
-          </div>
-        </div>
+            {previewMode ? "Hide Preview" : "Preview Mode"}
+          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reset to Defaults
+            </button>
+          )}
+        </PageHeader>
 
         {/* Pipeline visualizer */}
         <div className="overflow-x-auto pb-4">
@@ -285,7 +275,7 @@ export default function Rules() {
                     <div
                       className={`px-4 py-3 rounded-t-xl border-b border-border dark:border-gray-700 flex items-center justify-between ${
                         isEditing
-                          ? "bg-blue-50 dark:bg-blue-900/20"
+                          ? "bg-primary/5 dark:bg-primary/10"
                           : "bg-gray-50/70 dark:bg-gray-700/50"
                       }`}
                     >
@@ -537,7 +527,7 @@ export default function Rules() {
 
         {/* Reset to Defaults modal */}
         {showResetModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">

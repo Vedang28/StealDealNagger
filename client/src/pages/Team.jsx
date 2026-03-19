@@ -18,7 +18,10 @@ import {
   Bell,
   BellOff,
   MessageSquare,
+  Copy,
 } from "lucide-react";
+import PageHeader from "../components/ui/PageHeader";
+import SharedRoleBadge from "../components/ui/RoleBadge";
 
 const ROLE_META = {
   admin: {
@@ -178,29 +181,20 @@ export default function Team() {
   return (
     <PageWrapper>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">
-              Team Management
-            </h1>
-            <p className="text-muted dark:text-gray-400 text-sm mt-1">
-              {activeCount} active member{activeCount !== 1 ? "s" : ""}
-            </p>
-          </div>
+        <PageHeader title="Team Management" description={`${activeCount} active member${activeCount !== 1 ? "s" : ""}`}>
           {canInvite && (
             <button
               onClick={() => {
                 setShowInvite(true);
                 setInviteResult(null);
               }}
-              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
               Invite Member
             </button>
           )}
-        </div>
+        </PageHeader>
 
         {/* Members list */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
@@ -499,7 +493,7 @@ export default function Team() {
 
         {/* Invite modal */}
         {showInvite && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-bold text-dark dark:text-white text-lg">
@@ -532,14 +526,25 @@ export default function Team() {
                       </p>
                     </div>
                   </div>
-                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-4">
-                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-border dark:border-gray-700 rounded-xl p-4 mb-4">
+                    <p className="text-xs font-semibold text-muted dark:text-gray-400 mb-2">
                       Temporary Password
                     </p>
-                    <p className="font-mono text-sm text-amber-900 dark:text-amber-200 break-all">
-                      {inviteResult.tempPassword}
-                    </p>
-                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-2">
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 font-mono text-sm text-dark dark:text-white bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg px-3 py-2 break-all">
+                        {inviteResult.tempPassword}
+                      </code>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(inviteResult.tempPassword);
+                        }}
+                        className="p-2 rounded-lg border border-border dark:border-gray-700 text-muted hover:text-primary hover:bg-primary/5 transition-colors shrink-0"
+                        title="Copy password"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted dark:text-gray-500 mt-2">
                       Share this securely. They can change it in Settings.
                     </p>
                   </div>

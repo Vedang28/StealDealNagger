@@ -8,6 +8,7 @@ import DealSlideOver from "../components/DealSlideOver";
 import PageWrapper from "../components/PageWrapper";
 import EmptyState from "../components/EmptyState";
 import ImportModal from "../components/ImportModal";
+import PageHeader from "../components/ui/PageHeader";
 import {
   Briefcase,
   Search,
@@ -240,32 +241,22 @@ export default function Deals() {
     <PageWrapper>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">
-              Deals
-            </h1>
-            <p className="text-muted dark:text-gray-400 text-sm mt-1">
-              {pagination.total ?? 0} deals in pipeline
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowImport(true)}
-              className="flex items-center gap-1.5 border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-dark dark:text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
-            >
-              <Upload className="w-4 h-4" />
-              Import CSV
-            </button>
-            <Link
-              to="/deals/new"
-              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
-            >
-              <Plus className="w-4 h-4" />
-              New Deal
-            </Link>
-          </div>
-        </div>
+        <PageHeader title="Deals" description={`${pagination.total ?? 0} deals in pipeline`}>
+          <button
+            onClick={() => setShowImport(true)}
+            className="flex items-center gap-1.5 border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-dark dark:text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
+          >
+            <Upload className="w-4 h-4" />
+            Import CSV
+          </button>
+          <Link
+            to="/deals/new"
+            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            New Deal
+          </Link>
+        </PageHeader>
 
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-4 mb-6 shadow-sm">
@@ -412,7 +403,7 @@ export default function Deals() {
                 {deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="px-4 py-4 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600"
+                    className="px-4 py-4 cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 active:bg-gray-100 dark:active:bg-gray-600"
                   >
                     <div className="flex items-start gap-3 mb-2">
                       <button
@@ -500,7 +491,7 @@ export default function Deals() {
                     {deals.map((deal) => (
                       <tr
                         key={deal.id}
-                        className={`hover:bg-gray-50/80 dark:hover:bg-gray-700 transition-colors cursor-pointer ${selected.has(deal.id) ? "bg-primary/5 dark:bg-primary/10" : ""}`}
+                        className={`hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer ${selected.has(deal.id) ? "bg-primary/5 dark:bg-primary/10" : ""}`}
                       >
                         {/* Row checkbox */}
                         <td

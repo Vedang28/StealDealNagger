@@ -13,15 +13,11 @@ import {
   Trash2,
   Check,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
+import PageHeader from "../components/ui/PageHeader";
+import RoleBadge from "../components/ui/RoleBadge";
 
-const ROLE_STYLES = {
-  admin:
-    "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
-  manager:
-    "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
-  rep: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600",
-};
 
 // Common timezones for the dropdown
 const TIMEZONES = [
@@ -180,15 +176,7 @@ export default function Settings() {
   return (
     <PageWrapper>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-dark dark:text-white">
-            Settings
-          </h1>
-          <p className="text-muted dark:text-gray-400 text-sm mt-1">
-            Manage your profile and team configuration
-          </p>
-        </div>
+        <PageHeader title="Settings" description="Manage your profile and team configuration" />
 
         {/* ── Profile ──────────────────────────────────────────────────────────── */}
         <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
@@ -212,14 +200,9 @@ export default function Settings() {
                 {user?.email}
               </p>
             </div>
-            <span
-              className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
-                ROLE_STYLES[user?.role] ?? ROLE_STYLES.rep
-              }`}
-            >
-              <ShieldCheck className="w-3 h-3" />
-              {user?.role}
-            </span>
+            <div className="ml-auto">
+              <RoleBadge role={user?.role} />
+            </div>
           </div>
 
           <form onSubmit={handleSaveProfile} className="space-y-4">
@@ -277,7 +260,7 @@ export default function Settings() {
                 disabled={savingProfile}
                 className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
-                <Check className="w-4 h-4" />
+                {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {savingProfile ? "Saving…" : "Save Profile"}
               </button>
             </div>
@@ -344,7 +327,7 @@ export default function Settings() {
             disabled={savingNotif}
             className="mt-4 flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
           >
-            <Check className="w-4 h-4" />
+            {savingNotif ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             {savingNotif ? "Saving…" : "Save Preferences"}
           </button>
         </section>
@@ -397,7 +380,7 @@ export default function Settings() {
               disabled={savingPw}
               className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
             >
-              <Lock className="w-4 h-4" />
+              {savingPw ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
               {savingPw ? "Changing…" : "Change Password"}
             </button>
           </form>
@@ -486,7 +469,7 @@ export default function Settings() {
                 disabled={savingTeam}
                 className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
-                <Check className="w-4 h-4" />
+                {savingTeam ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {savingTeam ? "Saving…" : "Save Team Settings"}
               </button>
             </form>
@@ -516,7 +499,7 @@ export default function Settings() {
 
         {/* Delete confirmation modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">

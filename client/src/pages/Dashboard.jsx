@@ -26,6 +26,8 @@ import {
   ArrowUpDown,
   ExternalLink,
 } from "lucide-react";
+import PageHeader from "../components/ui/PageHeader";
+import { STATUS_STYLES, CHART_TOOLTIP_STYLE } from "../lib/styles";
 
 const STAGES = ["Discovery", "Proposal", "Negotiation", "Closing"];
 
@@ -38,10 +40,10 @@ const STATUS_BORDER = {
 
 /* ── Stacked-area chart colour mapping ── */
 const STATUS_COLORS = {
-  healthy: "#22c55e",
-  warning: "#f59e0b",
-  stale: "#ef4444",
-  critical: "#dc2626",
+  healthy: STATUS_STYLES.healthy.fill,
+  warning: STATUS_STYLES.warning.fill,
+  stale: STATUS_STYLES.stale.fill,
+  critical: STATUS_STYLES.critical.fill,
 };
 
 export default function Dashboard() {
@@ -189,15 +191,7 @@ export default function Dashboard() {
   return (
     <PageWrapper>
       <div className="px-6 py-8 max-w-none">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-dark dark:text-white">
-            Pipeline
-          </h1>
-          <p className="text-muted dark:text-gray-400 text-sm mt-0.5">
-            {team?.name}
-          </p>
-        </div>
+        <PageHeader title="Pipeline" description={team?.name} />
 
         {/* Stat Cards — with trend arrows + sparklines + pulse */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -309,12 +303,9 @@ export default function Dashboard() {
                   className="text-muted"
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--color-bg-light)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
+                  contentStyle={CHART_TOOLTIP_STYLE.contentStyle}
+                  labelStyle={CHART_TOOLTIP_STYLE.labelStyle}
+                  itemStyle={CHART_TOOLTIP_STYLE.itemStyle}
                 />
                 <Area
                   type="monotone"
@@ -389,7 +380,7 @@ export default function Dashboard() {
                       <button
                         key={deal.id}
                         onClick={() => setSelectedDealId(deal.id)}
-                        className={`w-full text-left bg-white dark:bg-gray-800 rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md transition-shadow cursor-pointer ${
+                        className={`w-full text-left bg-white dark:bg-gray-800 rounded-lg border-l-4 shadow-sm p-3.5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer ${
                           STATUS_BORDER[deal.stalenessStatus] ||
                           "border-l-gray-200"
                         }`}
@@ -469,7 +460,7 @@ export default function Dashboard() {
                     <tr
                       key={deal.id}
                       onClick={() => setSelectedDealId(deal.id)}
-                      className="hover:bg-gray-50/80 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      className="hover:bg-primary/5 dark:hover:bg-primary/5 transition-colors cursor-pointer"
                     >
                       <td className="px-5 py-3.5 text-sm font-medium text-dark dark:text-white">
                         {deal.name}

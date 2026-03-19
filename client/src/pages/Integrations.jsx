@@ -15,19 +15,45 @@ import {
   ExternalLink,
   ShieldCheck,
   ArrowRight,
+  Cloud,
+  GitBranch,
+  MessageSquare,
+  Table2,
+  Lock,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import PageHeader from "../components/ui/PageHeader";
 
-// Provider metadata — logos as colored SVG/emoji, descriptions, categories
+// HubSpot sprocket SVG logo
+const HubSpotIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 512 512" fill="currentColor" className={className}>
+    <path d="M267.4 211.6c-25.1 23.7-40.8 57.3-40.8 94.6 0 37.3 15.7 70.9 40.8 94.6l-100.2 100.2c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l55.6-55.6c-28.7-34.8-46-79.2-46-127.9s17.3-93.1 46-127.9l-55.6-55.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l100.2 100.2zm44.8 0l100.2-100.2c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-55.6 55.6c28.7 34.8 46 79.2 46 127.9s-17.3 93.1-46 127.9l55.6 55.6c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L312.2 469c25.1-23.7 40.8-57.3 40.8-94.6 0-37.3-15.7-70.9-40.8-94.6zM289.8 306.2c0-23.2-18.8-42-42-42s-42 18.8-42 42 18.8 42 42 42 42-18.8 42-42z"/>
+  </svg>
+);
+
+// SVG icon components for each provider
+const ProviderIcon = ({ id, className = "" }) => {
+  if (id === "hubspot") return <HubSpotIcon className={className} />;
+  const icons = {
+    salesforce: Cloud,
+    pipedrive: GitBranch,
+    slack: MessageSquare,
+    sheets: Table2,
+  };
+  const Icon = icons[id] || Plug;
+  return <Icon className={className} />;
+};
+
+// Provider metadata with proper icon styling (no emojis)
 const PROVIDERS = [
   {
     id: "hubspot",
     name: "HubSpot",
     category: "crm",
     description: "Sync deals and activities from your HubSpot CRM pipeline.",
-    color: "text-orange-600",
-    bg: "bg-orange-50 dark:bg-orange-900/20",
-    border: "border-orange-200 dark:border-orange-800",
-    logo: "🟠",
+    iconColor: "text-orange-600 dark:text-orange-400",
+    iconBg: "bg-orange-100 dark:bg-orange-900/30",
+    border: "border-orange-200 dark:border-orange-800/40",
     comingSoon: false,
   },
   {
@@ -35,10 +61,9 @@ const PROVIDERS = [
     name: "Salesforce",
     category: "crm",
     description: "Monitor opportunities in Salesforce Sales Cloud.",
-    color: "text-blue-600",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    border: "border-blue-200 dark:border-blue-800",
-    logo: "☁️",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    iconBg: "bg-blue-100 dark:bg-blue-900/30",
+    border: "border-blue-200 dark:border-blue-800/40",
     comingSoon: true,
   },
   {
@@ -46,10 +71,9 @@ const PROVIDERS = [
     name: "Pipedrive",
     category: "crm",
     description: "Pull deals and activity history from Pipedrive.",
-    color: "text-green-700",
-    bg: "bg-green-50 dark:bg-green-900/20",
-    border: "border-green-200 dark:border-green-800",
-    logo: "🟢",
+    iconColor: "text-green-600 dark:text-green-400",
+    iconBg: "bg-green-100 dark:bg-green-900/30",
+    border: "border-green-200 dark:border-green-800/40",
     comingSoon: true,
   },
   {
@@ -57,10 +81,9 @@ const PROVIDERS = [
     name: "Slack",
     category: "notification",
     description: "Send stale deal nudges directly to reps in Slack.",
-    color: "text-purple-700",
-    bg: "bg-purple-50 dark:bg-purple-900/20",
-    border: "border-purple-200 dark:border-purple-800",
-    logo: "💬",
+    iconColor: "text-purple-600 dark:text-purple-400",
+    iconBg: "bg-purple-100 dark:bg-purple-900/30",
+    border: "border-purple-200 dark:border-purple-800/40",
     comingSoon: false,
   },
   {
@@ -68,10 +91,9 @@ const PROVIDERS = [
     name: "Google Sheets",
     category: "notification",
     description: "Export pipeline reports to a Google Sheet automatically.",
-    color: "text-green-700",
-    bg: "bg-emerald-50 dark:bg-emerald-900/20",
-    border: "border-emerald-200 dark:border-emerald-800",
-    logo: "📊",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
+    border: "border-emerald-200 dark:border-emerald-800/40",
     comingSoon: true,
   },
 ];
@@ -227,15 +249,10 @@ export default function Integrations() {
   return (
     <PageWrapper>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-dark dark:text-white">
-            Integrations
-          </h1>
-          <p className="text-muted dark:text-gray-400 text-sm mt-1">
-            {connectedCount} of {PROVIDERS.length} integrations connected
-          </p>
-        </div>
+        <PageHeader
+          title="Integrations"
+          description={`${connectedCount} of ${PROVIDERS.length} integrations connected`}
+        />
 
         {/* CRM section */}
         <section className="mb-10">
@@ -293,14 +310,16 @@ export default function Integrations() {
 
         {/* OAuth Flow Modal */}
         {oauthProvider && oauthStep > 0 && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
               {/* Modal header */}
               <div
-                className={`px-6 py-4 border-b border-border dark:border-gray-700 flex items-center justify-between ${oauthProvider.bg}`}
+                className={`px-6 py-4 border-b border-border dark:border-gray-700 flex items-center justify-between ${oauthProvider.iconBg}`}
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-2xl">{oauthProvider.logo}</span>
+                  <div className={`w-9 h-9 rounded-lg ${oauthProvider.iconBg} flex items-center justify-center`}>
+                    <ProviderIcon id={oauthProvider.id} className={`w-5 h-5 ${oauthProvider.iconColor}`} />
+                  </div>
                   <div>
                     <h3 className="font-bold text-dark dark:text-white text-sm">
                       Connect {oauthProvider.name}
@@ -421,7 +440,7 @@ export default function Integrations() {
 
         {/* Disconnect confirmation modal */}
         {showDisconnectModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
@@ -484,15 +503,24 @@ function IntegrationCard({
   };
 
   return (
-    <div
-      className={`rounded-xl border-2 bg-white dark:bg-gray-800 p-5 transition-all hover:shadow-sm ${
-        connected ? `${provider.border}` : "border-border dark:border-gray-700"
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`rounded-xl border bg-white dark:bg-gray-800 p-5 transition-all duration-200 hover:shadow-md ${
+        connected
+          ? `${provider.border} shadow-sm`
+          : provider.comingSoon
+            ? "border-border dark:border-gray-700 opacity-75"
+            : "border-border dark:border-gray-700 hover:border-primary/30"
       }`}
     >
       {/* Card header */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">{provider.logo}</span>
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl ${provider.iconBg} flex items-center justify-center`}>
+            <ProviderIcon id={provider.id} className={`w-5 h-5 ${provider.iconColor}`} />
+          </div>
           <div>
             <p className="font-semibold text-dark dark:text-white text-sm">
               {provider.name}
@@ -503,7 +531,15 @@ function IntegrationCard({
           </div>
         </div>
         {connected ? (
-          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+          <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Live
+          </span>
+        ) : provider.comingSoon ? (
+          <span className="flex items-center gap-1 text-xs font-medium text-muted dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+            <Lock className="w-3 h-3" />
+            Soon
+          </span>
         ) : (
           <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />
         )}
@@ -577,6 +613,6 @@ function IntegrationCard({
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

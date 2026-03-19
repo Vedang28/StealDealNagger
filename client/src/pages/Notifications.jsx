@@ -1,42 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { notificationsAPI } from "../services/api";
 import { SkeletonNotifications } from "../components/Skeleton";
 import PageWrapper from "../components/PageWrapper";
 import EmptyState from "../components/EmptyState";
+import PageHeader from "../components/ui/PageHeader";
 import { Archive, Bell, CheckCircle, CheckCheck, Clock } from "lucide-react";
+import { NOTIFICATION_STYLES } from "../lib/styles";
 
 const TYPE_CONFIG = {
-  warning: {
-    label: "Warning",
-    color:
-      "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
-    border: "border-l-warning",
-  },
-  stale: {
-    label: "Stale",
-    color:
-      "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
-    border: "border-l-danger",
-  },
-  critical: {
-    label: "Critical",
-    color:
-      "text-critical bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700",
-    border: "border-l-critical",
-  },
-  nudge: {
-    label: "Nudge",
-    color:
-      "text-warning bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
-    border: "border-l-warning",
-  },
-  escalation: {
-    label: "Escalation",
-    color:
-      "text-danger bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
-    border: "border-l-danger",
-  },
+  warning: { label: "Warning", ...NOTIFICATION_STYLES.warning },
+  stale: { label: "Stale", ...NOTIFICATION_STYLES.stale },
+  critical: { label: "Critical", ...NOTIFICATION_STYLES.critical },
+  nudge: { label: "Nudge", ...NOTIFICATION_STYLES.nudge },
+  escalation: { label: "Escalation", ...NOTIFICATION_STYLES.escalation },
 };
 
 const FILTERS = [
@@ -172,15 +150,7 @@ export default function Notifications() {
     <PageWrapper>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-dark dark:text-white">
-              Notifications
-            </h1>
-            <p className="text-muted dark:text-gray-400 text-sm mt-1">
-              {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
-            </p>
-          </div>
+        <PageHeader title="Notifications" description={unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}>
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}
@@ -191,10 +161,10 @@ export default function Notifications() {
               {markingAll ? "Marking…" : "Mark all read"}
             </button>
           )}
-        </div>
+        </PageHeader>
 
         {/* Type filters */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
+        <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1 scrollbar-hide">
           {FILTERS.map(({ key, label }) => (
             <button
               key={key}
@@ -243,25 +213,31 @@ export default function Notifications() {
                   <div className="flex-1 h-px bg-border dark:bg-gray-700" />
                 </div>
                 <div className="space-y-2">
-                  {items.map((n) => {
+                  {items.map((n, itemIndex) => {
                     const cfg = TYPE_CONFIG[n.type] ?? {
                       label: n.type,
-                      color:
-                        "text-muted bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700",
-                      border: "border-l-gray-300",
+                      bg: "bg-gray-50 dark:bg-gray-800",
+                      text: "text-muted dark:text-gray-400",
+                      dot: "bg-gray-400",
                     };
                     return (
-                      <div
+                      <motion.div
                         key={n.id}
-                        className={`bg-white dark:bg-gray-800 rounded-xl border shadow-sm transition-all ${
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: itemIndex * 0.03 }}
+                        className={`relative bg-white dark:bg-gray-800 rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md ${
                           !n.isRead
-                            ? `border-l-4 ${cfg.border} border-r border-t border-b border-border dark:border-gray-700`
+                            ? "border-border dark:border-gray-700"
                             : "border-border dark:border-gray-700 opacity-60"
                         }`}
                       >
                         <div className="px-5 py-4 flex items-start gap-4">
+                          {!n.isRead && (
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
+                          )}
                           <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border text-xs font-bold mt-0.5 ${cfg.color}`}
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border text-xs font-bold mt-0.5 ${cfg.bg} ${cfg.text}`}
                           >
                             <Bell className="w-4 h-4" />
                           </div>
@@ -294,9 +270,8 @@ export default function Notifications() {
                               </Link>
                             )}
                             <div className="flex items-center gap-3 mt-2">
-                              <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${cfg.color}`}
-                              >
+                              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.bg} ${cfg.text}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
                                 {cfg.label}
                               </span>
                               {!n.isRead && (
@@ -318,7 +293,7 @@ export default function Notifications() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
