@@ -179,10 +179,10 @@ export default function Settings() {
         <PageHeader title="Settings" description="Manage your profile and team configuration" />
 
         {/* ── Profile ──────────────────────────────────────────────────────────── */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
+        <section className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
           <div className="flex items-center gap-2 mb-5">
-            <User className="w-4 h-4 text-muted" />
-            <h2 className="font-semibold text-dark dark:text-white">
+            <User className="w-4 h-4 text-[#888]" />
+            <h2 className="font-semibold text-[#f0ede8]">
               My Profile
             </h2>
           </div>
@@ -193,10 +193,10 @@ export default function Settings() {
               {initials(user?.name)}
             </div>
             <div>
-              <p className="text-base font-semibold text-dark dark:text-white">
+              <p className="text-base font-semibold text-[#f0ede8]">
                 {user?.name}
               </p>
-              <p className="text-sm text-muted dark:text-gray-400">
+              <p className="text-sm text-[#888]">
                 {user?.email}
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function Settings() {
 
           <form onSubmit={handleSaveProfile} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+              <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                 Full Name
               </label>
               <input
@@ -217,25 +217,25 @@ export default function Settings() {
                 onChange={(e) =>
                   setProfileForm({ ...profileForm, name: e.target.value })
                 }
-                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
+                className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+              <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                 Email
               </label>
               <input
                 type="email"
                 value={user?.email ?? ""}
                 disabled
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted bg-gray-50 dark:bg-gray-900 dark:text-gray-500 cursor-not-allowed"
+                className="w-full px-3 py-2.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#555] bg-[#0d0d0d] cursor-not-allowed"
               />
-              <p className="text-xs text-muted dark:text-gray-400 mt-1">
+              <p className="text-xs text-[#888] mt-1">
                 Email cannot be changed.
               </p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+              <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                 Slack User ID <span className="text-gray-400">(optional)</span>
               </label>
               <input
@@ -248,9 +248,9 @@ export default function Settings() {
                   })
                 }
                 placeholder="e.g. U01ABCDE123"
-                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary font-mono"
+                className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c] font-mono"
               />
-              <p className="text-xs text-muted dark:text-gray-400 mt-1">
+              <p className="text-xs text-[#888] mt-1">
                 Used to send you direct Slack nudges.
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function Settings() {
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {savingProfile ? "Saving…" : "Save Profile"}
@@ -268,10 +268,10 @@ export default function Settings() {
         </section>
 
         {/* ── Notification prefs ───────────────────────────────────────────────── */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
+        <section className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
           <div className="flex items-center gap-2 mb-5">
-            <Bell className="w-4 h-4 text-muted" />
-            <h2 className="font-semibold text-dark dark:text-white">
+            <Bell className="w-4 h-4 text-[#888]" />
+            <h2 className="font-semibold text-[#f0ede8]">
               Notification Preferences
             </h2>
           </div>
@@ -291,13 +291,13 @@ export default function Settings() {
             ].map(({ key, label, desc }) => (
               <div
                 key={key}
-                className="flex items-center justify-between py-3 border-b border-border dark:border-gray-700 last:border-0"
+                className="flex items-center justify-between py-3 border-b border-[rgba(255,255,255,0.07)] last:border-0"
               >
                 <div>
-                  <p className="text-sm font-medium text-dark dark:text-white">
+                  <p className="text-sm font-medium text-[#f0ede8]">
                     {label}
                   </p>
-                  <p className="text-xs text-muted dark:text-gray-400">
+                  <p className="text-xs text-[#888]">
                     {desc}
                   </p>
                 </div>
@@ -308,8 +308,8 @@ export default function Settings() {
                   }
                   className={`relative w-11 h-6 rounded-full transition-colors ${
                     notifPrefs[key]
-                      ? "bg-primary"
-                      : "bg-gray-200 dark:bg-gray-600"
+                      ? "bg-[#e8a87c]"
+                      : "bg-[#333]"
                   }`}
                 >
                   <span
@@ -325,7 +325,7 @@ export default function Settings() {
           <button
             onClick={handleSaveNotifPrefs}
             disabled={savingNotif}
-            className="mt-4 flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+            className="mt-4 flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
           >
             {savingNotif ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             {savingNotif ? "Saving…" : "Save Preferences"}
@@ -333,10 +333,10 @@ export default function Settings() {
         </section>
 
         {/* ── Change Password ──────────────────────────────────────────────────── */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
+        <section className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
           <div className="flex items-center gap-2 mb-5">
-            <Lock className="w-4 h-4 text-muted" />
-            <h2 className="font-semibold text-dark dark:text-white">
+            <Lock className="w-4 h-4 text-[#888]" />
+            <h2 className="font-semibold text-[#f0ede8]">
               Change Password
             </h2>
           </div>
@@ -360,7 +360,7 @@ export default function Settings() {
               },
             ].map(({ key, label, placeholder }) => (
               <div key={key}>
-                <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                   {label}
                 </label>
                 <input
@@ -371,14 +371,14 @@ export default function Settings() {
                     setPwForm({ ...pwForm, [key]: e.target.value })
                   }
                   placeholder={placeholder}
-                  className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
+                  className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                 />
               </div>
             ))}
             <button
               type="submit"
               disabled={savingPw}
-              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {savingPw ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
               {savingPw ? "Changing…" : "Change Password"}
@@ -388,20 +388,20 @@ export default function Settings() {
 
         {/* ── Team Settings (admin only) ───────────────────────────────────────── */}
         {isAdmin && (
-          <section className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm p-6">
+          <section className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
             <div className="flex items-center gap-2 mb-5">
-              <Building2 className="w-4 h-4 text-muted" />
-              <h2 className="font-semibold text-dark dark:text-white">
+              <Building2 className="w-4 h-4 text-[#888]" />
+              <h2 className="font-semibold text-[#f0ede8]">
                 Team Settings
               </h2>
-              <span className="ml-auto text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full font-medium">
+              <span className="ml-auto text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full font-medium">
                 Admin only
               </span>
             </div>
 
             <form onSubmit={handleSaveTeam} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                   Team Name
                 </label>
                 <input
@@ -411,24 +411,24 @@ export default function Settings() {
                   onChange={(e) =>
                     setTeamForm({ ...teamForm, name: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
+                  className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                   Team Slug <span className="text-gray-400">(read-only)</span>
                 </label>
                 <input
                   type="text"
                   value={team?.slug ?? ""}
                   disabled
-                  className="w-full px-3 py-2.5 border border-border rounded-lg text-sm text-muted font-mono bg-gray-50 dark:bg-gray-900 dark:text-gray-500 cursor-not-allowed"
+                  className="w-full px-3 py-2.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#555] font-mono bg-[#0d0d0d] cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                   Timezone
                 </label>
                 <select
@@ -436,7 +436,7 @@ export default function Settings() {
                   onChange={(e) =>
                     setTeamForm({ ...teamForm, timezone: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+                  className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                 >
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz}>
@@ -447,7 +447,7 @@ export default function Settings() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                <label className="block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-1">
                   Daily Digest Time
                 </label>
                 <input
@@ -456,9 +456,9 @@ export default function Settings() {
                   onChange={(e) =>
                     setTeamForm({ ...teamForm, digestTime: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary dark:focus:border-primary"
+                  className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                 />
-                <p className="text-xs text-muted dark:text-gray-400 mt-1">
+                <p className="text-xs text-[#888] mt-1">
                   Manager digest email is sent at this time in your team's
                   timezone.
                 </p>
@@ -467,7 +467,7 @@ export default function Settings() {
               <button
                 type="submit"
                 disabled={savingTeam}
-                className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {savingTeam ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {savingTeam ? "Saving…" : "Save Team Settings"}
@@ -478,18 +478,18 @@ export default function Settings() {
 
         {/* ── Danger Zone (admin only) ─────────────────────────────────────────── */}
         {isAdmin && (
-          <section className="bg-white dark:bg-gray-800 rounded-xl border-2 border-red-200 dark:border-red-900 shadow-sm p-6">
+          <section className="bg-[#161616] rounded-xl border-l-4 border-l-[#ef4444] border border-[rgba(255,255,255,0.07)] p-6">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle className="w-4 h-4 text-danger" />
               <h2 className="font-semibold text-danger">Danger Zone</h2>
             </div>
-            <p className="text-sm text-muted dark:text-gray-400 mb-4">
+            <p className="text-sm text-[#888] mb-4">
               Permanently delete this team and all its data. This action cannot
               be undone.
             </p>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-1.5 border-2 border-red-300 text-danger hover:bg-red-50 dark:hover:bg-red-900/20 px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
+              className="flex items-center gap-1.5 border border-[#ef4444] text-[#ef4444] hover:bg-[#ef4444] hover:text-[#0a0a0a] bg-transparent px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               Delete Team
@@ -500,23 +500,23 @@ export default function Settings() {
         {/* Delete confirmation modal */}
         {showDeleteModal && (
           <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="bg-[#161616] rounded-2xl shadow-xl max-w-md w-full p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#ef4444]/10 flex items-center justify-center">
                   <Trash2 className="w-5 h-5 text-danger" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-dark dark:text-white">
+                  <h3 className="font-bold text-[#f0ede8]">
                     Delete Team?
                   </h3>
-                  <p className="text-sm text-muted dark:text-gray-400">
+                  <p className="text-sm text-[#888]">
                     This will delete all data permanently.
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-muted dark:text-gray-400 mb-3">
+              <p className="text-sm text-[#888] mb-3">
                 Type{" "}
-                <span className="font-mono font-bold text-dark dark:text-white">
+                <span className="font-mono font-bold text-[#f0ede8]">
                   {team?.slug}
                 </span>{" "}
                 to confirm:
@@ -526,7 +526,7 @@ export default function Settings() {
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
                 placeholder={team?.slug}
-                className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 mb-4 font-mono"
+                className="w-full px-3 py-2.5 bg-[#111] border border-[rgba(255,255,255,0.1)] text-[#f0ede8] placeholder:text-[#555] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ef4444]/20 focus:border-[#ef4444] mb-4 font-mono"
               />
               <div className="flex gap-2">
                 <button
@@ -548,7 +548,7 @@ export default function Settings() {
                       setDeleting(false);
                     }
                   }}
-                  className="flex-1 bg-danger hover:bg-red-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex-1 border border-[#ef4444] text-[#ef4444] hover:bg-[#ef4444] hover:text-[#0a0a0a] bg-transparent py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {deleting ? "Deleting…" : "Yes, Delete Everything"}
                 </button>
@@ -557,7 +557,7 @@ export default function Settings() {
                     setShowDeleteModal(false);
                     setDeleteConfirm("");
                   }}
-                  className="flex-1 border border-border dark:border-gray-600 py-2.5 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex-1 border border-[rgba(255,255,255,0.1)] py-2.5 rounded-lg text-sm text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                 >
                   Cancel
                 </button>

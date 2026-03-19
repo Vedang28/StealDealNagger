@@ -139,8 +139,8 @@ export default function Notifications() {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <div className="h-7 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+          <div className="h-7 w-36 bg-[#1e1e1e] rounded animate-pulse" />
+          <div className="h-4 w-24 bg-[#1e1e1e] rounded animate-pulse mt-2" />
         </div>
         <SkeletonNotifications />
       </div>
@@ -155,7 +155,7 @@ export default function Notifications() {
             <button
               onClick={handleMarkAllRead}
               disabled={markingAll}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] text-sm font-medium text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors disabled:opacity-50 active:scale-95"
             >
               <CheckCheck className="w-4 h-4" />
               {markingAll ? "Marking…" : "Mark all read"}
@@ -171,8 +171,8 @@ export default function Notifications() {
               onClick={() => setTypeFilter(key)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 ${
                 typeFilter === key
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-[#e8a87c]/10 text-[#e8a87c]"
+                  : "bg-[#1e1e1e] text-[#888] hover:bg-[rgba(255,255,255,0.06)]"
               }`}
             >
               {label}
@@ -187,7 +187,7 @@ export default function Notifications() {
 
         {/* Content */}
         {filtered.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
             <EmptyState
               variant="notifications"
               title={
@@ -207,18 +207,18 @@ export default function Notifications() {
             {groups.map(({ label, items }) => (
               <div key={label}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted dark:text-gray-500">
+                  <span className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                     {label}
                   </span>
-                  <div className="flex-1 h-px bg-border dark:bg-gray-700" />
+                  <div className="flex-1 h-px bg-[rgba(255,255,255,0.05)]" />
                 </div>
                 <div className="space-y-2">
                   {items.map((n, itemIndex) => {
                     const cfg = TYPE_CONFIG[n.type] ?? {
                       label: n.type,
-                      bg: "bg-gray-50 dark:bg-gray-800",
-                      text: "text-muted dark:text-gray-400",
-                      dot: "bg-gray-400",
+                      bg: "bg-[#1e1e1e]",
+                      text: "text-[#888]",
+                      dot: "bg-[#888]",
                     };
                     return (
                       <motion.div
@@ -226,15 +226,15 @@ export default function Notifications() {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: itemIndex * 0.03 }}
-                        className={`relative bg-white dark:bg-gray-800 rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md ${
+                        className={`relative bg-[#161616] rounded-xl border transition-all duration-200 ${
                           !n.isRead
-                            ? "border-border dark:border-gray-700"
-                            : "border-border dark:border-gray-700 opacity-60"
+                            ? "border-[rgba(255,255,255,0.07)]"
+                            : "border-[rgba(255,255,255,0.07)] opacity-60"
                         }`}
                       >
                         <div className="px-5 py-4 flex items-start gap-4">
                           {!n.isRead && (
-                            <span className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#e8a87c]" />
                           )}
                           <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border text-xs font-bold mt-0.5 ${cfg.bg} ${cfg.text}`}
@@ -244,11 +244,11 @@ export default function Notifications() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <p
-                                className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-dark dark:text-white" : "text-muted dark:text-gray-400"}`}
+                                className={`text-sm leading-snug ${!n.isRead ? "font-semibold text-[#f0ede8]" : "text-[#888]"}`}
                               >
                                 {n.message}
                               </p>
-                              <span className="flex items-center gap-1 text-xs text-muted dark:text-gray-500 shrink-0 mt-0.5">
+                              <span className="flex items-center gap-1 text-xs text-[#555] shrink-0 mt-0.5">
                                 <Clock className="w-3 h-3" />
                                 {formatTime(n.createdAt)}
                               </span>
@@ -256,7 +256,7 @@ export default function Notifications() {
                             {n.deal && (
                               <Link
                                 to={`/deals/${n.deal.id}`}
-                                className="mt-1 text-xs text-primary hover:text-primary-hover font-medium inline-flex items-center gap-1"
+                                className="mt-1 text-xs text-[#e8a87c] hover:text-[#f0c8a0] font-medium inline-flex items-center gap-1"
                               >
                                 {n.deal.name}
                               </Link>
@@ -264,7 +264,7 @@ export default function Notifications() {
                             {n.dealId && !n.deal && (
                               <Link
                                 to={`/deals/${n.dealId}`}
-                                className="mt-1 text-xs text-primary hover:text-primary-hover font-medium inline-flex items-center gap-1"
+                                className="mt-1 text-xs text-[#e8a87c] hover:text-[#f0c8a0] font-medium inline-flex items-center gap-1"
                               >
                                 View deal →
                               </Link>
@@ -277,7 +277,7 @@ export default function Notifications() {
                               {!n.isRead && (
                                 <button
                                   onClick={() => handleMarkRead(n.id)}
-                                  className="text-xs text-muted dark:text-gray-400 hover:text-primary transition-colors flex items-center gap-1"
+                                  className="text-xs text-[#888] hover:text-[#e8a87c] transition-colors flex items-center gap-1"
                                 >
                                   <CheckCircle className="w-3.5 h-3.5" />
                                   Mark read
@@ -285,7 +285,7 @@ export default function Notifications() {
                               )}
                               <button
                                 onClick={() => handleArchive(n.id)}
-                                className="text-xs text-muted dark:text-gray-400 hover:text-danger transition-colors flex items-center gap-1"
+                                className="text-xs text-[#888] hover:text-danger transition-colors flex items-center gap-1"
                               >
                                 <Archive className="w-3.5 h-3.5" />
                                 Archive

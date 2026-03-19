@@ -26,20 +26,20 @@ import SharedRoleBadge from "../components/ui/RoleBadge";
 const ROLE_META = {
   admin: {
     label: "Admin",
-    bg: "bg-purple-100 dark:bg-purple-900/30",
-    text: "text-purple-700 dark:text-purple-300",
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
     icon: ShieldCheck,
   },
   manager: {
     label: "Manager",
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-    text: "text-blue-700 dark:text-blue-300",
+    bg: "bg-blue-500/10",
+    text: "text-blue-400",
     icon: Shield,
   },
   rep: {
     label: "Rep",
-    bg: "bg-gray-100 dark:bg-gray-700",
-    text: "text-gray-600 dark:text-gray-300",
+    bg: "bg-[#1e1e1e]",
+    text: "text-[#888]",
     icon: User,
   },
 };
@@ -170,8 +170,8 @@ export default function Team() {
       <PageWrapper>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
-            <div className="h-7 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+            <div className="h-7 w-48 bg-[#1e1e1e] rounded animate-pulse" />
+            <div className="h-4 w-28 bg-[#1e1e1e] rounded animate-pulse mt-2" />
           </div>
           <SkeletonTeamMembers />
         </div>
@@ -188,7 +188,7 @@ export default function Team() {
                 setShowInvite(true);
                 setInviteResult(null);
               }}
-              className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
               Invite Member
@@ -197,7 +197,7 @@ export default function Team() {
         </PageHeader>
 
         {/* Members list */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
+        <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
           {members.length === 0 ? (
             <EmptyState
               variant="team"
@@ -210,51 +210,51 @@ export default function Team() {
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <tr className="border-b border-[rgba(255,255,255,0.07)] bg-[#111]">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Member
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Role
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Status
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Slack ID
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Notifications
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Joined
                       </th>
                       {isAdmin && <th className="px-6 py-3" />}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border dark:divide-gray-700">
+                  <tbody className="divide-y divide-[rgba(255,255,255,0.07)]">
                     {members.map((member) => {
                       const isSelf = member.id === user?.id;
                       return (
                         <tr
                           key={member.id}
-                          className={`${!member.isActive ? "opacity-60" : ""} hover:bg-gray-50/50 dark:hover:bg-gray-700/30`}
+                          className={`${!member.isActive ? "opacity-60" : ""} hover:bg-[rgba(255,255,255,0.03)]`}
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-[#e8a87c]/10 text-[#e8a87c] flex items-center justify-center text-xs font-bold shrink-0">
                                 {initials(member.name)}
                               </div>
                               <div>
-                                <p className="font-medium text-dark dark:text-white">
+                                <p className="font-medium text-[#f0ede8]">
                                   {member.name}
                                   {isSelf && (
-                                    <span className="ml-2 text-xs text-muted dark:text-gray-400">
+                                    <span className="ml-2 text-xs text-[#888]">
                                       (you)
                                     </span>
                                   )}
                                 </p>
-                                <p className="text-xs text-muted dark:text-gray-400">
+                                <p className="text-xs text-[#888]">
                                   {member.email}
                                 </p>
                               </div>
@@ -269,13 +269,13 @@ export default function Team() {
                                     handleRoleChange(member.id, e.target.value)
                                   }
                                   disabled={changingRoleId === member.id}
-                                  className="appearance-none pl-2 pr-6 py-1 border border-border dark:border-gray-600 rounded-lg text-xs font-medium text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white dark:bg-gray-700 disabled:opacity-50 cursor-pointer"
+                                  className="appearance-none pl-2 pr-6 py-1 border border-[rgba(255,255,255,0.1)] rounded-lg text-xs font-medium text-[#f0ede8] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c] bg-[#111] disabled:opacity-50 cursor-pointer"
                                 >
                                   <option value="admin">Admin</option>
                                   <option value="manager">Manager</option>
                                   <option value="rep">Rep</option>
                                 </select>
-                                <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted dark:text-gray-400 pointer-events-none" />
+                                <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[#555] pointer-events-none" />
                               </div>
                             ) : (
                               <RoleBadge role={member.role} />
@@ -285,10 +285,10 @@ export default function Team() {
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                                 member.inviteStatus === "pending"
-                                  ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                                  ? "bg-[#f59e0b]/10 text-[#f59e0b]"
                                   : member.isActive
-                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                    : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                                    ? "bg-[#4ade80]/10 text-[#4ade80]"
+                                    : "bg-[#1e1e1e] text-[#555]"
                               }`}
                             >
                               {member.inviteStatus === "pending"
@@ -300,12 +300,12 @@ export default function Team() {
                           </td>
                           <td className="px-6 py-4">
                             {member.slackUserId ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-mono text-dark dark:text-gray-300 bg-gray-50 dark:bg-gray-700 px-2 py-0.5 rounded">
-                                <MessageSquare className="w-3 h-3 text-muted dark:text-gray-400" />
+                              <span className="inline-flex items-center gap-1 text-xs font-mono text-[#f0ede8] bg-[#1e1e1e] px-2 py-0.5 rounded">
+                                <MessageSquare className="w-3 h-3 text-[#888]" />
                                 {member.slackUserId}
                               </span>
                             ) : (
-                              <span className="text-xs text-muted dark:text-gray-500 italic">
+                              <span className="text-xs text-[#555] italic">
                                 Not set
                               </span>
                             )}
@@ -314,14 +314,14 @@ export default function Team() {
                             <div className="flex items-center gap-1.5">
                               {member.notificationPrefs?.slack ? (
                                 <span
-                                  className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400"
+                                  className="inline-flex items-center gap-0.5 text-xs text-[#4ade80]"
                                   title="Slack enabled"
                                 >
                                   <Bell className="w-3 h-3" /> Slack
                                 </span>
                               ) : (
                                 <span
-                                  className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through"
+                                  className="inline-flex items-center gap-0.5 text-xs text-[#555] line-through"
                                   title="Slack disabled"
                                 >
                                   <BellOff className="w-3 h-3" /> Slack
@@ -329,14 +329,14 @@ export default function Team() {
                               )}
                               {member.notificationPrefs?.email ? (
                                 <span
-                                  className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400"
+                                  className="inline-flex items-center gap-0.5 text-xs text-[#4ade80]"
                                   title="Email enabled"
                                 >
                                   <Bell className="w-3 h-3" /> Email
                                 </span>
                               ) : (
                                 <span
-                                  className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through"
+                                  className="inline-flex items-center gap-0.5 text-xs text-[#555] line-through"
                                   title="Email disabled"
                                 >
                                   <BellOff className="w-3 h-3" /> Email
@@ -344,7 +344,7 @@ export default function Team() {
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-muted dark:text-gray-400 text-xs">
+                          <td className="px-6 py-4 text-[#888] text-xs">
                             {formatDate(member.createdAt)}
                           </td>
                           {isAdmin && (
@@ -360,8 +360,8 @@ export default function Team() {
                                   }
                                   className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${
                                     member.isActive
-                                      ? "text-muted dark:text-gray-400 hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20"
-                                      : "text-muted dark:text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                                      ? "text-[#888] hover:text-[#ef4444] hover:bg-[#ef4444]/10"
+                                      : "text-[#888] hover:text-[#4ade80] hover:bg-[#4ade80]/10"
                                   }`}
                                 >
                                   {member.isActive ? (
@@ -381,7 +381,7 @@ export default function Team() {
               </div>
 
               {/* Mobile card list */}
-              <div className="sm:hidden divide-y divide-border dark:divide-gray-700">
+              <div className="sm:hidden divide-y divide-[rgba(255,255,255,0.07)]">
                 {members.map((member) => {
                   const isSelf = member.id === user?.id;
                   return (
@@ -391,19 +391,19 @@ export default function Team() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-[#e8a87c]/10 text-[#e8a87c] flex items-center justify-center text-xs font-bold shrink-0">
                             {initials(member.name)}
                           </div>
                           <div>
-                            <p className="font-medium text-dark dark:text-white text-sm">
+                            <p className="font-medium text-[#f0ede8] text-sm">
                               {member.name}
                               {isSelf && (
-                                <span className="ml-1 text-xs text-muted dark:text-gray-400">
+                                <span className="ml-1 text-xs text-[#888]">
                                   (you)
                                 </span>
                               )}
                             </p>
-                            <p className="text-xs text-muted dark:text-gray-400">
+                            <p className="text-xs text-[#888]">
                               {member.email}
                             </p>
                           </div>
@@ -414,10 +414,10 @@ export default function Team() {
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                             member.inviteStatus === "pending"
-                              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                              ? "bg-[#f59e0b]/10 text-[#f59e0b]"
                               : member.isActive
-                                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                                ? "bg-[#4ade80]/10 text-[#4ade80]"
+                                : "bg-[#1e1e1e] text-[#555]"
                           }`}
                         >
                           {member.inviteStatus === "pending"
@@ -427,31 +427,31 @@ export default function Team() {
                               : "Inactive"}
                         </span>
                         {member.slackUserId && (
-                          <span className="inline-flex items-center gap-0.5 text-xs font-mono text-muted dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                          <span className="inline-flex items-center gap-0.5 text-xs font-mono text-[#888] bg-[#1e1e1e] px-1.5 py-0.5 rounded">
                             <MessageSquare className="w-3 h-3" />
                             {member.slackUserId}
                           </span>
                         )}
-                        <span className="text-xs text-muted dark:text-gray-400">
+                        <span className="text-xs text-[#888]">
                           Joined {formatDate(member.createdAt)}
                         </span>
                       </div>
                       <div className="mt-1.5 flex items-center gap-2">
                         {member.notificationPrefs?.slack ? (
-                          <span className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400">
+                          <span className="inline-flex items-center gap-0.5 text-xs text-[#4ade80]">
                             <Bell className="w-3 h-3" /> Slack
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through">
+                          <span className="inline-flex items-center gap-0.5 text-xs text-[#555] line-through">
                             <BellOff className="w-3 h-3" /> Slack
                           </span>
                         )}
                         {member.notificationPrefs?.email ? (
-                          <span className="inline-flex items-center gap-0.5 text-xs text-green-600 dark:text-green-400">
+                          <span className="inline-flex items-center gap-0.5 text-xs text-[#4ade80]">
                             <Bell className="w-3 h-3" /> Email
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-0.5 text-xs text-gray-400 dark:text-gray-500 line-through">
+                          <span className="inline-flex items-center gap-0.5 text-xs text-[#555] line-through">
                             <BellOff className="w-3 h-3" /> Email
                           </span>
                         )}
@@ -464,7 +464,7 @@ export default function Team() {
                               handleRoleChange(member.id, e.target.value)
                             }
                             disabled={changingRoleId === member.id}
-                            className="flex-1 px-2 py-1.5 border border-border dark:border-gray-600 rounded-lg text-xs text-dark dark:text-white focus:outline-none bg-white dark:bg-gray-700"
+                            className="flex-1 px-2 py-1.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-xs text-[#f0ede8] focus:outline-none bg-[#111]"
                           >
                             <option value="admin">Admin</option>
                             <option value="manager">Manager</option>
@@ -475,8 +475,8 @@ export default function Team() {
                             disabled={togglingId === member.id}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-40 ${
                               member.isActive
-                                ? "bg-red-50 dark:bg-red-900/20 text-danger hover:bg-red-100 dark:hover:bg-red-900/30"
-                                : "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30"
+                                ? "bg-[#ef4444]/10 text-[#ef4444] hover:bg-[#ef4444]/15"
+                                : "bg-[#4ade80]/10 text-[#4ade80] hover:bg-[#4ade80]/15"
                             }`}
                           >
                             {member.isActive ? "Deactivate" : "Reactivate"}
@@ -494,9 +494,9 @@ export default function Team() {
         {/* Invite modal */}
         {showInvite && (
           <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="bg-[#161616] rounded-2xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-dark dark:text-white text-lg">
+                <h3 className="font-bold text-[#f0ede8] text-lg">
                   Invite Team Member
                 </h3>
                 <button
@@ -504,7 +504,7 @@ export default function Team() {
                     setShowInvite(false);
                     setInviteResult(null);
                   }}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-muted dark:text-gray-400 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-[#1e1e1e] text-[#888] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -514,37 +514,37 @@ export default function Team() {
                 /* Success state */
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                      <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div className="w-10 h-10 rounded-full bg-[#4ade80]/10 flex items-center justify-center">
+                      <Check className="w-5 h-5 text-[#4ade80]" />
                     </div>
                     <div>
-                      <p className="font-semibold text-dark dark:text-white">
+                      <p className="font-semibold text-[#f0ede8]">
                         {inviteResult.user?.name} invited!
                       </p>
-                      <p className="text-sm text-muted dark:text-gray-400">
+                      <p className="text-sm text-[#888]">
                         {inviteResult.user?.email}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-900 border border-border dark:border-gray-700 rounded-xl p-4 mb-4">
-                    <p className="text-xs font-semibold text-muted dark:text-gray-400 mb-2">
+                  <div className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-xl p-4 mb-4">
+                    <p className="text-xs font-semibold text-[#888] mb-2">
                       Temporary Password
                     </p>
                     <div className="flex items-center gap-2">
-                      <code className="flex-1 font-mono text-sm text-dark dark:text-white bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg px-3 py-2 break-all">
+                      <code className="flex-1 font-mono text-sm text-[#f0ede8] bg-[#0d0d0d] border border-[rgba(255,255,255,0.07)] rounded-lg px-3 py-2 break-all">
                         {inviteResult.tempPassword}
                       </code>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(inviteResult.tempPassword);
                         }}
-                        className="p-2 rounded-lg border border-border dark:border-gray-700 text-muted hover:text-primary hover:bg-primary/5 transition-colors shrink-0"
+                        className="p-2 rounded-lg border border-[rgba(255,255,255,0.07)] text-[#888] hover:text-[#e8a87c] hover:bg-[#e8a87c]/5 transition-colors shrink-0"
                         title="Copy password"
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-muted dark:text-gray-500 mt-2">
+                    <p className="text-xs text-[#555] mt-2">
                       Share this securely. They can change it in Settings.
                     </p>
                   </div>
@@ -553,7 +553,7 @@ export default function Team() {
                       setInviteResult(null);
                       setShowInvite(false);
                     }}
-                    className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                    className="w-full border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent py-2.5 rounded-lg text-sm font-semibold transition-colors"
                   >
                     Done
                   </button>
@@ -562,7 +562,7 @@ export default function Team() {
                 /* Invite form */
                 <form onSubmit={handleInvite} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-[#888] mb-1">
                       Full Name
                     </label>
                     <input
@@ -573,11 +573,11 @@ export default function Team() {
                         setInvite({ ...invite, name: e.target.value })
                       }
                       placeholder="Jane Smith"
-                      className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-3 py-2.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#f0ede8] bg-[#111] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-[#888] mb-1">
                       Email
                     </label>
                     <input
@@ -588,11 +588,11 @@ export default function Team() {
                         setInvite({ ...invite, email: e.target.value })
                       }
                       placeholder="jane@company.com"
-                      className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-3 py-2.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#f0ede8] bg-[#111] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-muted dark:text-gray-400 mb-1">
+                    <label className="block text-xs font-medium text-[#888] mb-1">
                       Role
                     </label>
                     <select
@@ -600,7 +600,7 @@ export default function Team() {
                       onChange={(e) =>
                         setInvite({ ...invite, role: e.target.value })
                       }
-                      className="w-full px-3 py-2.5 border border-border dark:border-gray-600 rounded-lg text-sm text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white dark:bg-gray-700"
+                      className="w-full px-3 py-2.5 border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#f0ede8] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c] bg-[#111]"
                     >
                       <option value="rep">
                         Rep — View and manage their own deals
@@ -617,7 +617,7 @@ export default function Team() {
                     <button
                       type="submit"
                       disabled={inviting}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                     >
                       <UserPlus className="w-4 h-4" />
                       {inviting ? "Inviting…" : "Send Invite"}
@@ -625,7 +625,7 @@ export default function Team() {
                     <button
                       type="button"
                       onClick={() => setShowInvite(false)}
-                      className="flex-1 border border-border dark:border-gray-700 py-2.5 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="flex-1 border border-[rgba(255,255,255,0.07)] py-2.5 rounded-lg text-sm text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                     >
                       Cancel
                     </button>

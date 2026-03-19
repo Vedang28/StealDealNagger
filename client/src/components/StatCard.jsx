@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
  * Mini sparkline rendered as inline SVG.
  * `data` is an array of numbers; the line auto-scales to fit.
  */
-function Sparkline({ data = [], color = "#f97316", width = 80, height = 28 }) {
+function Sparkline({ data = [], color = "#e8a87c", width = 80, height = 28 }) {
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -116,15 +116,15 @@ export default function StatCard({
   pulse,
 }) {
   const colors = {
-    primary: "bg-primary-light text-primary",
-    success: "bg-success-light text-success",
-    warning: "bg-warning-light text-warning",
-    danger: "bg-danger-light text-danger",
+    primary: "bg-[#e8a87c]/10 text-[#e8a87c]",
+    success: "bg-[#4ade80]/10 text-[#4ade80]",
+    warning: "bg-[#f59e0b]/10 text-[#f59e0b]",
+    danger: "bg-[#ef4444]/10 text-[#ef4444]",
   };
 
   const sparkColors = {
-    primary: "#f97316",
-    success: "#22c55e",
+    primary: "#e8a87c",
+    success: "#4ade80",
     warning: "#f59e0b",
     danger: "#ef4444",
   };
@@ -133,17 +133,17 @@ export default function StatCard({
     trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
   const trendColor =
     trend === "up"
-      ? "text-emerald-500"
+      ? "text-[#4ade80]"
       : trend === "down"
-        ? "text-rose-500"
-        : "text-gray-400 dark:text-gray-500";
+        ? "text-[#ef4444]"
+        : "text-[#555]";
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -2 }}
+      whileHover={{ y: -2, borderColor: "rgba(255,255,255,0.15)" }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-5 shadow-sm group cursor-default"
+      className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-5 group cursor-default"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3.5">
@@ -155,20 +155,20 @@ export default function StatCard({
             <Icon className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-muted dark:text-gray-400 font-medium uppercase tracking-wide">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] font-medium">
               {label}
             </p>
-            <p className="text-2xl font-bold text-dark dark:text-white leading-tight mt-0.5">
+            <p className="text-2xl font-bold text-[#f0ede8] leading-tight mt-0.5">
               <AnimatedValue value={value} />
             </p>
           </div>
         </div>
         {sparkData && sparkData.length >= 2 && (
-          <Sparkline data={sparkData} color={sparkColors[color] || "#f97316"} />
+          <Sparkline data={sparkData} color={sparkColors[color] || "#e8a87c"} />
         )}
       </div>
       {(trend || sub) && (
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50 dark:border-gray-700/50">
+        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[rgba(255,255,255,0.05)]">
           {trend && (
             <span
               className={`flex items-center gap-0.5 text-xs font-semibold ${trendColor}`}
@@ -178,7 +178,7 @@ export default function StatCard({
             </span>
           )}
           {sub && (
-            <span className="text-xs text-muted dark:text-gray-400">{sub}</span>
+            <span className="text-xs text-[#888]">{sub}</span>
           )}
         </div>
       )}

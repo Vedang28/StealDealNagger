@@ -27,13 +27,12 @@ import {
 
 /* ── Staleness Gauge ───────────────────────────────────────── */
 function StalenessGauge({ daysStale, status }) {
-  // Map status to a percentage (0-100) and color
   const pct = Math.min(100, Math.round((daysStale / 30) * 100));
   const colorMap = {
-    healthy: { stroke: "#22c55e", bg: "#dcfce7", darkBg: "#14532d" },
-    warning: { stroke: "#f59e0b", bg: "#fef3c7", darkBg: "#78350f" },
-    stale: { stroke: "#f97316", bg: "#ffedd5", darkBg: "#7c2d12" },
-    critical: { stroke: "#ef4444", bg: "#fee2e2", darkBg: "#7f1d1d" },
+    healthy: { stroke: "#4ade80", bg: "#0f2318" },
+    warning: { stroke: "#f59e0b", bg: "#2a1f0a" },
+    stale: { stroke: "#f97316", bg: "#2a1508" },
+    critical: { stroke: "#ef4444", bg: "#2a0808" },
   };
   const c = colorMap[status] || colorMap.healthy;
   const r = 40;
@@ -51,7 +50,7 @@ function StalenessGauge({ daysStale, status }) {
             fill="none"
             stroke="currentColor"
             strokeWidth="8"
-            className="text-gray-100 dark:text-gray-700"
+            className="text-[#1e1e1e]"
           />
           <circle
             cx="50"
@@ -67,10 +66,10 @@ function StalenessGauge({ daysStale, status }) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-lg font-bold text-dark dark:text-white">
+          <span className="text-lg font-bold text-[#f0ede8]">
             {daysStale}d
           </span>
-          <span className="text-[10px] text-muted dark:text-gray-400 uppercase tracking-wide">
+          <span className="text-[10px] text-[#555] uppercase tracking-wide font-mono">
             stale
           </span>
         </div>
@@ -81,11 +80,11 @@ function StalenessGauge({ daysStale, status }) {
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: c.stroke }}
           />
-          <span className="text-sm font-semibold text-dark dark:text-white capitalize">
+          <span className="text-sm font-semibold text-[#f0ede8] capitalize">
             {status}
           </span>
         </div>
-        <p className="text-xs text-muted dark:text-gray-400">
+        <p className="text-xs text-[#888]">
           {status === "healthy" && "Deal is progressing well"}
           {status === "warning" && "Deal needs attention soon"}
           {status === "stale" && "Deal requires immediate action"}
@@ -108,48 +107,48 @@ function SuggestedActions({ deal }) {
       s.push({
         icon: Phone,
         text: "Schedule a call with the contact",
-        color: "text-red-500 dark:text-red-400",
-        bg: "bg-red-50 dark:bg-red-900/20",
+        color: "text-[#ef4444]",
+        bg: "bg-[#2a0808]",
       });
     }
     if (days > 7 && deal.contactEmail) {
       s.push({
         icon: Mail,
         text: `Follow up with ${deal.contactName || "the contact"}`,
-        color: "text-blue-500 dark:text-blue-400",
-        bg: "bg-blue-50 dark:bg-blue-900/20",
+        color: "text-[#60a5fa]",
+        bg: "bg-blue-500/10",
       });
     }
     if (deal.stage === "Proposal" && days > 3) {
       s.push({
         icon: MessageSquare,
         text: "Send a revised proposal",
-        color: "text-violet-500 dark:text-violet-400",
-        bg: "bg-violet-50 dark:bg-violet-900/20",
+        color: "text-[#a78bfa]",
+        bg: "bg-purple-500/10",
       });
     }
     if (deal.stage === "Negotiation") {
       s.push({
         icon: DollarSign,
         text: "Review pricing and terms",
-        color: "text-amber-500 dark:text-amber-400",
-        bg: "bg-amber-50 dark:bg-amber-900/20",
+        color: "text-[#e8a87c]",
+        bg: "bg-[#e8a87c]/10",
       });
     }
     if (deal.stage === "Discovery") {
       s.push({
         icon: Zap,
         text: "Move to Proposal stage",
-        color: "text-emerald-500 dark:text-emerald-400",
-        bg: "bg-emerald-50 dark:bg-emerald-900/20",
+        color: "text-[#4ade80]",
+        bg: "bg-[#0f2318]",
       });
     }
     if (s.length === 0) {
       s.push({
         icon: Activity,
         text: "Log a recent activity to keep this deal healthy",
-        color: "text-gray-500 dark:text-gray-400",
-        bg: "bg-gray-50 dark:bg-gray-800",
+        color: "text-[#888]",
+        bg: "bg-[#1e1e1e]",
       });
     }
     return s.slice(0, 3);
@@ -157,7 +156,7 @@ function SuggestedActions({ deal }) {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+      <h4 className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] flex items-center gap-1.5">
         <Zap className="w-3.5 h-3.5" /> Suggested Actions
       </h4>
       {suggestions.map((s, i) => (
@@ -166,10 +165,10 @@ function SuggestedActions({ deal }) {
           className={`flex items-center gap-3 ${s.bg} rounded-lg px-3 py-2.5`}
         >
           <s.icon className={`w-4 h-4 shrink-0 ${s.color}`} />
-          <span className="text-sm text-dark dark:text-white flex-1">
+          <span className="text-sm text-[#f0ede8] flex-1">
             {s.text}
           </span>
-          <ArrowRight className="w-3.5 h-3.5 text-muted dark:text-gray-500" />
+          <ArrowRight className="w-3.5 h-3.5 text-[#555]" />
         </div>
       ))}
     </div>
@@ -186,8 +185,8 @@ function ActivityTimeline({ deal }) {
       date: deal.createdAt,
       label: "Deal created",
       icon: Briefcase,
-      color: "text-blue-500",
-      dotColor: "bg-blue-500",
+      color: "text-[#60a5fa]",
+      dotColor: "bg-[#60a5fa]",
     });
 
     if (deal.lastActivityAt && deal.lastActivityAt !== deal.createdAt) {
@@ -195,8 +194,8 @@ function ActivityTimeline({ deal }) {
         date: deal.lastActivityAt,
         label: "Last activity recorded",
         icon: Activity,
-        color: "text-emerald-500",
-        dotColor: "bg-emerald-500",
+        color: "text-[#4ade80]",
+        dotColor: "bg-[#4ade80]",
       });
     }
 
@@ -205,8 +204,8 @@ function ActivityTimeline({ deal }) {
         date: deal.updatedAt || deal.snoozedUntil,
         label: `Snoozed until ${new Date(deal.snoozedUntil).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
         icon: BellOff,
-        color: "text-amber-500",
-        dotColor: "bg-amber-500",
+        color: "text-[#f59e0b]",
+        dotColor: "bg-[#f59e0b]",
       });
     }
 
@@ -220,10 +219,10 @@ function ActivityTimeline({ deal }) {
         icon: AlertTriangle,
         color:
           deal.stalenessStatus === "critical"
-            ? "text-red-500"
-            : "text-orange-500",
+            ? "text-[#ef4444]"
+            : "text-[#f97316]",
         dotColor:
-          deal.stalenessStatus === "critical" ? "bg-red-500" : "bg-orange-500",
+          deal.stalenessStatus === "critical" ? "bg-[#ef4444]" : "bg-[#f97316]",
       });
     }
 
@@ -243,20 +242,20 @@ function ActivityTimeline({ deal }) {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+      <h4 className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] flex items-center gap-1.5">
         <Clock className="w-3.5 h-3.5" /> Activity Timeline
       </h4>
       <div className="relative pl-6 space-y-4">
         {/* Vertical line */}
-        <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-200 dark:bg-gray-700" />
+        <div className="absolute left-[7px] top-2 bottom-2 w-px bg-[rgba(255,255,255,0.07)]" />
         {events.map((ev, i) => (
           <div key={i} className="relative flex items-start gap-3">
             <div
-              className={`absolute left-[-17px] mt-1.5 w-2.5 h-2.5 rounded-full ${ev.dotColor} ring-2 ring-white dark:ring-gray-800`}
+              className={`absolute left-[-17px] mt-1.5 w-2.5 h-2.5 rounded-full ${ev.dotColor} ring-2 ring-[#161616]`}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-dark dark:text-white">{ev.label}</p>
-              <p className="text-xs text-muted dark:text-gray-500">
+              <p className="text-sm text-[#f0ede8]">{ev.label}</p>
+              <p className="text-xs text-[#555]">
                 {fmt(ev.date)}
               </p>
             </div>
@@ -423,11 +422,13 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
     });
   };
 
+  const inputClass = "w-full px-3 py-2 bg-[#111] border border-[rgba(255,255,255,0.1)] rounded-lg text-sm text-[#f0ede8] placeholder:text-[#555] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/20 focus:border-[#e8a87c]";
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${
           isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -437,7 +438,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[520px] sm:max-w-full bg-white dark:bg-gray-800 shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[520px] sm:max-w-full bg-[#161616] z-50 flex flex-col transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -448,20 +449,20 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
         ) : !deal ? null : (
           <>
             {/* Header */}
-            <div className="px-6 py-5 border-b border-border dark:border-gray-700 flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-light text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <div className="px-6 py-5 border-b border-[rgba(255,255,255,0.07)] flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#e8a87c]/10 text-[#e8a87c] flex items-center justify-center shrink-0 mt-0.5">
                 <Briefcase className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-base font-bold text-dark dark:text-white truncate">
+                <h2 className="text-base font-bold text-[#f0ede8] truncate">
                   {deal.name}
                 </h2>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-text dark:text-gray-300">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1e1e1e] text-xs font-medium text-[#888]">
                     {deal.stage}
                   </span>
-                  <span className="text-sm font-semibold text-dark dark:text-white flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5 text-muted dark:text-gray-400" />
+                  <span className="text-sm font-semibold text-[#f0ede8] flex items-center gap-1">
+                    <DollarSign className="w-3.5 h-3.5 text-[#888]" />
                     {formatCurrency(deal.amount)}
                   </span>
                   <StatusBadge status={deal.stalenessStatus} />
@@ -469,7 +470,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-muted dark:text-gray-400 shrink-0"
+                className="p-1.5 rounded-lg hover:bg-[#1e1e1e] transition-colors text-[#888] shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -485,14 +486,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
 
               {/* Snooze status */}
               {deal.isSnoozed && (
-                <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
+                <div className="flex items-center justify-between bg-[#2a1f0a] border border-[#f59e0b30] rounded-lg px-4 py-3 text-sm text-[#f59e0b]">
                   <div className="flex items-center gap-2">
                     <BellOff className="w-4 h-4 shrink-0" />
                     <span>Snoozed until {formatDate(deal.snoozedUntil)}</span>
                   </div>
                   <button
                     onClick={handleUnsnooze}
-                    className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline"
+                    className="text-xs font-semibold text-[#f59e0b] hover:underline"
                   >
                     Unsnooze
                   </button>
@@ -505,7 +506,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               {/* Quick Snooze Presets */}
               {!deal.isSnoozed && !showSnooze && !showEdit && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <h4 className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] flex items-center gap-1.5">
                     <BellOff className="w-3.5 h-3.5" /> Quick Snooze
                   </h4>
                   <div className="flex gap-2">
@@ -514,7 +515,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                         key={d}
                         onClick={() => handlePresetSnooze(d)}
                         disabled={snoozing}
-                        className="flex-1 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all disabled:opacity-50"
+                        className="flex-1 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] text-sm font-medium text-[#f0ede8] hover:bg-[#1e1e1e] active:scale-95 transition-all disabled:opacity-50"
                       >
                         {d}d
                       </button>
@@ -522,7 +523,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                     <button
                       onClick={() => setShowSnooze(true)}
                       disabled={snoozing}
-                      className="flex-1 py-2 rounded-lg border border-primary/30 text-sm font-medium text-primary hover:bg-primary-light active:scale-95 transition-all disabled:opacity-50"
+                      className="flex-1 py-2 rounded-lg border border-[#e8a87c]/30 text-sm font-medium text-[#e8a87c] hover:bg-[#e8a87c]/10 active:scale-95 transition-all disabled:opacity-50"
                     >
                       Custom
                     </button>
@@ -534,14 +535,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               {showSnooze && (
                 <form
                   onSubmit={handleCustomSnooze}
-                  className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-xl p-4 space-y-3"
+                  className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-xl p-4 space-y-3"
                 >
-                  <h4 className="text-sm font-semibold text-dark dark:text-white">
+                  <h4 className="text-sm font-semibold text-[#f0ede8]">
                     Custom Snooze
                   </h4>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-muted dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-[#888] mb-1">
                         Snooze until
                       </label>
                       <input
@@ -550,11 +551,11 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                         value={snoozeDate}
                         min={new Date().toISOString().split("T")[0]}
                         onChange={(e) => setSnoozeDate(e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        className={inputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-muted dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-[#888] mb-1">
                         Reason (optional)
                       </label>
                       <input
@@ -562,7 +563,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                         value={snoozeReason}
                         onChange={(e) => setSnoozeReason(e.target.value)}
                         placeholder="e.g. Waiting for Q2 budget"
-                        className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        className={inputClass}
                       />
                     </div>
                   </div>
@@ -570,14 +571,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                     <button
                       type="submit"
                       disabled={snoozing}
-                      className="flex-1 bg-primary hover:bg-primary-hover text-white py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="flex-1 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                     >
                       {snoozing ? "Snoozing…" : "Snooze Deal"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowSnooze(false)}
-                      className="px-4 py-2 border border-border dark:border-gray-700 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="px-4 py-2 border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                     >
                       Cancel
                     </button>
@@ -586,33 +587,33 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               )}
 
               {/* Metadata */}
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 space-y-3 text-sm">
+              <div className="bg-[#111] rounded-xl p-4 space-y-3 text-sm">
                 <div className="flex items-center gap-3">
-                  <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                  <span className="text-[#888] w-28 shrink-0">
                     CRM Source
                   </span>
-                  <span className="text-dark dark:text-white font-medium">
+                  <span className="text-[#f0ede8] font-medium">
                     {deal.crmSource || "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                  <span className="text-[#888] w-28 shrink-0">
                     CRM ID
                   </span>
-                  <span className="text-dark dark:text-white font-mono text-xs">
+                  <span className="text-[#f0ede8] font-mono text-xs">
                     {deal.crmDealId || "—"}
                   </span>
                 </div>
                 {deal.contactName && (
                   <div className="flex items-center gap-3">
-                    <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                    <span className="text-[#888] w-28 shrink-0">
                       Contact
                     </span>
-                    <span className="text-dark dark:text-white font-medium flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-muted dark:text-gray-400" />
+                    <span className="text-[#f0ede8] font-medium flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-[#888]" />
                       {deal.contactName}
                       {deal.contactEmail && (
-                        <span className="text-muted dark:text-gray-400 font-normal">
+                        <span className="text-[#888] font-normal">
                           ({deal.contactEmail})
                         </span>
                       )}
@@ -621,27 +622,27 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                 )}
                 {deal.owner && (
                   <div className="flex items-center gap-3">
-                    <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                    <span className="text-[#888] w-28 shrink-0">
                       Owner
                     </span>
-                    <span className="text-dark dark:text-white font-medium">
+                    <span className="text-[#f0ede8] font-medium">
                       {deal.owner.name}
                     </span>
                   </div>
                 )}
                 <div className="flex items-center gap-3">
-                  <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                  <span className="text-[#888] w-28 shrink-0">
                     Last Activity
                   </span>
-                  <span className="text-dark dark:text-white">
+                  <span className="text-[#f0ede8]">
                     {formatDate(deal.lastActivityAt)}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-muted dark:text-gray-400 w-28 shrink-0">
+                  <span className="text-[#888] w-28 shrink-0">
                     Created
                   </span>
-                  <span className="text-dark dark:text-white">
+                  <span className="text-[#f0ede8]">
                     {formatDate(deal.createdAt)}
                   </span>
                 </div>
@@ -654,14 +655,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               {showEdit && (
                 <form
                   onSubmit={handleSave}
-                  className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-xl p-4 space-y-3"
+                  className="bg-[#111] border border-[rgba(255,255,255,0.07)] rounded-xl p-4 space-y-3"
                 >
-                  <h4 className="text-sm font-semibold text-dark dark:text-white">
+                  <h4 className="text-sm font-semibold text-[#f0ede8]">
                     Edit Deal
                   </h4>
                   <div className="space-y-3">
                     <input
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className={inputClass}
                       placeholder="Deal name"
                       value={editData.name}
                       onChange={(e) =>
@@ -670,7 +671,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                       required
                     />
                     <select
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className={inputClass}
                       value={editData.stage}
                       onChange={(e) =>
                         setEditData({ ...editData, stage: e.target.value })
@@ -683,7 +684,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                     </select>
                     <input
                       type="number"
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className={inputClass}
                       placeholder="Amount"
                       value={editData.amount}
                       onChange={(e) =>
@@ -691,7 +692,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                       }
                     />
                     <input
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className={inputClass}
                       placeholder="Contact name"
                       value={editData.contactName}
                       onChange={(e) =>
@@ -703,7 +704,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                     />
                     <input
                       type="email"
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm text-dark dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className={inputClass}
                       placeholder="Contact email"
                       value={editData.contactEmail}
                       onChange={(e) =>
@@ -718,14 +719,14 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex-1 bg-primary hover:bg-primary-hover text-white py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="flex-1 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                     >
                       {saving ? "Saving…" : "Save Changes"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowEdit(false)}
-                      className="px-4 py-2 border border-border dark:border-gray-700 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="px-4 py-2 border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                     >
                       Cancel
                     </button>
@@ -735,27 +736,27 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
             </div>
 
             {/* Footer actions */}
-            <div className="px-6 py-4 border-t border-border dark:border-gray-700 space-y-3">
+            <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.07)] space-y-3">
               {/* Action buttons */}
               {!showEdit && !showSnooze && (
                 <div className="flex gap-2">
                   <button
                     onClick={openEdit}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] text-sm font-medium text-[#f0ede8] hover:bg-[#1e1e1e] active:scale-95 transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" /> Edit
                   </button>
                   {deal.isSnoozed ? (
                     <button
                       onClick={handleUnsnooze}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-amber-300 dark:border-amber-700 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 active:scale-95 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#f59e0b30] text-sm font-medium text-[#f59e0b] hover:bg-[#2a1f0a] active:scale-95 transition-colors"
                     >
                       <Bell className="w-3.5 h-3.5" /> Unsnooze
                     </button>
                   ) : (
                     <button
                       onClick={() => setShowSnooze(true)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] text-sm font-medium text-[#f0ede8] hover:bg-[#1e1e1e] active:scale-95 transition-colors"
                     >
                       <BellOff className="w-3.5 h-3.5" /> Snooze
                     </button>
@@ -763,7 +764,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-colors disabled:opacity-50"
+                    className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#ef444430] text-sm font-medium text-[#ef4444] hover:bg-[#2a0808] active:scale-95 transition-colors disabled:opacity-50"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     {deleting ? "Deleting…" : "Delete"}
@@ -774,7 +775,7 @@ export default function DealSlideOver({ dealId, onClose, onUpdate }) {
               {/* Deep-link */}
               <Link
                 to={`/deals/${dealId}`}
-                className="flex items-center justify-center gap-1.5 text-sm text-primary hover:text-primary-hover font-medium transition-colors"
+                className="flex items-center justify-center gap-1.5 text-sm text-[#e8a87c] hover:text-[#f0c8a0] font-medium transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View full details

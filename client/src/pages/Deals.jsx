@@ -241,17 +241,17 @@ export default function Deals() {
     <PageWrapper>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <PageHeader title="Deals" description={`${pagination.total ?? 0} deals in pipeline`}>
+        <PageHeader label="deals" title="Deals" description={`${pagination.total ?? 0} deals in pipeline`}>
           <button
             onClick={() => setShowImport(true)}
-            className="flex items-center gap-1.5 border border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-dark dark:text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
+            className="flex items-center gap-1.5 border border-[rgba(255,255,255,0.07)] hover:bg-[#1e1e1e] text-[#f0ede8] px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
           >
             <Upload className="w-4 h-4" />
             Import CSV
           </button>
           <Link
             to="/deals/new"
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm active:scale-95"
+            className="flex items-center gap-1.5 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors active:scale-95"
           >
             <Plus className="w-4 h-4" />
             New Deal
@@ -259,22 +259,22 @@ export default function Deals() {
         </PageHeader>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-4 mb-6 shadow-sm">
+        <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-4 mb-6">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted dark:text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-[#888]">
               <Filter className="w-4 h-4" />
               Filters
             </div>
 
             {/* Search */}
             <div className="relative flex-1 min-w-50">
-              <Search className="w-4 h-4 text-muted dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#555] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => updateFilter("search", e.target.value)}
                 placeholder="Search deals..."
-                className="w-full pl-9 pr-4 py-2 rounded-lg border border-border bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm text-dark placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                className="w-full pl-9 pr-4 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#161616] text-[#f0ede8] text-sm placeholder:text-[#555] focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/30 focus:border-[#e8a87c] transition"
               />
             </div>
 
@@ -282,7 +282,7 @@ export default function Deals() {
             <select
               value={status}
               onChange={(e) => updateFilter("status", e.target.value)}
-              className="px-3 py-2 rounded-lg border border-border bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+              className="px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#161616] text-[#f0ede8] text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/30 focus:border-[#e8a87c] transition"
             >
               <option value="">All Statuses</option>
               <option value="healthy">Healthy</option>
@@ -295,7 +295,7 @@ export default function Deals() {
             <select
               value={stage}
               onChange={(e) => updateFilter("stage", e.target.value)}
-              className="px-3 py-2 rounded-lg border border-border bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm text-dark focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+              className="px-3 py-2 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#161616] text-[#f0ede8] text-sm focus:outline-none focus:ring-2 focus:ring-[#e8a87c]/30 focus:border-[#e8a87c] transition"
             >
               <option value="">All Stages</option>
               <option value="Discovery">Discovery</option>
@@ -308,8 +308,8 @@ export default function Deals() {
 
         {/* Bulk Action Bar */}
         {selected.size > 0 && (
-          <div className="bg-primary/10 dark:bg-primary/20 border border-primary/30 rounded-xl p-3 mb-4 flex items-center justify-between gap-4 animate-in slide-in-from-top-2">
-            <div className="flex items-center gap-2 text-sm font-medium text-primary">
+          <div className="bg-[#e8a87c]/5 border border-[#e8a87c]/20 rounded-xl p-3 mb-4 flex items-center justify-between gap-4 animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-2 text-sm font-medium text-[#e8a87c]">
               <CheckSquare className="w-4 h-4" />
               {selected.size} deal{selected.size !== 1 ? "s" : ""} selected
             </div>
@@ -317,14 +317,14 @@ export default function Deals() {
               <button
                 onClick={() => handleBulkSnooze(3)}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-900/40 text-amber-300 text-xs font-semibold hover:bg-amber-900/60 transition-colors disabled:opacity-50"
               >
                 <BellOff className="w-3.5 h-3.5" /> Snooze 3d
               </button>
               <button
                 onClick={() => handleBulkSnooze(7)}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-900/40 text-amber-300 text-xs font-semibold hover:bg-amber-900/60 transition-colors disabled:opacity-50"
               >
                 <BellOff className="w-3.5 h-3.5" /> Snooze 7d
               </button>
@@ -332,22 +332,22 @@ export default function Deals() {
                 <button
                   onClick={openReassignDropdown}
                   disabled={bulkLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-900/40 text-blue-300 text-xs font-semibold hover:bg-blue-900/60 transition-colors disabled:opacity-50"
                 >
                   <Users className="w-3.5 h-3.5" /> Reassign
                 </button>
                 {showReassign && teamMembers.length > 0 && (
-                  <div className="absolute top-full mt-1 right-0 w-52 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg shadow-lg z-20 py-1 max-h-48 overflow-y-auto">
+                  <div className="absolute top-full mt-1 right-0 w-52 bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-lg shadow-lg z-20 py-1 max-h-48 overflow-y-auto">
                     {teamMembers
                       .filter((m) => m.isActive)
                       .map((m) => (
                         <button
                           key={m.id}
                           onClick={() => handleBulkReassign(m.id)}
-                          className="w-full text-left px-3 py-2 text-xs text-dark dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full text-left px-3 py-2 text-xs text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                         >
                           {m.name}{" "}
-                          <span className="text-muted dark:text-gray-400">
+                          <span className="text-[#888]">
                             ({m.role})
                           </span>
                         </button>
@@ -358,14 +358,14 @@ export default function Deals() {
               <button
                 onClick={handleBulkMarkLost}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-semibold hover:bg-purple-200 dark:hover:bg-purple-900/60 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-900/40 text-purple-300 text-xs font-semibold hover:bg-purple-900/60 transition-colors disabled:opacity-50"
               >
                 <UserRoundX className="w-3.5 h-3.5" /> Mark Lost
               </button>
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/40 text-red-300 text-xs font-semibold hover:bg-red-900/60 transition-colors disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Delete
               </button>
@@ -374,7 +374,7 @@ export default function Deals() {
                   setSelected(new Set());
                   setShowReassign(false);
                 }}
-                className="p-1.5 rounded-lg text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="p-1.5 rounded-lg text-[#888] hover:bg-[#1e1e1e] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -383,7 +383,7 @@ export default function Deals() {
         )}
 
         {/* Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
+        <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
           {loading ? (
             <div className="p-4">
               <SkeletonTable rows={8} cols={6} />
@@ -399,11 +399,11 @@ export default function Deals() {
           ) : (
             <>
               {/* Mobile card list (hidden on sm+) */}
-              <div className="sm:hidden divide-y divide-border dark:divide-gray-700">
+              <div className="sm:hidden divide-y divide-[rgba(255,255,255,0.05)]">
                 {deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="px-4 py-4 cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 active:bg-gray-100 dark:active:bg-gray-600"
+                    className="px-4 py-4 cursor-pointer hover:bg-[rgba(255,255,255,0.03)] active:bg-[#1e1e1e]"
                   >
                     <div className="flex items-start gap-3 mb-2">
                       <button
@@ -411,10 +411,10 @@ export default function Deals() {
                           e.stopPropagation();
                           toggleSelect(deal.id);
                         }}
-                        className="mt-0.5 text-muted dark:text-gray-400 hover:text-primary transition-colors shrink-0"
+                        className="mt-0.5 text-[#888] hover:text-[#e8a87c] transition-colors shrink-0"
                       >
                         {selected.has(deal.id) ? (
-                          <CheckSquare className="w-4 h-4 text-primary" />
+                          <CheckSquare className="w-4 h-4 text-[#e8a87c]" />
                         ) : (
                           <Square className="w-4 h-4" />
                         )}
@@ -424,16 +424,16 @@ export default function Deals() {
                         onClick={() => setSelectedDealId(deal.id)}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <p className="font-medium text-dark dark:text-white text-sm leading-snug">
+                          <p className="font-medium text-[#f0ede8] text-sm leading-snug">
                             {deal.name}
                           </p>
                           <StatusBadge status={deal.stalenessStatus} />
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-muted dark:text-gray-400 mt-1">
-                          <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center gap-3 text-xs text-[#888] mt-1">
+                          <span className="px-1.5 py-0.5 rounded bg-[#1e1e1e] text-[#888]">
                             {deal.stage}
                           </span>
-                          <span className="font-semibold text-dark dark:text-white">
+                          <span className="font-semibold text-[#f0ede8]">
                             {formatCurrency(deal.amount)}
                           </span>
                           <span className="flex items-center gap-0.5">
@@ -451,16 +451,16 @@ export default function Deals() {
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-border dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
+                    <tr className="border-b border-[rgba(255,255,255,0.07)]">
                       {/* Select-all checkbox */}
                       <th className="w-12 px-4 py-3">
                         <button
                           onClick={toggleSelectAll}
-                          className="text-muted dark:text-gray-400 hover:text-primary transition-colors"
+                          className="text-[#888] hover:text-[#e8a87c] transition-colors"
                         >
                           {selected.size === deals.length &&
                           deals.length > 0 ? (
-                            <CheckSquare className="w-4 h-4 text-primary" />
+                            <CheckSquare className="w-4 h-4 text-[#e8a87c]" />
                           ) : (
                             <Square className="w-4 h-4" />
                           )}
@@ -470,12 +470,12 @@ export default function Deals() {
                         <th
                           key={col.key}
                           onClick={() => toggleSort(col.key)}
-                          className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-dark dark:hover:text-white transition-colors group"
+                          className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] cursor-pointer select-none hover:text-[#f0ede8] transition-colors group"
                         >
                           <span className="inline-flex items-center gap-1">
                             {col.label}
                             {sortBy === col.key ? (
-                              <span className="text-primary">
+                              <span className="text-[#e8a87c]">
                                 {sortOrder === "asc" ? "↑" : "↓"}
                               </span>
                             ) : (
@@ -487,11 +487,11 @@ export default function Deals() {
                       <th className="px-6 py-3" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border dark:divide-gray-700">
+                  <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                     {deals.map((deal) => (
                       <tr
                         key={deal.id}
-                        className={`hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer ${selected.has(deal.id) ? "bg-primary/5 dark:bg-primary/10" : ""}`}
+                        className={`hover:bg-[rgba(255,255,255,0.03)] transition-colors cursor-pointer ${selected.has(deal.id) ? "bg-[#e8a87c]/5" : ""}`}
                       >
                         {/* Row checkbox */}
                         <td
@@ -500,10 +500,10 @@ export default function Deals() {
                         >
                           <button
                             onClick={() => toggleSelect(deal.id)}
-                            className="text-muted dark:text-gray-400 hover:text-primary transition-colors"
+                            className="text-[#888] hover:text-[#e8a87c] transition-colors"
                           >
                             {selected.has(deal.id) ? (
-                              <CheckSquare className="w-4 h-4 text-primary" />
+                              <CheckSquare className="w-4 h-4 text-[#e8a87c]" />
                             ) : (
                               <Square className="w-4 h-4" />
                             )}
@@ -514,14 +514,14 @@ export default function Deals() {
                           onClick={() => setSelectedDealId(deal.id)}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-lg bg-primary-light text-primary flex items-center justify-center shrink-0">
+                            <div className="w-9 h-9 rounded-lg bg-[#e8a87c]/10 text-[#e8a87c] flex items-center justify-center shrink-0">
                               <Briefcase className="w-4 h-4" />
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-dark dark:text-white">
+                              <p className="text-sm font-medium text-[#f0ede8]">
                                 {deal.name}
                               </p>
-                              <p className="text-xs text-muted dark:text-gray-400">
+                              <p className="text-xs text-[#888]">
                                 {deal.crmSource}
                               </p>
                             </div>
@@ -531,12 +531,12 @@ export default function Deals() {
                           className="px-6 py-4"
                           onClick={() => setSelectedDealId(deal.id)}
                         >
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-text dark:text-gray-300">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#1e1e1e] text-xs font-medium text-[#888]">
                             {deal.stage}
                           </span>
                         </td>
                         <td
-                          className="px-6 py-4 text-sm font-semibold text-dark dark:text-white"
+                          className="px-6 py-4 text-sm font-semibold text-[#f0ede8]"
                           onClick={() => setSelectedDealId(deal.id)}
                         >
                           {formatCurrency(deal.amount)}
@@ -551,13 +551,13 @@ export default function Deals() {
                           className="px-6 py-4"
                           onClick={() => setSelectedDealId(deal.id)}
                         >
-                          <span className="flex items-center gap-1 text-sm text-muted dark:text-gray-400">
+                          <span className="flex items-center gap-1 text-sm text-[#888]">
                             <Clock className="w-3.5 h-3.5" />
                             {deal.daysStale}d
                           </span>
                         </td>
                         <td
-                          className="px-6 py-4 text-sm text-muted dark:text-gray-400"
+                          className="px-6 py-4 text-sm text-[#888]"
                           onClick={() => setSelectedDealId(deal.id)}
                         >
                           {formatDate(deal.lastActivityAt)}
@@ -569,7 +569,7 @@ export default function Deals() {
                           <Link
                             to={`/deals/${deal.id}`}
                             title="View full details"
-                            className="p-1.5 rounded-lg text-muted dark:text-gray-400 hover:text-primary hover:bg-primary-light transition-colors inline-flex"
+                            className="p-1.5 rounded-lg text-[#888] hover:text-[#e8a87c] transition-colors inline-flex"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </Link>
@@ -582,8 +582,8 @@ export default function Deals() {
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-border dark:border-gray-700">
-                  <p className="text-sm text-muted dark:text-gray-400">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-[rgba(255,255,255,0.07)]">
+                  <p className="text-sm text-[#888]">
                     Page {pagination.page} of {pagination.totalPages} (
                     {pagination.total} deals)
                   </p>
@@ -593,7 +593,7 @@ export default function Deals() {
                         updateFilter("page", Math.max(1, page - 1).toString())
                       }
                       disabled={page <= 1}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border dark:border-gray-700 text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#e8a87c] text-sm text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
                     >
                       <ChevronLeft className="w-4 h-4" /> Prev
                     </button>
@@ -604,7 +604,7 @@ export default function Deals() {
                         setSearchParams(params);
                       }}
                       disabled={page >= pagination.totalPages}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border dark:border-gray-700 text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#e8a87c] text-sm text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
                     >
                       Next <ChevronRight className="w-4 h-4" />
                     </button>

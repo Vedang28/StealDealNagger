@@ -18,11 +18,11 @@ export default function AnimatedCard({
       }}
       whileHover={
         hover
-          ? { y: -2, boxShadow: "0 8px 25px -5px rgba(0,0,0,0.1)" }
+          ? { y: -2, borderColor: "rgba(255,255,255,0.15)" }
           : undefined
       }
       onClick={onClick}
-      className={`bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm transition-colors ${
+      className={`bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] transition-colors ${
         onClick ? "cursor-pointer" : ""
       } ${className}`}
     >

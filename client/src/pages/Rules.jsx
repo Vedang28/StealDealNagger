@@ -215,8 +215,8 @@ export default function Rules() {
       <PageWrapper>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <div className="h-7 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-4 w-56 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+            <div className="h-7 w-40 bg-[#1e1e1e] rounded animate-pulse" />
+            <div className="h-4 w-56 bg-[#1e1e1e] rounded animate-pulse mt-2" />
           </div>
           <SkeletonRulesCards />
         </div>
@@ -231,8 +231,8 @@ export default function Rules() {
             onClick={() => setPreviewMode((v) => !v)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
               previewMode
-                ? "bg-primary/10 text-primary border-primary/30"
-                : "bg-white dark:bg-gray-800 text-muted dark:text-gray-400 border-border dark:border-gray-700 hover:text-dark dark:hover:text-white"
+                ? "bg-[#e8a87c]/10 text-[#e8a87c] border-[#e8a87c]/30"
+                : "bg-[#161616] text-[#888] border-[rgba(255,255,255,0.07)] hover:text-[#f0ede8]"
             }`}
           >
             {previewMode ? (
@@ -245,7 +245,7 @@ export default function Rules() {
           {isAdmin && (
             <button
               onClick={() => setShowResetModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-border dark:border-gray-700 bg-white dark:bg-gray-800 text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-[rgba(255,255,255,0.07)] bg-[#161616] text-[#888] hover:text-[#f0ede8] transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               Reset to Defaults
@@ -265,27 +265,27 @@ export default function Rules() {
                 <div key={stage} className="flex items-center gap-2">
                   {/* Stage card */}
                   <div
-                    className={`w-56 rounded-xl border-2 shadow-sm bg-white dark:bg-gray-800 transition-all ${
+                    className={`w-56 rounded-xl border-2 bg-[#161616] transition-all ${
                       isEditing
-                        ? "border-primary shadow-md"
-                        : "border-border dark:border-gray-700"
+                        ? "border-[#e8a87c]"
+                        : "border-[rgba(255,255,255,0.07)]"
                     }`}
                   >
                     {/* Card header */}
                     <div
-                      className={`px-4 py-3 rounded-t-xl border-b border-border dark:border-gray-700 flex items-center justify-between ${
+                      className={`px-4 py-3 rounded-t-xl border-b border-[rgba(255,255,255,0.07)] flex items-center justify-between ${
                         isEditing
-                          ? "bg-primary/5 dark:bg-primary/10"
-                          : "bg-gray-50/70 dark:bg-gray-700/50"
+                          ? "bg-[#e8a87c]/5"
+                          : "bg-[#111]"
                       }`}
                     >
-                      <span className="font-semibold text-dark dark:text-white text-sm">
+                      <span className="font-semibold text-[#f0ede8] text-sm">
                         {stage}
                       </span>
                       {canWrite && !isEditing && (
                         <button
                           onClick={() => openEdit(stage)}
-                          className="p-1 rounded-md text-muted dark:text-gray-400 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition-colors"
+                          className="p-1 rounded-md text-[#888] hover:text-primary hover:bg-[#1e1e1e] transition-colors"
                           title="Edit thresholds"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -346,17 +346,17 @@ export default function Rules() {
                                       [key]: Number(e.target.value),
                                     })
                                   }
-                                  className={`w-full h-1.5 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-600 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:dark:border-gray-800 [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:transition-transform [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white ${sliderClass}`}
+                                  className={`w-full h-1.5 rounded-full appearance-none cursor-pointer bg-[#333] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#161616] [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:transition-transform [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#161616] ${sliderClass}`}
                                 />
                                 {/* Scale markers */}
                                 <div className="flex justify-between mt-0.5 px-0.5">
-                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                  <span className="text-[9px] text-[#555]">
                                     1
                                   </span>
-                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                  <span className="text-[9px] text-[#555]">
                                     30
                                   </span>
-                                  <span className="text-[9px] text-gray-400 dark:text-gray-500">
+                                  <span className="text-[9px] text-[#555]">
                                     60
                                   </span>
                                 </div>
@@ -367,14 +367,14 @@ export default function Rules() {
                             <button
                               onClick={saveEdit}
                               disabled={saving}
-                              className="flex-1 flex items-center justify-center gap-1 bg-primary hover:bg-primary-hover text-white py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                              className="flex-1 flex items-center justify-center gap-1 border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
                             >
                               <Check className="w-3 h-3" />
                               {saving ? "Saving…" : "Save"}
                             </button>
                             <button
                               onClick={cancelEdit}
-                              className="flex-1 flex items-center justify-center border border-border dark:border-gray-700 py-1.5 rounded-lg text-xs text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              className="flex-1 flex items-center justify-center border border-[rgba(255,255,255,0.07)] py-1.5 rounded-lg text-xs text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                             >
                               <X className="w-3 h-3 mr-0.5" />
                               Cancel
@@ -388,23 +388,23 @@ export default function Rules() {
                             {
                               label: "Warning",
                               value: rule.staleAfterDays,
-                              bg: "bg-amber-50 dark:bg-amber-900/20",
+                              bg: "bg-[#2a1f0a]",
                               text: "text-warning",
-                              border: "border-amber-200 dark:border-amber-800",
+                              border: "border-[#f59e0b30]",
                             },
                             {
                               label: "Stale",
                               value: rule.escalateAfterDays,
-                              bg: "bg-red-50 dark:bg-red-900/20",
+                              bg: "bg-[#2a0808]",
                               text: "text-danger",
-                              border: "border-red-200 dark:border-red-800",
+                              border: "border-[#ef444430]",
                             },
                             {
                               label: "Critical",
                               value: rule.criticalAfterDays,
-                              bg: "bg-red-100 dark:bg-red-900/30",
+                              bg: "bg-[#2a0808]",
                               text: "text-critical",
-                              border: "border-red-300 dark:border-red-700",
+                              border: "border-[#ef444450]",
                             },
                           ].map(({ label, value, bg, text, border }) => (
                             <div
@@ -425,8 +425,8 @@ export default function Rules() {
                       ) : (
                         /* No rule configured */
                         <div className="text-center py-2">
-                          <Settings2 className="w-6 h-6 text-gray-300 dark:text-gray-600 mx-auto mb-1" />
-                          <p className="text-xs text-muted dark:text-gray-400">
+                          <Settings2 className="w-6 h-6 text-[#555] mx-auto mb-1" />
+                          <p className="text-xs text-[#888]">
                             No rule set
                           </p>
                           {canWrite && (
@@ -442,12 +442,12 @@ export default function Rules() {
 
                       {/* Preview counts */}
                       {previewMode && counts && !isEditing && (
-                        <div className="pt-2 border-t border-border/60 dark:border-gray-700/60 space-y-1">
-                          <p className="text-xs font-medium text-muted dark:text-gray-400 mb-1.5">
+                        <div className="pt-2 border-t border-[rgba(255,255,255,0.07)] space-y-1">
+                          <p className="text-xs font-medium text-[#888] mb-1.5">
                             Current deals:
                           </p>
                           {dealsLoading ? (
-                            <p className="text-xs text-muted dark:text-gray-400">
+                            <p className="text-xs text-[#888]">
                               Loading…
                             </p>
                           ) : (
@@ -477,7 +477,7 @@ export default function Rules() {
                                 key={label}
                                 className="flex items-center justify-between"
                               >
-                                <span className="text-xs text-muted dark:text-gray-400">
+                                <span className="text-xs text-[#888]">
                                   {label}
                                 </span>
                                 <span className={`text-xs font-bold ${color}`}>
@@ -493,7 +493,7 @@ export default function Rules() {
 
                   {/* Arrow connector */}
                   {idx < STAGES.length - 1 && (
-                    <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0 mt-10" />
+                    <ChevronRight className="w-5 h-5 text-[#555] shrink-0 mt-10" />
                   )}
                 </div>
               );
@@ -502,12 +502,12 @@ export default function Rules() {
         </div>
 
         {/* Legend / info */}
-        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl px-5 py-4">
+        <div className="mt-6 bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-xl px-5 py-4">
           <div className="flex items-start gap-3">
             <Settings2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-            <div className="text-sm text-blue-800 dark:text-blue-300 space-y-0.5">
+            <div className="text-sm text-[#888] space-y-0.5">
               <p className="font-medium">How thresholds work</p>
-              <p className="text-xs text-blue-700 dark:text-blue-400">
+              <p className="text-xs text-[#888]">
                 <span className="font-semibold text-warning">Warning</span> —
                 deal flagged after N days of no activity.{" "}
                 <span className="font-semibold text-danger">Stale</span> —
@@ -520,7 +520,7 @@ export default function Rules() {
         </div>
 
         {!canWrite && (
-          <p className="text-xs text-muted dark:text-gray-400 text-center mt-6">
+          <p className="text-xs text-[#888] text-center mt-6">
             Contact an admin or manager to modify staleness rules.
           </p>
         )}
@@ -528,30 +528,30 @@ export default function Rules() {
         {/* Reset to Defaults modal */}
         {showResetModal && (
           <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="bg-[#161616] rounded-2xl max-w-md w-full p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                  <RotateCcw className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <div className="w-10 h-10 rounded-full bg-[#f59e0b]/10 flex items-center justify-center">
+                  <RotateCcw className="w-5 h-5 text-[#f59e0b]" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-dark dark:text-white">
+                  <h3 className="font-bold text-[#f0ede8]">
                     Reset to Defaults?
                   </h3>
-                  <p className="text-sm text-muted dark:text-gray-400">
+                  <p className="text-sm text-[#888]">
                     This will overwrite all current rule thresholds.
                   </p>
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-5 space-y-1 text-sm">
+              <div className="bg-[#111] rounded-xl p-4 mb-5 space-y-1 text-sm">
                 {STAGES.map((stage) => (
                   <div
                     key={stage}
                     className="flex items-center justify-between"
                   >
-                    <span className="font-medium text-dark dark:text-white">
+                    <span className="font-medium text-[#f0ede8]">
                       {stage}
                     </span>
-                    <span className="text-muted dark:text-gray-400 text-xs">
+                    <span className="text-[#888] text-xs">
                       {DEFAULT_THRESHOLDS[stage].staleAfterDays}d /{" "}
                       {DEFAULT_THRESHOLDS[stage].escalateAfterDays}d /{" "}
                       {DEFAULT_THRESHOLDS[stage].criticalAfterDays}d
@@ -563,13 +563,13 @@ export default function Rules() {
                 <button
                   onClick={handleResetDefaults}
                   disabled={resetting}
-                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 border border-[#f59e0b] text-[#f59e0b] hover:bg-[#f59e0b] hover:text-[#0a0a0a] bg-transparent py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {resetting ? "Resetting…" : "Yes, Reset Rules"}
                 </button>
                 <button
                   onClick={() => setShowResetModal(false)}
-                  className="flex-1 border border-border dark:border-gray-700 py-2.5 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex-1 border border-[rgba(255,255,255,0.07)] py-2.5 rounded-lg text-sm text-[#f0ede8] hover:bg-[#1e1e1e] transition-colors"
                 >
                   Cancel
                 </button>

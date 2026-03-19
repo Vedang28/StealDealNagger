@@ -25,7 +25,7 @@ import Onboarding from "./pages/Onboarding";
 
 function SidebarLayout({ children }) {
   return (
-    <div className="flex min-h-screen bg-bg-light dark:bg-gray-950">
+    <div className="flex min-h-screen bg-[#0f0f0f]">
       <Sidebar />
       {/* pb-20 md:pb-0 adds space for mobile bottom tab bar */}
       <main className="flex-1 overflow-auto pb-20 md:pb-0">{children}</main>

@@ -40,10 +40,10 @@ import {
 } from "lucide-react";
 
 const CHART_COLORS = {
-  healthy: "#22c55e",
+  healthy: "#4ade80",
   warning: "#f59e0b",
-  stale: "#ef4444",
-  critical: "#dc2626",
+  stale: "#f97316",
+  critical: "#ef4444",
 };
 
 function formatCurrency(val) {
@@ -57,39 +57,39 @@ function pct(a, b) {
 }
 
 function repBarColor(score) {
-  if (score >= 80) return "#22c55e";
+  if (score >= 80) return "#4ade80";
   if (score >= 50) return "#f59e0b";
   return "#ef4444";
 }
 
 function heatColor(count, max) {
   if (max === 0 || count === 0)
-    return "bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-600";
+    return "bg-[#111] text-[#444]";
   const ratio = count / max;
   if (ratio > 0.7)
-    return "bg-red-200 dark:bg-red-900/60 text-red-800 dark:text-red-200";
+    return "bg-red-500/15 text-red-400";
   if (ratio > 0.4)
-    return "bg-orange-200 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200";
+    return "bg-orange-500/15 text-orange-400";
   if (ratio > 0.1)
-    return "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200";
-  return "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300";
+    return "bg-amber-500/10 text-amber-400";
+  return "bg-yellow-500/5 text-yellow-400";
 }
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg p-3 shadow-lg text-xs">
-      <p className="font-semibold text-dark dark:text-white mb-2">{label}</p>
+    <div className="bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-lg p-3 shadow-lg text-xs">
+      <p className="font-semibold text-[#f0ede8] mb-2">{label}</p>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
           <span
             className="w-2.5 h-2.5 rounded-full shrink-0"
             style={{ background: p.fill || p.stroke }}
           />
-          <span className="text-muted dark:text-gray-400 capitalize">
+          <span className="text-[#888] capitalize">
             {p.name}:
           </span>
-          <span className="text-dark dark:text-white font-medium">
+          <span className="text-[#f0ede8] font-medium">
             {p.value}
           </span>
         </div>
@@ -110,7 +110,7 @@ function LeaderboardSparkline({ data = [], width = 60, height = 20 }) {
       return `${x},${y}`;
     })
     .join(" ");
-  const color = data[data.length - 1] >= data[0] ? "#22c55e" : "#ef4444";
+  const color = data[data.length - 1] >= data[0] ? "#4ade80" : "#ef4444";
   return (
     <svg
       width={width}
@@ -133,14 +133,14 @@ function LeaderboardSparkline({ data = [], width = 60, height = 20 }) {
 const HeatmapTooltip = ({ stage, day, cell }) => {
   if (!cell) return null;
   return (
-    <div className="absolute z-50 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg p-2.5 shadow-lg text-xs pointer-events-none -translate-x-1/2 -translate-y-full -mt-2 left-1/2 min-w-32">
-      <p className="font-semibold text-dark dark:text-white">
+    <div className="absolute z-50 bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-lg p-2.5 shadow-lg text-xs pointer-events-none -translate-x-1/2 -translate-y-full -mt-2 left-1/2 min-w-32">
+      <p className="font-semibold text-[#f0ede8]">
         {stage} — {day}
       </p>
       <div className="mt-1 space-y-0.5">
         <p className="text-danger">Stale: {cell.staleCount}</p>
         <p className="text-critical">Critical: {cell.criticalCount}</p>
-        <p className="text-muted dark:text-gray-400">Total: {cell.total}</p>
+        <p className="text-[#888]">Total: {cell.total}</p>
       </div>
     </div>
   );
@@ -342,8 +342,8 @@ export default function Analytics() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div>
-          <div className="h-7 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+          <div className="h-7 w-32 bg-[#1e1e1e] rounded animate-pulse" />
+          <div className="h-4 w-64 bg-[#1e1e1e] rounded animate-pulse mt-2" />
         </div>
         <SkeletonStatCards />
         <SkeletonTable rows={4} cols={5} />
@@ -373,17 +373,17 @@ export default function Analytics() {
     <PageWrapper>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <PageHeader title="Analytics" description="Pipeline health, velocity, and team performance">
+        <PageHeader label="analytics" title="Analytics" description="Pipeline health, velocity, and team performance">
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border dark:border-gray-700 text-sm font-medium text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#e8a87c] text-sm font-medium text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] transition-colors duration-150 active:scale-95"
           >
             <Download className="w-4 h-4" />
             CSV
           </button>
           <button
             onClick={exportPDF}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors duration-150 active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#e8a87c] text-sm font-medium text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] transition-colors duration-150 active:scale-95"
           >
             <FileText className="w-4 h-4" />
             PDF
@@ -397,43 +397,43 @@ export default function Analytics() {
               icon: Briefcase,
               label: "Total Deals",
               value: totalDeals,
-              color: "text-primary",
-              bg: "bg-primary-light dark:bg-orange-900/30",
+              color: "text-[#e8a87c]",
+              bg: "bg-[#e8a87c]/10",
             },
             {
               icon: AlertTriangle,
               label: "Stale Deals",
               value: staleCount,
               color: "text-danger",
-              bg: "bg-red-50 dark:bg-red-900/20",
+              bg: "bg-red-500/10",
             },
             {
               icon: TrendingDown,
               label: "Critical Deals",
               value: criticalCount,
               color: "text-critical",
-              bg: "bg-red-100 dark:bg-red-900/30",
+              bg: "bg-red-500/15",
             },
             {
               icon: BarChart2,
               label: "Stale Rate",
               value: `${pct(staleCount, totalDeals || 1)}%`,
               color: "text-warning",
-              bg: "bg-amber-50 dark:bg-amber-900/20",
+              bg: "bg-amber-500/10",
             },
             {
               icon: DollarSign,
               label: "At-Risk Revenue",
               value: formatCurrency(pipeline?.atRiskRevenue ?? 0),
               color: "text-danger",
-              bg: "bg-red-50 dark:bg-red-900/20",
+              bg: "bg-red-500/10",
             },
             {
               icon: Heart,
               label: "Recovery Rate",
               value: `${recovery?.recoveryRate ?? 0}%`,
               color: "text-success",
-              bg: "bg-success-light dark:bg-green-900/20",
+              bg: "bg-green-500/10",
             },
           ].map(({ icon: Icon, label, value, color, bg }, index) => (
             <motion.div
@@ -441,17 +441,17 @@ export default function Analytics() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-5 shadow-sm card-hover-lift"
+              className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-5 card-hover-lift"
             >
               <div
                 className={`w-10 h-10 rounded-lg ${bg} ${color} flex items-center justify-center mb-3`}
               >
                 <Icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-dark dark:text-white">
+              <p className="text-2xl font-bold text-[#f0ede8]">
                 {value}
               </p>
-              <p className="text-sm text-muted dark:text-gray-400 mt-0.5">
+              <p className="text-sm text-[#888] mt-0.5">
                 {label}
               </p>
             </motion.div>
@@ -460,8 +460,8 @@ export default function Analytics() {
 
         {/* Health Breakdown */}
         {Object.keys(byStatus).length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm mb-8">
-            <h3 className="font-semibold text-dark dark:text-white mb-4">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6 mb-8">
+            <h3 className="font-semibold text-[#f0ede8] mb-4">
               Deal Health Breakdown
             </h3>
             <div className="space-y-4">
@@ -480,15 +480,15 @@ export default function Analytics() {
                     <div className="flex justify-between items-center mb-1">
                       <StatusBadge status={s} />
                       <div className="flex items-center gap-3 text-sm">
-                        <span className="text-muted dark:text-gray-400">
+                        <span className="text-[#888]">
                           {formatCurrency(data.revenue)}
                         </span>
-                        <span className="font-semibold text-dark dark:text-white w-6 text-right">
+                        <span className="font-semibold text-[#f0ede8] w-6 text-right">
                           {count}
                         </span>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+                    <div className="w-full bg-[#1e1e1e] rounded-full h-2">
                       <div
                         className={`h-2 rounded-full transition-all duration-500 ${barColors[s]}`}
                         style={{ width: `${p}%` }}
@@ -502,23 +502,23 @@ export default function Analytics() {
         )}
 
         {/* Health Trend Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm mb-8">
+        <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6 mb-8">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
             <div className="flex items-center gap-2">
-              <BarChart2 className="w-4 h-4 text-muted dark:text-gray-400" />
-              <h3 className="font-semibold text-dark dark:text-white">
+              <BarChart2 className="w-4 h-4 text-[#888]" />
+              <h3 className="font-semibold text-[#f0ede8]">
                 Pipeline Health Trend
               </h3>
             </div>
-            <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <div className="flex gap-1 bg-[#1e1e1e] rounded-lg p-1">
               {[7, 30, 90].map((d) => (
                 <button
                   key={d}
                   onClick={() => handleDateRange(d)}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors duration-150 ${
                     dateRange === d
-                      ? "bg-white dark:bg-gray-600 text-dark dark:text-white shadow-sm"
-                      : "text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white"
+                      ? "bg-[#2a2a2a] text-[#f0ede8]"
+                      : "text-[#555] hover:text-[#f0ede8]"
                   }`}
                 >
                   {d}d
@@ -527,7 +527,7 @@ export default function Analytics() {
             </div>
           </div>
           {!hasHistoricalTrends ? (
-            <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
+            <div className="flex items-start gap-3 bg-amber-900/20 border border-amber-800 rounded-lg px-4 py-3 text-sm text-amber-300">
               <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
               <span>
                 Historical data accumulates as the staleness engine runs. Check
@@ -555,10 +555,10 @@ export default function Analytics() {
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 11, fill: "#9ca3af" }}
+                  tick={{ fontSize: 11, fill: "#555" }}
                   tickFormatter={(d) =>
                     new Date(d).toLocaleDateString("en-US", {
                       month: "short",
@@ -566,7 +566,7 @@ export default function Analytics() {
                     })
                   }
                 />
-                <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                <YAxis tick={{ fontSize: 11, fill: "#555" }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
                   wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }}
@@ -591,13 +591,13 @@ export default function Analytics() {
         {/* Revenue at Risk Trend + Recovery Rate */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Revenue at Risk 30/60/90d Line Chart */}
-          <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm card-hover-lift">
+          <div className="lg:col-span-2 bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6 card-hover-lift">
             <div className="flex items-center gap-2 mb-5">
-              <DollarSign className="w-4 h-4 text-muted dark:text-gray-400" />
-              <h3 className="font-semibold text-dark dark:text-white">
+              <DollarSign className="w-4 h-4 text-[#888]" />
+              <h3 className="font-semibold text-[#f0ede8]">
                 Revenue at Risk Trend
               </h3>
-              <span className="text-xs text-muted dark:text-gray-500 ml-1">
+              <span className="text-xs text-[#888] ml-1">
                 Weekly over 90 days
               </span>
             </div>
@@ -635,10 +635,10 @@ export default function Analytics() {
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                     <XAxis
                       dataKey="label"
-                      tick={{ fontSize: 10, fill: "#9ca3af" }}
+                      tick={{ fontSize: 10, fill: "#555" }}
                       tickFormatter={(d) =>
                         new Date(d).toLocaleDateString("en-US", {
                           month: "short",
@@ -647,15 +647,15 @@ export default function Analytics() {
                       }
                     />
                     <YAxis
-                      tick={{ fontSize: 10, fill: "#9ca3af" }}
+                      tick={{ fontSize: 10, fill: "#555" }}
                       tickFormatter={(v) => formatCurrency(v)}
                     />
                     <Tooltip
                       content={({ active, payload, label }) => {
                         if (!active || !payload?.length) return null;
                         return (
-                          <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-lg p-3 shadow-lg text-xs">
-                            <p className="font-semibold text-dark dark:text-white mb-1">
+                          <div className="bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-lg p-3 shadow-lg text-xs">
+                            <p className="font-semibold text-[#f0ede8] mb-1">
                               {label}
                             </p>
                             <p className="text-danger font-medium">
@@ -691,8 +691,8 @@ export default function Analytics() {
                       key={pill.label}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
                         pill.highlight
-                          ? "bg-red-50 dark:bg-red-900/20 text-danger font-semibold"
-                          : "bg-gray-50 dark:bg-gray-700 text-muted dark:text-gray-400"
+                          ? "bg-red-500/10 text-danger font-semibold"
+                          : "bg-[#1e1e1e] text-[#888]"
                       }`}
                     >
                       {pill.label}: {formatCurrency(pill.value ?? 0)}
@@ -704,10 +704,10 @@ export default function Analytics() {
           </div>
 
           {/* Recovery Rate Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm card-hover-lift">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6 card-hover-lift">
             <div className="flex items-center gap-2 mb-5">
-              <RefreshCw className="w-4 h-4 text-muted dark:text-gray-400" />
-              <h3 className="font-semibold text-dark dark:text-white">
+              <RefreshCw className="w-4 h-4 text-[#888]" />
+              <h3 className="font-semibold text-[#f0ede8]">
                 Deal Recovery
               </h3>
             </div>
@@ -732,16 +732,15 @@ export default function Analytics() {
                         cy="18"
                         r="15.5"
                         fill="none"
-                        stroke="#e5e7eb"
+                        stroke="#1e1e1e"
                         strokeWidth="3"
-                        className="dark:stroke-gray-700"
                       />
                       <circle
                         cx="18"
                         cy="18"
                         r="15.5"
                         fill="none"
-                        stroke="#22c55e"
+                        stroke="#4ade80"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeDasharray={`${(recovery.recoveryRate / 100) * 97.4} 97.4`}
@@ -749,12 +748,12 @@ export default function Analytics() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-dark dark:text-white">
+                      <span className="text-2xl font-bold text-[#f0ede8]">
                         {recovery.recoveryRate}%
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-muted dark:text-gray-400">
+                  <p className="text-xs text-[#888]">
                     of stale deals recovered
                   </p>
                 </div>
@@ -775,22 +774,22 @@ export default function Analytics() {
                     {
                       label: "Ever Stale",
                       value: recovery.totalEverStale,
-                      color: "text-muted dark:text-gray-400",
+                      color: "text-[#888]",
                     },
                     {
                       label: "Avg Recovery",
                       value: `${recovery.avgDaysToRecover}d`,
-                      color: "text-muted dark:text-gray-400",
+                      color: "text-[#888]",
                     },
                   ].map((stat) => (
                     <div
                       key={stat.label}
-                      className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-center"
+                      className="bg-[#111] rounded-lg p-3 text-center"
                     >
                       <p className={`text-lg font-bold ${stat.color}`}>
                         {stat.value}
                       </p>
-                      <p className="text-[10px] text-muted dark:text-gray-500 uppercase tracking-wide mt-0.5">
+                      <p className="text-[10px] text-[#555] uppercase tracking-wide mt-0.5">
                         {stat.label}
                       </p>
                     </div>
@@ -804,26 +803,26 @@ export default function Analytics() {
         {/* Pipeline Velocity + Rep Leaderboard */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Pipeline Velocity — time-series area chart */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
             <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-muted dark:text-gray-400" />
-                <h3 className="font-semibold text-dark dark:text-white">
+                <Clock className="w-4 h-4 text-[#888]" />
+                <h3 className="font-semibold text-[#f0ede8]">
                   Pipeline Velocity
                 </h3>
-                <span className="text-xs text-muted dark:text-gray-500 ml-1">
+                <span className="text-xs text-[#888] ml-1">
                   Deals created over time
                 </span>
               </div>
-              <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <div className="flex gap-1 bg-[#1e1e1e] rounded-lg p-1">
                 {[7, 30, 90].map((d) => (
                   <button
                     key={d}
                     onClick={() => handleVelocityRange(d)}
                     className={`px-3 py-1 rounded-md text-xs font-medium transition-colors duration-150 ${
                       velocityRange === d
-                        ? "bg-white dark:bg-gray-600 text-dark dark:text-white shadow-sm"
-                        : "text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white"
+                        ? "bg-[#2a2a2a] text-[#f0ede8]"
+                        : "text-[#555] hover:text-[#f0ede8]"
                     }`}
                   >
                     {d}d
@@ -854,10 +853,10 @@ export default function Analytics() {
                     >
                       <stop
                         offset="5%"
-                        stopColor="#f97316"
+                        stopColor="#e8a87c"
                         stopOpacity={0.25}
                       />
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                      <stop offset="95%" stopColor="#e8a87c" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient
                       id="grad-vel-closed"
@@ -868,16 +867,16 @@ export default function Analytics() {
                     >
                       <stop
                         offset="5%"
-                        stopColor="#22c55e"
+                        stopColor="#4ade80"
                         stopOpacity={0.25}
                       />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 10, fill: "#9ca3af" }}
+                    tick={{ fontSize: 10, fill: "#555" }}
                     tickFormatter={(d) =>
                       new Date(d).toLocaleDateString("en-US", {
                         month: "short",
@@ -885,7 +884,7 @@ export default function Analytics() {
                       })
                     }
                   />
-                  <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "#555" }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend
                     wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
@@ -894,7 +893,7 @@ export default function Analytics() {
                     type="monotone"
                     dataKey="total"
                     name="Created"
-                    stroke="#f97316"
+                    stroke="#e8a87c"
                     fill="url(#grad-vel-total)"
                     strokeWidth={2}
                     dot={false}
@@ -903,7 +902,7 @@ export default function Analytics() {
                     type="monotone"
                     dataKey="closed"
                     name="Closed"
-                    stroke="#22c55e"
+                    stroke="#4ade80"
                     fill="url(#grad-vel-closed)"
                     strokeWidth={2}
                     dot={false}
@@ -914,18 +913,18 @@ export default function Analytics() {
           </div>
 
           {/* Rep Leaderboard — ranked by recovery rate with sparklines */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 p-6 shadow-sm">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] p-6">
             <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-muted dark:text-gray-400" />
-                <h3 className="font-semibold text-dark dark:text-white">
+                <Users className="w-4 h-4 text-[#888]" />
+                <h3 className="font-semibold text-[#f0ede8]">
                   Rep Leaderboard
                 </h3>
-                <span className="text-xs text-muted dark:text-gray-500 ml-1">
+                <span className="text-xs text-[#888] ml-1">
                   Recovery rate
                 </span>
               </div>
-              <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <div className="flex gap-1 bg-[#1e1e1e] rounded-lg p-1">
                 {[
                   { key: "all", label: "All" },
                   { key: "rep", label: "Reps" },
@@ -936,8 +935,8 @@ export default function Analytics() {
                     onClick={() => setLeaderboardPeriod(key)}
                     className={`px-3 py-1 rounded-md text-xs font-medium transition-colors duration-150 ${
                       leaderboardPeriod === key
-                        ? "bg-white dark:bg-gray-600 text-dark dark:text-white shadow-sm"
-                        : "text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white"
+                        ? "bg-[#2a2a2a] text-[#f0ede8]"
+                        : "text-[#555] hover:text-[#f0ede8]"
                     }`}
                   >
                     {label}
@@ -956,22 +955,22 @@ export default function Analytics() {
               <div className="overflow-y-auto max-h-56 -mx-2 px-2">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border dark:border-gray-700">
-                      <th className="text-left py-2 text-xs font-semibold text-muted dark:text-gray-400">
+                    <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                      <th className="text-left py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         #
                       </th>
-                      <th className="text-left py-2 text-xs font-semibold text-muted dark:text-gray-400">
+                      <th className="text-left py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Rep
                       </th>
-                      <th className="text-center py-2 text-xs font-semibold text-muted dark:text-gray-400">
+                      <th className="text-center py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Trend
                       </th>
-                      <th className="text-right py-2 text-xs font-semibold text-muted dark:text-gray-400">
+                      <th className="text-right py-2 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Recovery
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/50 dark:divide-gray-700/50">
+                  <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                     {leaderboard
                       .filter((r) =>
                         leaderboardPeriod === "all"
@@ -981,13 +980,13 @@ export default function Analytics() {
                       .map((r, idx) => (
                         <tr
                           key={r.user?.id}
-                          className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                          className="hover:bg-[rgba(255,255,255,0.03)] transition-colors"
                         >
-                          <td className="py-2 text-muted dark:text-gray-500 text-xs w-6">
+                          <td className="py-2 text-[#555] text-xs w-6">
                             {idx + 1}
                           </td>
                           <td className="py-2">
-                            <p className="font-medium text-dark dark:text-white text-xs truncate max-w-24">
+                            <p className="font-medium text-[#f0ede8] text-xs truncate max-w-24">
                               {r.user?.name?.split(" ")[0]}
                             </p>
                           </td>
@@ -1019,9 +1018,9 @@ export default function Analytics() {
         {/* Stage Breakdown Table + Heatmap */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Stage Breakdown */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-border dark:border-gray-700">
-              <h3 className="font-semibold text-dark dark:text-white">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)]">
+              <h3 className="font-semibold text-[#f0ede8]">
                 Stage Breakdown
               </h3>
             </div>
@@ -1036,38 +1035,38 @@ export default function Analytics() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-80 text-sm">
                   <thead>
-                    <tr className="bg-gray-50/50 dark:bg-gray-700/50 border-b border-border dark:border-gray-700">
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                      <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Stage
                       </th>
-                      <th className="text-right px-4 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-right px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Deals
                       </th>
-                      <th className="text-right px-4 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-right px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Value
                       </th>
-                      <th className="text-right px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                      <th className="text-right px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                         Avg Stale
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border dark:divide-gray-700">
+                  <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                     {stages.map((s) => (
                       <tr
                         key={s.stage}
-                        className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                        className="hover:bg-[rgba(255,255,255,0.03)] transition-colors"
                       >
-                        <td className="px-6 py-3 font-medium text-dark dark:text-white">
+                        <td className="px-6 py-3 font-medium text-[#f0ede8]">
                           {s.stage}
                         </td>
-                        <td className="px-4 py-3 text-right text-dark dark:text-gray-300">
+                        <td className="px-4 py-3 text-right text-[#f0ede8]">
                           {s.totalDeals}
                         </td>
-                        <td className="px-4 py-3 text-right text-dark dark:text-gray-300 font-semibold">
+                        <td className="px-4 py-3 text-right text-[#f0ede8] font-semibold">
                           {formatCurrency(s.totalRevenue)}
                         </td>
                         <td className="px-6 py-3 text-right">
-                          <span className="flex items-center justify-end gap-1 text-muted dark:text-gray-400">
+                          <span className="flex items-center justify-end gap-1 text-[#888]">
                             <Clock className="w-3.5 h-3.5" />
                             {Math.round(s.avgDaysStale ?? 0)}d
                           </span>
@@ -1081,12 +1080,12 @@ export default function Analytics() {
           </div>
 
           {/* Staleness Heatmap — Stage × Day-of-week */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-border dark:border-gray-700">
-              <h3 className="font-semibold text-dark dark:text-white">
+          <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)]">
+              <h3 className="font-semibold text-[#f0ede8]">
                 Staleness Heatmap
               </h3>
-              <p className="text-xs text-muted dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-[#888] mt-0.5">
                 Stage × Day-of-week stale + critical deals
               </p>
             </div>
@@ -1102,11 +1101,11 @@ export default function Analytics() {
                 <table className="w-full text-xs border-separate border-spacing-1">
                   <thead>
                     <tr>
-                      <th className="text-left text-muted dark:text-gray-400 font-medium w-24"></th>
+                      <th className="text-left text-[#888] font-medium w-24"></th>
                       {heatmap.days.map((day) => (
                         <th
                           key={day}
-                          className="text-center text-muted dark:text-gray-400 font-medium pb-1 px-1"
+                          className="text-center text-[#888] font-medium pb-1 px-1"
                         >
                           {day}
                         </th>
@@ -1116,7 +1115,7 @@ export default function Analytics() {
                   <tbody>
                     {heatmap.stages.map((stage) => (
                       <tr key={stage}>
-                        <td className="text-muted dark:text-gray-400 font-medium py-1 pr-2 text-xs">
+                        <td className="text-[#888] font-medium py-1 pr-2 text-xs">
                           {stage}
                         </td>
                         {heatmap.days.map((day, dayIdx) => {
@@ -1157,20 +1156,20 @@ export default function Analytics() {
                   </tbody>
                 </table>
                 <div className="flex items-center gap-3 mt-3 px-1">
-                  <span className="text-xs text-muted dark:text-gray-500">
+                  <span className="text-xs text-[#555]">
                     Low
                   </span>
                   <div className="flex gap-1">
                     {[
-                      "bg-yellow-50",
-                      "bg-amber-100",
-                      "bg-orange-200",
-                      "bg-red-200",
+                      "bg-yellow-500/5",
+                      "bg-amber-500/10",
+                      "bg-orange-500/15",
+                      "bg-red-500/15",
                     ].map((c, i) => (
                       <div key={i} className={`w-4 h-3 rounded ${c}`} />
                     ))}
                   </div>
-                  <span className="text-xs text-muted dark:text-gray-500">
+                  <span className="text-xs text-[#555]">
                     High
                   </span>
                 </div>
@@ -1180,10 +1179,10 @@ export default function Analytics() {
         </div>
 
         {/* Rep Performance Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-border dark:border-gray-700 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-border dark:border-gray-700 flex items-center gap-2">
-            <Users className="w-4 h-4 text-muted dark:text-gray-400" />
-            <h3 className="font-semibold text-dark dark:text-white">
+        <div className="bg-[#161616] rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)] flex items-center gap-2">
+            <Users className="w-4 h-4 text-[#888]" />
+            <h3 className="font-semibold text-[#f0ede8]">
               Rep Performance
             </h3>
           </div>
@@ -1198,42 +1197,42 @@ export default function Analytics() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-80 text-sm">
                 <thead>
-                  <tr className="bg-gray-50/50 dark:bg-gray-700/50 border-b border-border dark:border-gray-700">
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                  <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                    <th className="text-left px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                       Rep
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-right px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                       Deals
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-right px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                       Health
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-right px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                       Stale
                     </th>
-                    <th className="text-right px-6 py-3 text-xs font-semibold text-muted dark:text-gray-400 uppercase tracking-wider">
+                    <th className="text-right px-6 py-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555]">
                       Value
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border dark:divide-gray-700">
+                <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                   {reps.map((r) => {
                     const stale =
                       (r.byStatus?.stale ?? 0) + (r.byStatus?.critical ?? 0);
                     return (
                       <tr
                         key={r.user?.id ?? r.user?.email}
-                        className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                        className="hover:bg-[rgba(255,255,255,0.03)] transition-colors"
                       >
                         <td className="px-6 py-3">
-                          <p className="font-medium text-dark dark:text-white">
+                          <p className="font-medium text-[#f0ede8]">
                             {r.user?.name}
                           </p>
-                          <p className="text-xs text-muted dark:text-gray-400">
+                          <p className="text-xs text-[#888]">
                             {r.user?.email}
                           </p>
                         </td>
-                        <td className="px-4 py-3 text-right text-dark dark:text-gray-300">
+                        <td className="px-4 py-3 text-right text-[#f0ede8]">
                           {r.totalDeals}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -1254,7 +1253,7 @@ export default function Analytics() {
                             {stale}
                           </span>
                         </td>
-                        <td className="px-6 py-3 text-right font-semibold text-dark dark:text-gray-300">
+                        <td className="px-6 py-3 text-right font-semibold text-[#f0ede8]">
                           {formatCurrency(r.totalRevenue)}
                         </td>
                       </tr>

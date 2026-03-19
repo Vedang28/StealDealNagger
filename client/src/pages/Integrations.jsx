@@ -79,9 +79,9 @@ const PROVIDERS = [
     name: "HubSpot",
     category: "crm",
     description: "Sync deals and activities from your HubSpot CRM pipeline.",
-    iconColor: "text-orange-600 dark:text-orange-400",
-    iconBg: "bg-orange-100 dark:bg-orange-900/30",
-    border: "border-orange-200 dark:border-orange-800/40",
+    iconColor: "text-orange-400",
+    iconBg: "bg-orange-500/10",
+    border: "border-orange-500/20",
     comingSoon: false,
   },
   {
@@ -89,9 +89,9 @@ const PROVIDERS = [
     name: "Salesforce",
     category: "crm",
     description: "Monitor opportunities in Salesforce Sales Cloud.",
-    iconColor: "text-blue-600 dark:text-blue-400",
-    iconBg: "bg-blue-100 dark:bg-blue-900/30",
-    border: "border-blue-200 dark:border-blue-800/40",
+    iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10",
+    border: "border-blue-500/20",
     comingSoon: true,
   },
   {
@@ -99,9 +99,9 @@ const PROVIDERS = [
     name: "Pipedrive",
     category: "crm",
     description: "Pull deals and activity history from Pipedrive.",
-    iconColor: "text-green-600 dark:text-green-400",
-    iconBg: "bg-green-100 dark:bg-green-900/30",
-    border: "border-green-200 dark:border-green-800/40",
+    iconColor: "text-green-400",
+    iconBg: "bg-green-500/10",
+    border: "border-green-500/20",
     comingSoon: true,
   },
   {
@@ -109,9 +109,9 @@ const PROVIDERS = [
     name: "Slack",
     category: "notification",
     description: "Send stale deal nudges directly to reps in Slack.",
-    iconColor: "text-purple-600 dark:text-purple-400",
-    iconBg: "bg-purple-100 dark:bg-purple-900/30",
-    border: "border-purple-200 dark:border-purple-800/40",
+    iconColor: "text-purple-400",
+    iconBg: "bg-purple-500/10",
+    border: "border-purple-500/20",
     comingSoon: false,
   },
   {
@@ -119,9 +119,9 @@ const PROVIDERS = [
     name: "Google Sheets",
     category: "notification",
     description: "Export pipeline reports to a Google Sheet automatically.",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
-    iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
-    border: "border-emerald-200 dark:border-emerald-800/40",
+    iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
     comingSoon: true,
   },
 ];
@@ -263,8 +263,8 @@ export default function Integrations() {
       <PageWrapper>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <div className="h-7 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-4 w-52 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+            <div className="h-7 w-36 bg-[#1e1e1e] rounded animate-pulse" />
+            <div className="h-4 w-52 bg-[#1e1e1e] rounded animate-pulse mt-2" />
           </div>
           <SkeletonIntegrations />
         </div>
@@ -284,7 +284,7 @@ export default function Integrations() {
 
         {/* CRM section */}
         <section className="mb-10">
-          <h2 className="text-sm font-semibold text-muted dark:text-gray-400 uppercase tracking-wider mb-4">
+          <h2 className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-4">
             CRM Integrations
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -304,7 +304,7 @@ export default function Integrations() {
 
         {/* Notification section */}
         <section className="mb-10">
-          <h2 className="text-sm font-semibold text-muted dark:text-gray-400 uppercase tracking-wider mb-4">
+          <h2 className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[#555] mb-4">
             Notification Channels
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -323,12 +323,12 @@ export default function Integrations() {
         </section>
 
         {/* Info banner */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl px-5 py-4">
+        <div className="bg-[#161616] border border-[rgba(255,255,255,0.07)] rounded-xl px-5 py-4">
           <div className="flex items-start gap-3">
-            <Plug className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-            <div className="text-sm text-blue-800 dark:text-blue-300">
+            <Plug className="w-4 h-4 text-[#e8a87c] mt-0.5 shrink-0" />
+            <div className="text-sm text-[#888]">
               <p className="font-medium">Integration Guide</p>
-              <p className="text-xs text-blue-700 dark:text-blue-400 mt-0.5">
+              <p className="text-xs text-[#888] mt-0.5">
                 Connect your CRM to sync deals automatically. Notification
                 channels let you send alerts directly to your team.
               </p>
@@ -339,20 +339,20 @@ export default function Integrations() {
         {/* OAuth Flow Modal */}
         {oauthProvider && oauthStep > 0 && (
           <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div className="bg-[#161616] rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
               {/* Modal header */}
               <div
-                className={`px-6 py-4 border-b border-border dark:border-gray-700 flex items-center justify-between ${oauthProvider.iconBg}`}
+                className={`px-6 py-4 border-b border-[rgba(255,255,255,0.07)] flex items-center justify-between ${oauthProvider.iconBg}`}
               >
                 <div className="flex items-center gap-2.5">
                   <div className={`w-9 h-9 rounded-lg ${oauthProvider.iconBg} flex items-center justify-center`}>
                     <ProviderIcon id={oauthProvider.id} className={`w-5 h-5 ${oauthProvider.iconColor}`} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-dark dark:text-white text-sm">
+                    <h3 className="font-bold text-[#f0ede8] text-sm">
                       Connect {oauthProvider.name}
                     </h3>
-                    <p className="text-xs text-muted dark:text-gray-400">
+                    <p className="text-xs text-[#888]">
                       OAuth 2.0 Authorization
                     </p>
                   </div>
@@ -360,9 +360,9 @@ export default function Integrations() {
                 {oauthStep !== 2 && (
                   <button
                     onClick={closeOAuth}
-                    className="p-1.5 rounded-lg hover:bg-white/60 dark:hover:bg-gray-700 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-[#1e1e1e] transition-colors"
                   >
-                    <X className="w-4 h-4 text-muted dark:text-gray-400" />
+                    <X className="w-4 h-4 text-[#888]" />
                   </button>
                 )}
               </div>
@@ -370,36 +370,36 @@ export default function Integrations() {
               {/* Step 1: Authorize */}
               {oauthStep === 1 && (
                 <div className="px-6 py-5 space-y-4">
-                  <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
-                    <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-3 bg-[#111] rounded-xl p-4">
+                    <ShieldCheck className="w-5 h-5 text-[#e8a87c] shrink-0 mt-0.5" />
                     <div className="text-sm">
-                      <p className="font-medium text-dark dark:text-white">
+                      <p className="font-medium text-[#f0ede8]">
                         Permissions Requested
                       </p>
-                      <ul className="mt-2 space-y-1.5 text-xs text-muted dark:text-gray-400">
+                      <ul className="mt-2 space-y-1.5 text-xs text-[#888]">
                         {oauthProvider.category === "crm" ? (
                           <>
                             <li className="flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />{" "}
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#4ade80]" />{" "}
                               Read deals and pipeline data
                             </li>
                             <li className="flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />{" "}
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#4ade80]" />{" "}
                               Read contact information
                             </li>
                             <li className="flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />{" "}
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#4ade80]" />{" "}
                               Read activity history
                             </li>
                           </>
                         ) : (
                           <>
                             <li className="flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />{" "}
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#4ade80]" />{" "}
                               Send messages to channels
                             </li>
                             <li className="flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />{" "}
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#4ade80]" />{" "}
                               Create incoming webhooks
                             </li>
                           </>
@@ -407,20 +407,20 @@ export default function Integrations() {
                       </ul>
                     </div>
                   </div>
-                  <p className="text-xs text-muted dark:text-gray-400 text-center">
+                  <p className="text-xs text-[#888] text-center">
                     StaleDealNagger will be granted read-only access to your{" "}
                     {oauthProvider.name} data.
                   </p>
                   <button
                     onClick={handleOAuthAuthorize}
-                    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors bg-primary hover:bg-primary-hover`}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Authorize {oauthProvider.name}
                   </button>
                   <button
                     onClick={closeOAuth}
-                    className="w-full py-2 text-sm text-muted dark:text-gray-400 hover:text-dark dark:hover:text-white transition-colors"
+                    className="w-full py-2 text-sm text-[#888] hover:text-[#f0ede8] transition-colors"
                   >
                     Cancel
                   </button>
@@ -430,15 +430,15 @@ export default function Integrations() {
               {/* Step 2: Connecting */}
               {oauthStep === 2 && (
                 <div className="px-6 py-10 text-center">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
-                  <p className="font-semibold text-dark dark:text-white">
+                  <Loader2 className="w-8 h-8 text-[#e8a87c] animate-spin mx-auto mb-3" />
+                  <p className="font-semibold text-[#f0ede8]">
                     Connecting to {oauthProvider.name}…
                   </p>
-                  <p className="text-xs text-muted dark:text-gray-400 mt-1">
+                  <p className="text-xs text-[#888] mt-1">
                     Exchanging authorization token
                   </p>
-                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted dark:text-gray-500">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#555]">
+                    <div className="w-2 h-2 rounded-full bg-[#e8a87c] animate-pulse" />
                     <span>Verifying credentials</span>
                     <ArrowRight className="w-3 h-3" />
                     <span>Storing tokens</span>
@@ -451,13 +451,13 @@ export default function Integrations() {
               {/* Step 3: Success */}
               {oauthStep === 3 && (
                 <div className="px-6 py-10 text-center">
-                  <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3">
-                    <CheckCircle2 className="w-8 h-8 text-green-500" />
+                  <div className="w-14 h-14 rounded-full bg-[#4ade80]/10 flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle2 className="w-8 h-8 text-[#4ade80]" />
                   </div>
-                  <p className="font-semibold text-dark dark:text-white">
+                  <p className="font-semibold text-[#f0ede8]">
                     {oauthProvider.name} Connected!
                   </p>
-                  <p className="text-xs text-muted dark:text-gray-400 mt-1">
+                  <p className="text-xs text-[#888] mt-1">
                     Data sync will start shortly
                   </p>
                 </div>
@@ -469,34 +469,34 @@ export default function Integrations() {
         {/* Disconnect confirmation modal */}
         {showDisconnectModal && (
           <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <div className="bg-[#161616] rounded-2xl shadow-xl max-w-sm w-full p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#ef4444]/10 flex items-center justify-center">
                   <AlertCircle className="w-5 h-5 text-danger" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-dark dark:text-white">
+                  <h3 className="font-bold text-[#f0ede8]">
                     Disconnect Integration?
                   </h3>
-                  <p className="text-sm text-muted dark:text-gray-400 capitalize">
+                  <p className="text-sm text-[#888] capitalize">
                     {PROVIDERS.find((p) => p.id === showDisconnectModal)?.name}
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-muted dark:text-gray-400 mb-5">
+              <p className="text-sm text-[#888] mb-5">
                 This will stop syncing data. You can reconnect at any time.
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={handleDisconnect}
                   disabled={!!disconnecting}
-                  className="flex-1 bg-danger hover:bg-red-600 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 border border-[#ef4444] text-[#ef4444] hover:bg-[#ef4444] hover:text-[#0a0a0a] bg-transparent py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {disconnecting ? "Disconnecting…" : "Disconnect"}
                 </button>
                 <button
                   onClick={() => setShowDisconnectModal(null)}
-                  className="flex-1 border border-border dark:border-gray-700 py-2.5 rounded-lg text-sm text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex-1 border border-[rgba(255,255,255,0.07)] text-[#f0ede8] py-2.5 rounded-lg text-sm hover:bg-[#1e1e1e] transition-colors"
                 >
                   Cancel
                 </button>
@@ -535,12 +535,12 @@ function IntegrationCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-xl border bg-white dark:bg-gray-800 p-5 transition-all duration-200 hover:shadow-md ${
+      className={`rounded-xl border bg-[#161616] p-5 transition-all duration-200 ${
         connected
-          ? `${provider.border} shadow-sm`
+          ? `${provider.border}`
           : provider.comingSoon
-            ? "border-border dark:border-gray-700 opacity-75"
-            : "border-border dark:border-gray-700 hover:border-primary/30"
+            ? "border-[rgba(255,255,255,0.07)] opacity-75"
+            : "border-[rgba(255,255,255,0.07)] hover:border-[#e8a87c]/30"
       }`}
     >
       {/* Card header */}
@@ -550,31 +550,31 @@ function IntegrationCard({
             <ProviderIcon id={provider.id} className={`w-5 h-5 ${provider.iconColor}`} />
           </div>
           <div>
-            <p className="font-semibold text-dark dark:text-white text-sm">
+            <p className="font-semibold text-[#f0ede8] text-sm">
               {provider.name}
             </p>
-            <p className="text-xs text-muted dark:text-gray-400 capitalize">
+            <p className="text-xs text-[#888] capitalize">
               {provider.category}
             </p>
           </div>
         </div>
         {connected ? (
-          <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          <span className="flex items-center gap-1 text-xs font-medium text-[#4ade80] bg-[#4ade80]/10 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
             Live
           </span>
         ) : provider.comingSoon ? (
-          <span className="flex items-center gap-1 text-xs font-medium text-muted dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+          <span className="flex items-center gap-1 text-xs font-medium text-[#555] bg-[#1e1e1e] px-2 py-0.5 rounded-full">
             <Lock className="w-3 h-3" />
             Soon
           </span>
         ) : (
-          <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />
+          <Circle className="w-5 h-5 text-[#333] shrink-0" />
         )}
       </div>
 
       {/* Description */}
-      <p className="text-xs text-muted dark:text-gray-400 mb-4 leading-relaxed">
+      <p className="text-xs text-[#888] mb-4 leading-relaxed">
         {provider.description}
       </p>
 
@@ -582,12 +582,12 @@ function IntegrationCard({
       {connected ? (
         <div className="space-y-2">
           <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            <span className="text-xs text-green-700 dark:text-green-400 font-medium">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+            <span className="text-xs text-[#4ade80] font-medium">
               Connected
             </span>
             {lastSync && (
-              <span className="text-xs text-muted dark:text-gray-400 ml-auto flex items-center gap-0.5">
+              <span className="text-xs text-[#888] ml-auto flex items-center gap-0.5">
                 <RefreshCw className="w-3 h-3" />
                 {formatTimeAgo(lastSync)}
               </span>
@@ -597,7 +597,7 @@ function IntegrationCard({
             <button
               onClick={handleSync}
               disabled={syncing}
-              className="w-full py-1.5 flex items-center justify-center gap-1.5 border border-primary/30 text-primary rounded-lg text-xs font-medium hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors disabled:opacity-50"
+              className="w-full py-1.5 flex items-center justify-center gap-1.5 border border-[#e8a87c]/30 text-[#e8a87c] rounded-lg text-xs font-medium hover:bg-[#e8a87c]/10 transition-colors disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`}
@@ -608,7 +608,7 @@ function IntegrationCard({
           {isAdmin && (
             <button
               onClick={onDisconnect}
-              className="w-full py-1.5 border border-red-200 dark:border-red-800 text-danger rounded-lg text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="w-full py-1.5 border border-[#ef444430] text-[#ef4444] rounded-lg text-xs font-medium hover:bg-[#2a0808] transition-colors"
             >
               Disconnect
             </button>
@@ -617,7 +617,7 @@ function IntegrationCard({
       ) : (
         <div className="space-y-2">
           {provider.comingSoon && (
-            <p className="text-xs text-muted dark:text-gray-400 text-center">
+            <p className="text-xs text-[#888] text-center">
               Coming soon
             </p>
           )}
@@ -627,15 +627,15 @@ function IntegrationCard({
             className={`w-full py-2 rounded-lg text-xs font-semibold transition-colors ${
               isAdmin
                 ? provider.comingSoon
-                  ? "bg-gray-100 dark:bg-gray-700 text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  : "bg-primary hover:bg-primary-hover text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-muted dark:text-gray-500 cursor-not-allowed"
+                  ? "bg-[#1e1e1e] text-[#555]"
+                  : "border border-[#e8a87c] text-[#e8a87c] hover:bg-[#e8a87c] hover:text-[#0a0a0a] bg-transparent"
+                : "bg-[#1e1e1e] text-[#555] cursor-not-allowed"
             }`}
           >
             {provider.comingSoon ? "Coming Soon" : "Connect"}
           </button>
           {!isAdmin && (
-            <p className="text-xs text-muted dark:text-gray-400 text-center">
+            <p className="text-xs text-[#888] text-center">
               Admin access required
             </p>
           )}
