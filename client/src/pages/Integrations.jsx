@@ -15,7 +15,6 @@ import {
   ExternalLink,
   ShieldCheck,
   ArrowRight,
-  Table2,
   Lock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -54,17 +53,23 @@ const SlackIcon = ({ className = "" }) => (
   </svg>
 );
 
+// Google Sheets icon (official)
+const SheetsIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 314.7 428" className={className}>
+    <path d="M206 108.7h108.7L206 0z" fill="#188038"/>
+    <path d="M206 108.7V0H24C10.7 0 0 10.7 0 24v380c0 13.3 10.7 24 24 24h266.7c13.3 0 24-10.7 24-24V108.7z" fill="#34a853"/>
+    <path d="M60 167.9V315h194.7V167.9zM145.3 291H84v-37.6h61.3zm0-61.5H84v-37.6h61.3zm85.4 61.5h-61.3v-37.6h61.3zm0-61.5h-61.3v-37.6h61.3z" fill="#fff"/>
+  </svg>
+);
+
 // SVG icon components for each provider
 const ProviderIcon = ({ id, className = "" }) => {
   if (id === "hubspot") return <HubSpotIcon className={className} />;
   if (id === "salesforce") return <SalesforceIcon className={className} />;
   if (id === "pipedrive") return <PipedriveIcon className={className} />;
   if (id === "slack") return <SlackIcon className={className} />;
-  const icons = {
-    sheets: Table2,
-  };
-  const Icon = icons[id] || Plug;
-  return <Icon className={className} />;
+  if (id === "sheets") return <SheetsIcon className={className} />;
+  return <Plug className={className} />;
 };
 
 // Provider metadata with proper icon styling (no emojis)
