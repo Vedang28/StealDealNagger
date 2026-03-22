@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql --version)",
+      "Bash(brew services:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(npm run:*)",
+      "Read(//Users/vedangvaidya/.claude/**)",
+      "Bash(claude mcp:*)",
+      "Bash(npx @21st-sdk/cli login)",
+      "Bash(export API_KEY_21ST=e7a3011f46d45c5bc1be8edbbd1f5f449266b397db6303fc9b9faf0de43af1d5)",
+      "Bash(npx @21st-sdk/cli deploy)",
+      "Bash(export API_KEY_21ST=an_sk_169b8c4746db0f3f12f5c2c2d8ad6b5d42f732162994ae759a02f0ef2200d0a5)",
+      "Bash(npx @21st-sdk/cli list)",
+      "Bash(node -e \":*)",
+      "Bash(curl -X GET http://localhost:3000/health)",
+      "Bash(git add:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
